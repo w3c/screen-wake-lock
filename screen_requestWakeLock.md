@@ -1,4 +1,4 @@
-# `screen.requestWakeLock()` API
+# `screen.getWakeLock()` API
 
 ## Abstract
 
@@ -12,13 +12,13 @@ This method is used to request a wake lock on a top-level browsing context. This
 ## Example
 
 ```JS
-if(screen.requestWakeLock && screen.wakeLockState !== "locked"){
-   screen.requestWakeLock().then(letsGetThisPartyStarted)
+if(screen.getWakeLock && screen.wakeLockState !== "locked"){
+   screen.getWakeLock().then(letsGetThisPartyStarted)
 }
 
 //sometime later
 if(screen.wakeLockState !== "locked"){
-   screen.removeWakeLock();
+   screen.releaseWakeLock();
 }
 
 ```
@@ -27,8 +27,8 @@ if(screen.wakeLockState !== "locked"){
 
 ```JS
 partial interface Screen {
-  promise requestWakeLock(optional ScreenLockOptions options);
-  promise removeWakeLock()
+  promise getWakeLock(optional ScreenLockOptions options);
+  promise releaseWakeLock()
   readonly WakeLockState wakeLockState;
 };
 
