@@ -1,20 +1,22 @@
-screen-wake
-===========
-
+#screen wake
 An API to keep the screen from dimming / locking
 
-Use cases
-=========
+##Use cases
+
 * watch video without screen dimming (or worse, locking)
 * user follows cooking recipe in Web browser, gets hands dirty, can't easily unlock screen when it locks
 * a game use the device's accelerometer / gyroscope as a controler, without other user interaction; the screen shouldn't lock up
 * a navigation Web app needs to continue to be visible for a while, even without direct user interaction
 * a speech controled Web app in general would want to not be dependent on user touching the screen
 
-Existing similar APIs
-=============
+## Existing similar APIs
 See [list of mobile APIs for screen wake](https://github.com/w3c-webmob/web-api-gap/blob/master/features/screen-wake.md)
 
-`navigator.poke`
-================
+## Proposals
+Proposals from the community.
+
+### `navigator.poke`
 A [proposed API](http://w3c.github.io/screen-wake/navigator_poke.html) that fulfills these use cases (as discussed in [specifiction](http://discourse.specifiction.org/t/allow-developers-to-control-wake-lock-aka-disable-auto-dimming).
+
+### `screen.requestWakeLock`
+[API proposal](screen_requestWakeLock.md)
