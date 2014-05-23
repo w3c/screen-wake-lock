@@ -15,6 +15,12 @@ This method is used to request a wake lock on a top-level browsing context. This
 if(screen.requestWakeLock && screen.wakeLockState !== "locked"){
    screen.requestWakeLock().then(letsGetThisPartyStarted)
 }
+
+//sometime later
+if(screen.wakeLockState !== "locked"){
+   screen.removeWakeLock();
+}
+
 ```
 
 # Extensions to the `Screen` interface
