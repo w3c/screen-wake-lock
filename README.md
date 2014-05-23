@@ -14,3 +14,7 @@ Use cases
 Existing similar APIs
 =============
 See [list of mobile APIs for screen wake](https://github.com/w3c-webmob/web-api-gap/blob/master/features/screen-wake.md)
+
+`navigator.poke`
+================
+A [proposed API](http://w3c.github.io/screen-wake/navigator_poke.html) that fulfills these use cases (as discussed in [specifiction](http://discourse.specifiction.org/t/allow-developers-to-control-wake-lock-aka-disable-auto-dimming).
