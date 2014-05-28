@@ -18,7 +18,7 @@ Proposals from the community.
 ### `navigator.poke`
 A [proposed API](http://w3c.github.io/screen-wake/navigator_poke.html) that fulfills these use cases (as discussed in [specifiction](http://discourse.specifiction.org/t/allow-developers-to-control-wake-lock-aka-disable-auto-dimming).
 
-### `screen.requestWakeLock`
+### `screen.getWakeLock`
 [API proposal](screen_requestWakeLock.md)
 
 
