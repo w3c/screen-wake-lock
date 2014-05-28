@@ -8,6 +8,7 @@ An API to keep the screen from dimming / locking
 * a game use the device's accelerometer / gyroscope as a controler, without other user interaction; the screen shouldn't lock up
 * a navigation Web app needs to continue to be visible for a while, even without direct user interaction
 * a speech controled Web app in general would want to not be dependent on user touching the screen
+* a score keeper for a table top game, where score adjustments are infrequent
 
 ## Existing similar APIs
 See [list of mobile APIs for screen wake](https://github.com/w3c-webmob/web-api-gap/blob/master/features/screen-wake.md)
