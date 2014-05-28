@@ -20,3 +20,19 @@ A [proposed API](http://w3c.github.io/screen-wake/navigator_poke.html) that fulf
 
 ### `screen.requestWakeLock`
 [API proposal](screen_requestWakeLock.md)
+
+
+### Declarative option
+A member could be added to the app manifest to control this:
+
+```JSON
+{
+  "bikeshed_me": "dont_sleep"
+}
+```
+
+Or some other declarative means, like a HTML attribute `<html stayawake>`.
+
+
+
+
