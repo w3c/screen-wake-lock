@@ -22,6 +22,8 @@ A [proposed API](http://w3c.github.io/screen-wake/navigator_poke.html) that fulf
 ### `screen.getWakeLock`
 [API proposal](screen_requestWakeLock.md)
 
+### `screen.requestWakeLock`
+More similar to Firefox OS and Android [API proposal](screen_requestWakeLock_alternative.md)
 
 ### Declarative option
 A member could be added to the app manifest to control this:
