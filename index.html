@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Standby API</title>
+    <meta charset='utf-8'>
+    <script src='http://www.w3.org/Tools/respec/respec-w3c-common'
+            async class='remove'></script>
+    <script class='remove'>
+      var respecConfig = {
+          specStatus: "ED",
+          shortName:  "screen-wake",
+          editors: [
+                {   name:       "Ilya Bogdanovich",
+                    url:        "mailto:bogdanovichiy@yandex-team.ru", 
+                    company:    "Yandex"
+                },
+                {
+                    name:       "Marcos Caceres",
+                    url:        "mailto:marcos@marcosc.com",
+                    company:    "Mozilla" 
+                }
+          ],
+          edDraftURI:   "http://boiler23.github.io/screen-wake/",
+          wg:           "Device APIs Working Group",
+          wgURI:        "http://www.w3.org/2009/dap/",
+          wgPublicList: "public-device-apis",
+          wgPatentURI:  "http://www.w3.org/2004/01/pp-impl/43696/status",
+      };
+    </script>
+  </head>
+  <body>
+    <section id='abstract'>
+      <p>
+        This document specifies a JavaScript Web API used to request a screen wake lock on a top-level browsing context. This prevents the device from entering a power-saving state
+        (e.g, turning off the screen).
+      </p>
+    </section>
+
+    <section id='sotd'>
+      <p>
+        This document is a public working draft of a potential specification. It captures one of the proposals discussed by W3C DAP WG members and decided to start with.
+      </p>
+    </section>
+
+    <section id="conformance">
+      <p>
+        This specification defines conformance criteria that apply to a single
+        product: the <dfn>user agent</dfn> that implements the
+        interfaces that it contains.
+      </p>
+      <p>
+        Implementations that use ECMAScript to implement the APIs defined in
+        this specification must implement them in a manner consistent with the
+        ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]],
+        as this specification uses that specification and terminology.
+      </p>
+    </section>
+
+    <section>
+      <h2>Use cases</h2>
+      <p>
+        There is a number of use cases for this API:
+      </p>
+      <ul>
+        <li>
+          Applications that don't rely on finger/click based interaction, such as games that use the acceleromenter or voice input;
+        </li>
+        <li>
+          Applications where it's critical for a user to be able to see the informations on screen while they are performing a different task. E.g., an application for preparing meals, or for fixing appliances;
+        </li>
+        <li>
+          Online video services, cinemas etc. - user is watching movie and doesn't interact with screen for a long time, but it is critical to keep screen awake;
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Terminology</h2>
+      <p>
+        The <code><a href="http://www.w3.org/TR/cssom-view/#the-screen-interface">Screen</a></code> interface
+        this specification extends is defined in [[!cssom-view]].
+      </p>
+      <p>
+        The <code><a href="http://www.w3.org/TR/2013/WD-dom-20131107/#promises">Promise</a></code> interface
+        this specification uses is defined in [[!DOM4]].
+      </p>
+    </section>
+    <section id="screen.requestWakeLock">
+      <h2><code>Screen interface extensions</code></h2>
+      <dl class="idl" title="partial interface Screen">
+        <dt>Promise requestWakeLock()</dt>
+        <dd>Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.</dd>
+      </dl>
+    </section>
+    <section id="WakeLock">
+      <h2><code>WakeLock interface</code></h2>
+      <dl class="idl" title="interface WakeLock">
+        <dt>readonly attribute boolean isHeld</dt>
+        <dd>Contains value telling if WakeLock object is still keeping the screen awake. It equals <code>true</code> if wake lock is still active, otherwise it is <code>false</code>.</dd>
+        <dt>void release()</dt>
+        <dd>Calling this method releases the WakeLock object. If no other active locks exist, the screen will no longer be kept awake and it could dim or lock afterwards. Calling this method is not required because WakeLock objects are automatically released when they go out of scope.</dd>
+      </dl>
+    </section>
+    <section id="security">
+      <h2>Security considerations</h2>
+      <p>The primary use case for this API is to prevent a device from dimming or locking the device screen, as often happens when a device is left without user interactions.</p>
+      <p>Keeping the screen from dimming or locking can drain the underlying device power reserve. Preventing it from locking may expose the device and its content to unwanted parties if the user expected it to lock automatically.</p>
+      <p>To mitigate the risks mentioned above, user agents may want to:</p>
+      <ul>
+        <li>Only resolve resulting Promise of <code>screen.requestWakeLock</code> on visible browsing contexts;</li>
+        <li>Do not resolve resulting Promise of <code>screen.requestWakeLock</code> when the power reserve reaches low levels;</li>
+        <li>Alert the user when the first request to lock screen happens, with the option of banning further use of that feature from the given origin;</li>
+        <li>Highlight in some way browsing contexts, keeping the screen lock to inform user about it.</li>
+    </section>
+
+    <section id="examples">
+      <h2>Examples</h2>
+      <pre class="example highlight">
+var lock = {};
+
+// check if requestWakeLock supported and then lock the screen
+if (window.screen.requestWakeLock) {
+  window.screen.requestWakeLock().then(function(l) {
+    lock = l;
+  });
+}
+
+// only do work if lock is actually held
+if (lock.isHeld) {
+    // do some work
+}
+
+// not necessary to release the lock,
+// it will be release after desctruction automatically.
+// However, you can still release it manually when you don't need it anymore.
+if (lock) {
+  lock.release();
+}
+      </pre>
+    </section>
+  </body>
+</html>
