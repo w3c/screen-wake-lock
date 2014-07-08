@@ -131,7 +131,7 @@ if (lock.isHeld) {
 }
 
 // not necessary to release the lock,
-// it will be release after desctruction automatically.
+// it will be automatically released after destruction.
 // However, you can still release it manually when you don't need it anymore.
 if (lock) {
   lock.release();
