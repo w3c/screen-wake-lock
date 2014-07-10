@@ -95,10 +95,34 @@
     <section id="WakeLock">
       <h2><code>WakeLock interface</code></h2>
       <dl class="idl" title="interface WakeLock">
-        <dt>readonly attribute boolean isHeld</dt>
-        <dd>Contains value telling if WakeLock object is still keeping the screen awake. It equals <code>true</code> if wake lock is still active, otherwise it is <code>false</code>.</dd>
+        <dt>attribute EventHandler? onstatuschange</dt>
+        <dd>An event handler for <code>wakelockstatuschange</code> event.</dd>
+        <dt>readonly attribute WakeLockStatus status</dt>
+        <dd>Contains current status of the WakeLock object.</dd>
         <dt>void release()</dt>
-        <dd>Calling this method releases the WakeLock object. If no other active locks exist, the screen will no longer be kept awake and it could dim or lock afterwards. Calling this method is not required because WakeLock objects are automatically released when they go out of scope.</dd>
+        <dd>Calling this method releases the WakeLock object. If no other active locks exist, the screen will no longer be kept awake and it could switch off again.</dd>
+      </dl>
+    </section>
+    <section id="wakelockstatuschange">
+      <h2><code>wakelockstatuschange</code> Event</h2>
+      <p>
+        This event is used to notify about WakeLock object status changes. If the wake lock was lost for any reason - it was released explicitly or that was caused by current browsing context activity state change - this event must be fired.
+      </p>
+      <p>
+        User agents must deliver these events by <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">
+        queuing a task</a> to <a class="external" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">
+        fire an event</a> of the appropriate name with its <code>status</code> attribute set to the new status of WakeLock object.
+      </p> 
+    </section>
+    <section id="WakeLockStatus">
+      <h2><code>WakeLockStatus enumeration</code></h2>
+      <dl class="idl" title="enum WakeLockStatus">
+        <dt>unknown</dt>
+        <dd>Status of the WakeLock object is undefined.</dd>
+        <dt>locked</dt>
+        <dd>This WakeLock object keeps lock and prevents screen from being turned off.</dd>
+        <dt>unlocked</dt>
+        <dd>This WakeLock object was released for some reason.</dd>
       </dl>
     </section>
     <section id="security">
@@ -124,6 +148,33 @@ function ongamestarted() {
             screen.requestWakeLock().then(function(lock) {
             game.wakeLock = lock;
         });
+    }
+}
+
+function ongamefinished() {
+    // release previously acquired lock
+    if (game.wakeLock) {
+        game.wakeLock.release();
+    }
+}
+      </pre>
+      <p>Observing a wake lock status with event handler</p>
+      <pre class="example highlight">
+var game = {};
+
+function ongamestarted() {
+    // check if requestWakeLock supported and then lock the screen
+    if (screen.requestWakeLock) {
+        screen.requestWakeLock().then(function(lock) {
+            game.wakeLock = lock;
+            game.wakeLock.onstatuschange = onwakelockchanged;
+        });
+    }
+}
+
+function onwakelockchanged(status) {
+    if (status === "unlocked") {
+        console.log('Wake lock was lost.');
     }
 }
 
