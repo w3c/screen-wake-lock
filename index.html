@@ -121,10 +121,10 @@ var game = {};
 function ongamestarted() {
     // check if requestWakeLock supported and then lock the screen
     if (screen.requestWakeLock) {
-        screen.requestWakeLock().then(function(lock) {
-        game.wakeLock = lock;
-    });
-  }
+            screen.requestWakeLock().then(function(lock) {
+            game.wakeLock = lock;
+        });
+    }
 }
 
 function ongamefinished() {
