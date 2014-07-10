@@ -116,25 +116,22 @@
     <section id="examples">
       <h2>Examples</h2>
       <pre class="example highlight">
-var lock = {};
+var game = {};
 
-// check if requestWakeLock supported and then lock the screen
-if (window.screen.requestWakeLock) {
-  window.screen.requestWakeLock().then(function(l) {
-    lock = l;
-  });
+function ongamestarted() {
+    // check if requestWakeLock supported and then lock the screen
+    if (screen.requestWakeLock) {
+            screen.requestWakeLock().then(function(lock) {
+            game.wakeLock = lock;
+        });
+    }
 }
 
-// only do work if lock is actually held
-if (lock.isHeld) {
-    // do some work
-}
-
-// not necessary to release the lock,
-// it will be automatically released after destruction.
-// However, you can still release it manually when you don't need it anymore.
-if (lock) {
-  lock.release();
+function ongamefinished() {
+    // release previously acquired lock
+    if (game.wakeLock) {
+        game.wakeLock.release();
+    }
 }
       </pre>
     </section>
