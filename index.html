@@ -88,13 +88,13 @@
     <section id="screen.wakelock">
       <h2><code>Screen interface extensions</code></h2>
       <dl class="idl" title="partial interface Screen">
-        <dt>readonly attribute WakeLock lock</dt>
+        <dt>readonly attribute WakeLock wakeLock</dt>
         <dd>An object of type <code>WakeLock</code>, responsible for acquiring and releasing the screen wake lock. It is a global object, tied to current browsing context.</dd>
       </dl>
     </section>
     <section id="WakeLock">
       <h2><code>WakeLock interface</code></h2>
-      <p>Objects of this type cannot be constructed, they only exist as a property of some global object like <code>Screen</code>. In future we may add an ability to lock cpu, wifi or some other resource. For that purposes there may be introduced new properties like <code>system.cpu.lock</code>, <code>network.wifi.lock</code>, etc.</p> 
+      <p>Objects of this type cannot be constructed, they only exist as a property of some global object like <code>Screen</code>. In future we may add an ability to lock cpu, wifi or some other resource. For that purposes there may be introduced new properties like <code>system.cpu.wakeLock</code>, <code>network.wifi.wakeLock</code>, etc.</p> 
       <dl class="idl" title="interface WakeLock">
         <dt>attribute EventHandler? onstatuschange</dt>
         <dd>An event handler for <code>wakelockstatuschange</code> event.</dd>
@@ -140,8 +140,8 @@
       <p>Keeping the screen from dimming or locking can drain the underlying device power reserve. Preventing it from locking may expose the device and its content to unwanted parties if the user expected it to lock automatically.</p>
       <p>To mitigate the risks mentioned above, user agents may want to:</p>
       <ul>
-        <li>Only resolve resulting Promise of <code>screen.lock.acquire</code> on visible browsing contexts;</li>
-        <li>Do not resolve resulting Promise of <code>screen.lock.acquire</code> when the power reserve reaches low levels;</li>
+        <li>Only resolve resulting Promise of <code>screen.wakeLock.acquire</code> on visible browsing contexts;</li>
+        <li>Do not resolve resulting Promise of <code>screen.wakeLock.acquire</code> when the power reserve reaches low levels;</li>
         <li>Alert the user when the first request to lock screen happens, with the option of banning further use of that feature from the given origin;</li>
         <li>Highlight in some way browsing contexts, keeping the screen lock to inform user about it.</li>
     </section>
@@ -152,8 +152,8 @@
       <pre class="example highlight">
 function ongamestarted() {
     // check if screen wake locks supported and then lock the screen until we manually release it.
-    if (screen.lock) {
-        screen.lock.acquire().then(function() {
+    if (screen.wakeLock) {
+        screen.wakeLock.acquire().then(function() {
             // ...
         });
     }
@@ -161,8 +161,8 @@ function ongamestarted() {
 
 function ongamefinished() {
     // release previously acquired lock
-    if (screen.lock) {
-        screen.lock.release().then(function() {
+    if (screen.wakeLock) {
+        screen.wakeLock.release().then(function() {
             // ...
         });
     }
@@ -172,10 +172,10 @@ function ongamefinished() {
       <pre class="example highlight">
 function ongamestarted() {
     // check if screen wake locks supported and then lock the screen
-    if (screen.lock) {
-        screen.lock.acquire().then(function() {
+    if (screen.wakeLock) {
+        screen.wakeLock.acquire().then(function() {
             // lock acquired, now start receiving events about its status changes
-            screen.lock.onstatuschange = onwakelockchanged;
+            screen.wakeLock.onstatuschange = onwakelockchanged;
         });
     }
 }
@@ -190,8 +190,8 @@ function onwakelockchanged(status) {
 
 function ongamefinished() {
     // release previously acquired lock
-    if (screen.lock) {
-        screen.lock.release();
+    if (screen.wakeLock) {
+        screen.wakeLock.release();
     }
 }
       </pre>
@@ -199,9 +199,9 @@ function ongamefinished() {
       <pre class="example highlight">
 // For comfortable reading we need to keep backlight on for some reasonable time, like 2 minutes
 function onopenbook() {
-    if (screen.lock) {
+    if (screen.wakeLock) {
         // acquire screen lock for time given from application settings
-        screen.lock.acquire(app.settings.backlightTimeout).then(function() {
+        screen.wakeLock.acquire(app.settings.backlightTimeout).then(function() {
             // ...
         });
     }
@@ -209,8 +209,8 @@ function onopenbook() {
 
 function onclosebook() {
     // release previously acquired lock
-    if (screen.lock) {
-        screen.lock.release();
+    if (screen.wakeLock) {
+        screen.wakeLock.release();
     }
 }
       </pre>
