@@ -85,22 +85,31 @@
         this specification uses is defined in [[!DOM4]].
       </p>
     </section>
-    <section id="screen.requestWakeLock">
+    <section id="screen.wakelock">
       <h2><code>Screen interface extensions</code></h2>
       <dl class="idl" title="partial interface Screen">
-        <dt>Promise requestWakeLock()</dt>
-        <dd>Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.</dd>
+        <dt>readonly attribute WakeLock lock</dt>
+        <dd>An object of type <code>WakeLock</code>, responsible for acquiring and releasing the screen wake lock. It is a global object, tied to current browsing context.</dd>
       </dl>
     </section>
     <section id="WakeLock">
       <h2><code>WakeLock interface</code></h2>
+      <p>Objects of this type cannot be constructed, they only exist as a property of some global object like <code>Screen</code>. In future we may add an ability to lock cpu, wifi or some other resource. For that purposes there may be introduced new properties like <code>system.cpu.lock</code>, <code>network.wifi.lock</code>, etc.</p> 
       <dl class="idl" title="interface WakeLock">
         <dt>attribute EventHandler? onstatuschange</dt>
         <dd>An event handler for <code>wakelockstatuschange</code> event.</dd>
         <dt>readonly attribute WakeLockStatus status</dt>
         <dd>Contains current status of the WakeLock object.</dd>
-        <dt>void release()</dt>
-        <dd>Calling this method releases the WakeLock object. If no other active locks exist, the screen will no longer be kept awake and it could switch off again.</dd>
+        <dt>Promise acquire()</dt>
+        <dd>
+          Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.
+          <dl class="parameters">
+            <dt>optional unsigned int timeout</dt>
+            <dd>Sets the maximum time for wake lock to be active, in milliseconds. Lock will be released automatically after this time. Zero value is equals to infinite timeout.</dd>
+          </dl>
+        </dd>
+        <dt>Promise release()</dt>
+        <dd>Calling this method releases the wake lock. The screen will no longer be kept awake and it could switch off again.</dd>
       </dl>
     </section>
     <section id="wakelockstatuschange">
@@ -120,7 +129,7 @@
         <dt>unknown</dt>
         <dd>Status of the WakeLock object is undefined.</dd>
         <dt>locked</dt>
-        <dd>This WakeLock object keeps lock and prevents screen from being turned off.</dd>
+        <dd>This WakeLock object is currently locked.</dd>
         <dt>unlocked</dt>
         <dd>This WakeLock object was released for some reason.</dd>
       </dl>
@@ -131,43 +140,42 @@
       <p>Keeping the screen from dimming or locking can drain the underlying device power reserve. Preventing it from locking may expose the device and its content to unwanted parties if the user expected it to lock automatically.</p>
       <p>To mitigate the risks mentioned above, user agents may want to:</p>
       <ul>
-        <li>Only resolve resulting Promise of <code>screen.requestWakeLock</code> on visible browsing contexts;</li>
-        <li>Do not resolve resulting Promise of <code>screen.requestWakeLock</code> when the power reserve reaches low levels;</li>
+        <li>Only resolve resulting Promise of <code>screen.lock.acquire</code> on visible browsing contexts;</li>
+        <li>Do not resolve resulting Promise of <code>screen.lock.acquire</code> when the power reserve reaches low levels;</li>
         <li>Alert the user when the first request to lock screen happens, with the option of banning further use of that feature from the given origin;</li>
         <li>Highlight in some way browsing contexts, keeping the screen lock to inform user about it.</li>
     </section>
 
     <section id="examples">
       <h2>Examples</h2>
+      <p>Acquiring and releasing screen wake lock</p>
       <pre class="example highlight">
-var game = {};
-
 function ongamestarted() {
-    // check if requestWakeLock supported and then lock the screen
-    if (screen.requestWakeLock) {
-            screen.requestWakeLock().then(function(lock) {
-            game.wakeLock = lock;
+    // check if screen wake locks supported and then lock the screen until we manually release it.
+    if (screen.lock) {
+        screen.lock.acquire().then(function() {
+            // ...
         });
     }
 }
 
 function ongamefinished() {
     // release previously acquired lock
-    if (game.wakeLock) {
-        game.wakeLock.release();
+    if (screen.lock) {
+        screen.lock.release().then(function() {
+            // ...
+        });
     }
 }
       </pre>
       <p>Observing a wake lock status with event handler</p>
       <pre class="example highlight">
-var game = {};
-
 function ongamestarted() {
-    // check if requestWakeLock supported and then lock the screen
-    if (screen.requestWakeLock) {
-        screen.requestWakeLock().then(function(lock) {
-            game.wakeLock = lock;
-            game.wakeLock.onstatuschange = onwakelockchanged;
+    // check if screen wake locks supported and then lock the screen
+    if (screen.lock) {
+        screen.lock.acquire().then(function() {
+            // lock acquired, now start receiving events about its status changes
+            screen.lock.onstatuschange = onwakelockchanged;
         });
     }
 }
@@ -175,13 +183,15 @@ function ongamestarted() {
 function onwakelockchanged(status) {
     if (status === "unlocked") {
         console.log('Wake lock was lost.');
+    } else if (status === "locked") {
+        console.log('Wake lock was acquired.');
     }
 }
 
 function ongamefinished() {
     // release previously acquired lock
-    if (game.wakeLock) {
-        game.wakeLock.release();
+    if (screen.lock) {
+        screen.lock.release();
     }
 }
       </pre>
