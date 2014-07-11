@@ -195,6 +195,25 @@ function ongamefinished() {
     }
 }
       </pre>
+      <p>Acquiring a wake lock for limited time</p>
+      <pre class="example highlight">
+// For comfortable reading we need to keep backlight on for some reasonable time, like 2 minutes
+function onopenbook() {
+    if (screen.lock) {
+        // acquire screen lock for time given from application settings
+        screen.lock.acquire(app.settings.backlightTimeout).then(function() {
+            // ...
+        });
+    }
+}
+
+function onclosebook() {
+    // release previously acquired lock
+    if (screen.lock) {
+        screen.lock.release();
+    }
+}
+      </pre>
     </section>
   </body>
 </html>
