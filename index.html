@@ -77,61 +77,49 @@
     <section>
       <h2>Terminology</h2>
       <p>
-        The <code><a href="http://www.w3.org/TR/cssom-view/#the-screen-interface">Screen</a></code> interface
-        this specification extends is defined in [[!cssom-view]].
+        The concept <a href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a> is defined in [[!HTML5]].
       </p>
       <p>
         The <code><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">Promise</a></code> interface
         this specification uses is defined in [[!ECMASCRIPT]].
       </p>
     </section>
-    <section id="screen.wakelock">
-      <h2><code>Screen interface extensions</code></h2>
-      <dl class="idl" title="partial interface Screen">
+    <section id="navigator.wakelock">
+      <h2><code>Navigator interface extensions</code></h2>
+      <dl class="idl" title="partial interface Navigator">
         <dt>readonly attribute WakeLock wakeLock</dt>
         <dd>An object of type <code>WakeLock</code>, responsible for acquiring and releasing the screen wake lock. It is a global object, tied to current browsing context.</dd>
       </dl>
     </section>
     <section id="WakeLock">
       <h2><code>WakeLock interface</code></h2>
-      <p>Objects of this type cannot be constructed, they only exist as a property of some global object like <code>Screen</code>. In future we may add an ability to lock cpu, wifi or some other resource. For that purposes there may be introduced new properties like <code>system.cpu.wakeLock</code>, <code>network.wifi.wakeLock</code>, etc.</p> 
+      <p>Objects of this type cannot be constructed, only one instance of it exists as a property of <code>Navigator</code>.
       <dl class="idl" title="interface WakeLock">
-        <dt>attribute EventHandler? onstatuschange</dt>
-        <dd>An event handler for <code>wakelockstatuschange</code> event.</dd>
-        <dt>readonly attribute WakeLockStatus status</dt>
-        <dd>Contains current status of the WakeLock object.</dd>
-        <dt>Promise acquire()</dt>
+        <dt>Promise request()</dt>
         <dd>
           Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.
           <dl class="parameters">
-            <dt>optional unsigned int timeout</dt>
-            <dd>Sets the maximum time for wake lock to be active, in milliseconds. Lock will be released automatically after this time. Zero value is equals to infinite timeout.</dd>
+            <dt>WakeLockType type</dt>
+            <dd>Type of wake lock resource to request</dd>
           </dl>
         </dd>
         <dt>Promise release()</dt>
-        <dd>Calling this method releases the wake lock. The screen will no longer be kept awake and it could switch off again.</dd>
+        <dd>
+          Calling this method releases the wake lock. The screen will no longer be kept awake and it could switch off again.
+          <dl class="parameters">
+            <dt>WakeLockType type</dt>
+            <dd>Type of wake lock resource to release</dd>
+          </dl>
+        </dd>
       </dl>
     </section>
-    <section id="wakelockstatuschange">
-      <h2><code>wakelockstatuschange</code> Event</h2>
-      <p>
-        This event is used to notify about WakeLock object status changes. If the wake lock was lost for any reason - it was released explicitly or that was caused by current browsing context activity state change - this event must be fired.
-      </p>
-      <p>
-        User agents must deliver these events by <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">
-        queuing a task</a> to <a class="external" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">
-        fire an event</a> of the appropriate name with its <code>status</code> attribute set to the new status of WakeLock object.
-      </p> 
-    </section>
-    <section id="WakeLockStatus">
-      <h2><code>WakeLockStatus enumeration</code></h2>
-      <dl class="idl" title="enum WakeLockStatus">
-        <dt>unknown</dt>
-        <dd>Status of the WakeLock object is undefined.</dd>
-        <dt>locked</dt>
-        <dd>This WakeLock object is currently locked.</dd>
-        <dt>unlocked</dt>
-        <dd>This WakeLock object was released for some reason.</dd>
+    <section id="WakeLockType">
+      <h2><code>WakeLockType enumeration</code></h2>
+      <dl class="idl" title="enum WakeLockType">
+        <dt>screen</dt>
+        <dd>This wake lock is intended to keep awake device screen.</dd>
+        <dt>system</dt>
+        <dd>This wake lock is intended to keep awake device cpu, radio and other system services, except the screen.</dd>
       </dl>
     </section>
     <section id="security">
@@ -140,79 +128,24 @@
       <p>Keeping the screen from dimming or locking can drain the underlying device power reserve. Preventing it from locking may expose the device and its content to unwanted parties if the user expected it to lock automatically.</p>
       <p>To mitigate the risks mentioned above, user agents may want to:</p>
       <ul>
-        <li>Only resolve resulting Promise of <code>screen.wakeLock.acquire</code> on visible browsing contexts;</li>
-        <li>Do not resolve resulting Promise of <code>screen.wakeLock.acquire</code> when the power reserve reaches low levels;</li>
+        <li>Only resolve resulting Promise of <code>navigator.wakeLock.request</code> on visible browsing contexts;</li>
+        <li>Do not resolve resulting Promise of <code>navigator.wakeLock.request</code> when the power reserve reaches low levels;</li>
         <li>Alert the user when the first request to lock screen happens, with the option of banning further use of that feature from the given origin;</li>
         <li>Highlight in some way browsing contexts, keeping the screen lock to inform user about it.</li>
     </section>
 
     <section id="examples">
       <h2>Examples</h2>
-      <p>Acquiring and releasing screen wake lock</p>
       <pre class="example highlight">
-function ongamestarted() {
-    // check if screen wake locks supported and then lock the screen until we manually release it.
-    if (screen.wakeLock) {
-        screen.wakeLock.acquire().then(function() {
-            // ...
-        });
-    }
-}
+//lock display when the recipe is showing: 
+$( "#recipe" ).on( "show", function() {
+    navigator.wakeLock.request("display").then(haveFun, boo) 
+} ); 
 
-function ongamefinished() {
-    // release previously acquired lock
-    if (screen.wakeLock) {
-        screen.wakeLock.release().then(function() {
-            // ...
-        });
-    }
-}
-      </pre>
-      <p>Observing a wake lock status with event handler</p>
-      <pre class="example highlight">
-function ongamestarted() {
-    // check if screen wake locks supported and then lock the screen
-    if (screen.wakeLock) {
-        screen.wakeLock.acquire().then(function() {
-            // lock acquired, now start receiving events about its status changes
-            screen.wakeLock.onstatuschange = onwakelockchanged;
-        });
-    }
-}
-
-function onwakelockchanged(status) {
-    if (status === "unlocked") {
-        console.log('Wake lock was lost.');
-    } else if (status === "locked") {
-        console.log('Wake lock was acquired.');
-    }
-}
-
-function ongamefinished() {
-    // release previously acquired lock
-    if (screen.wakeLock) {
-        screen.wakeLock.release();
-    }
-}
-      </pre>
-      <p>Acquiring a wake lock for limited time</p>
-      <pre class="example highlight">
-// For comfortable reading we need to keep backlight on for some reasonable time, like 2 minutes
-function onopenbook() {
-    if (screen.wakeLock) {
-        // acquire screen lock for time given from application settings
-        screen.wakeLock.acquire(app.settings.backlightTimeout).then(function() {
-            // ...
-        });
-    }
-}
-
-function onclosebook() {
-    // release previously acquired lock
-    if (screen.wakeLock) {
-        screen.wakeLock.release();
-    }
-}
+//release lock: 
+$( "#recipe" ).on( "hide", function() {
+    navigator.wakeLock.release("display") 
+} ); 
       </pre>
     </section>
   </body>
