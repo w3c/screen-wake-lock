@@ -120,6 +120,14 @@
             <dd>Type of wake lock resource to release</dd>
           </dl>
         </dd>
+        <dt>boolean isHeld()</dt>
+        <dd>
+          Calling this method must return actual status for wake lock of given type: is it currently acquired or not. If wake lock type is not supported by UA or by underlying OS, the method should return false.
+          <dl class="parameters">
+            <dt>WakeLockType type</dt>
+            <dd>Type of wake lock which status we'd like to determine</dd>
+          </dl>
+        </dd>
       </dl>
     </section>
     <section id="WakeLockType">
