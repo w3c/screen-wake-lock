@@ -106,7 +106,7 @@
         </dd>
         <dt>Promise request()</dt>
         <dd>
-          Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.
+          Calling this method should ask the underlying OS for acquiring the lock of specified type. Returned <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a> must be resolved when lock is actually acquired or acquiring failed. It may fail due to security reasons or bacause requested lock type is not supported by UA or by OS.
           <dl class="parameters">
             <dt>WakeLockType type</dt>
             <dd>Type of wake lock resource to request</dd>
@@ -114,7 +114,7 @@
         </dd>
         <dt>Promise release()</dt>
         <dd>
-          Calling this method releases the wake lock. The screen will no longer be kept awake and it could switch off again.
+          Calling this method must release the previously acquired wake lock. If wake lock of given type is not actually held, it has no effect. Method returns <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a>, which is released with success when the wake lock is actually released (immediately if lock isn't held). It may resolve with failure if underlying OS failed to release wake lock for some reason.
           <dl class="parameters">
             <dt>WakeLockType type</dt>
             <dd>Type of wake lock resource to release</dd>
