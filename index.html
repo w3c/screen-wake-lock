@@ -139,12 +139,12 @@
       <pre class="example highlight">
 //lock display when the recipe is showing: 
 $( "#recipe" ).on( "show", function() {
-    navigator.wakeLock.request("display").then(haveFun, boo) 
+    navigator.wakeLock.request("screen").then(haveFun, boo) 
 } ); 
 
 //release lock: 
 $( "#recipe" ).on( "hide", function() {
-    navigator.wakeLock.release("display") 
+    navigator.wakeLock.release("screen") 
 } ); 
       </pre>
     </section>
