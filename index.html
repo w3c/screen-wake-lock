@@ -84,6 +84,11 @@
         this specification uses is defined in [[!ECMASCRIPT]].
       </p>
     </section>
+    <section id="wakelockchanged">
+      <h2><code>wakelockchanged</code> event</h2>
+      <p>This event is used to communicate wake lock state change or an error in changing state. It is named <b>wakelockchanged</b>. If wake lock is acquired or released for any reason a <a href="#wakelockchanged" class="internalDFN">wakelockchanged</a> event must be sent.</p>
+      <p>User agents must deliver this event by <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">queuing a task</a> to <a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">fire an event</a> of the appropriate name with its <code>WakeLockType</code> attribute set to type of lock being acquired or released.</p>
+    </section>
     <section id="navigator.wakelock">
       <h2><code>Navigator interface extensions</code></h2>
       <dl class="idl" title="partial interface Navigator">
@@ -95,6 +100,10 @@
       <h2><code>WakeLock interface</code></h2>
       <p>Objects of this type cannot be constructed, only one instance of it exists as a property of <code>Navigator</code>.
       <dl class="idl" title="interface WakeLock">
+        <dt>attribute EventHandler? onlockchanged</dt>
+        <dd>
+          An <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#event-handlers">event handler</a> for <a href="#wakelockchanged" class="internalDFN">wakelockchanged</a> events.
+        </dd>
         <dt>Promise request()</dt>
         <dd>
           Calling this method causes the underlying platform to keep the screen in active state, preventing it from dimming or locking until user unlocks it.
@@ -146,6 +155,14 @@ $( "#recipe" ).on( "show", function() {
 $( "#recipe" ).on( "hide", function() {
     navigator.wakeLock.release("screen") 
 } ); 
+      </pre>
+      <p>Example of using wakelockchanged events</p>
+      <pre class="example highlight">
+navigator.wakeLock.onlockchanged = function(locktype) {
+    if (locktype === "screen") {
+        console.log("Oops, screen wake lock was lost.");
+    }
+}
       </pre>
     </section>
   </body>
