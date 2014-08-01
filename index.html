@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Standby API</title>
+    <meta name="generator" content=
+    "HTML Tidy for HTML5 (experimental) for Mac OS X https://github.com/w3c/tidy-html5/tree/c63cc39">
+    <title>
+      Standby API
+    </title>
     <meta charset='utf-8'>
-    <script src='http://www.w3.org/Tools/respec/respec-w3c-common'
-            async class='remove'></script>
+    <script src='http://www.w3.org/Tools/respec/respec-w3c-common' async=""
+    class='remove'>
+</script>
     <script class='remove'>
-      var respecConfig = {
+  var respecConfig = {
           specStatus: "unofficial",
           shortName:  "screen-wake",
           editors: [
@@ -31,22 +36,23 @@
   <body>
     <section id='abstract'>
       <p>
-        This document specifies a JavaScript Web API used to request a screen wake lock on a top-level browsing context. This prevents the device from entering a power-saving state
-        (e.g, turning off the screen).
+        This document specifies a JavaScript Web API used to request a screen
+        wake lock on a top-level browsing context. This prevents the device
+        from entering a power-saving state (e.g, turning off the screen).
       </p>
     </section>
-
     <section id='sotd'>
       <p>
-        This document is a public working draft of a potential specification. It captures one of the proposals discussed by W3C DAP WG members and decided to start with.
+        This document is a public working draft of a potential specification.
+        It captures one of the proposals discussed by W3C DAP WG members and
+        decided to start with.
       </p>
     </section>
-
     <section id="conformance">
       <p>
         This specification defines conformance criteria that apply to a single
-        product: the <dfn>user agent</dfn> that implements the
-        interfaces that it contains.
+        product: the <dfn>user agent</dfn> that implements the interfaces that
+        it contains.
       </p>
       <p>
         Implementations that use ECMAScript to implement the APIs defined in
@@ -55,104 +61,214 @@
         as this specification uses that specification and terminology.
       </p>
     </section>
-
     <section>
-      <h2>Use cases</h2>
+      <h2>
+        Use cases
+      </h2>
       <p>
         There is a number of use cases for this API:
       </p>
       <ul>
-        <li>
-          Applications that don't rely on finger/click based interaction, such as games that use the acceleromenter or voice input;
+        <li>Applications that don't rely on finger/click based interaction,
+        such as games that use the acceleromenter or voice input;
         </li>
-        <li>
-          Applications where it's critical for a user to be able to see the informations on screen while they are performing a different task. E.g., an application for preparing meals, or for fixing appliances;
+        <li>Applications where it's critical for a user to be able to see the
+        informations on screen while they are performing a different task.
+        E.g., an application for preparing meals, or for fixing appliances;
         </li>
-        <li>
-          Online video services, cinemas etc. - user is watching movie and doesn't interact with screen for a long time, but it is critical to keep screen awake;
+        <li>Online video services, cinemas etc. - user is watching movie and
+        doesn't interact with screen for a long time, but it is critical to
+        keep screen awake;
         </li>
       </ul>
     </section>
-
     <section>
-      <h2>Terminology</h2>
+      <h2>
+        Terminology
+      </h2>
       <p>
-        The concept <a href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a> is defined in [[!HTML5]].
+        The concept <a href=
+        "http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing
+        context</a> is defined in [[!HTML5]].
       </p>
       <p>
-        The <code><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">Promise</a></code> interface
-        this specification uses is defined in [[!ECMASCRIPT]].
+        The <code><a href=
+        "http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
+        Promise</a></code> interface this specification uses is defined in
+        [[!ECMASCRIPT]].
       </p>
     </section>
     <section id="wakelockchanged">
-      <h2><code>wakelockchanged</code> event</h2>
-      <p>This event is used to communicate wake lock state change or an error in changing state. It is named <b>wakelockchanged</b>. If wake lock is acquired or released for any reason a <a href="#wakelockchanged" class="internalDFN">wakelockchanged</a> event must be sent.</p>
-      <p>User agents must deliver this event by <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">queuing a task</a> to <a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">fire an event</a> of the appropriate name with its <code>WakeLockType</code> attribute set to type of lock being acquired or released.</p>
+      <h2>
+        <code>wakelockchanged</code> event
+      </h2>
+      <p>
+        This event is used to communicate wake lock state change or an error in
+        changing state. It is named <b>wakelockchanged</b>. If wake lock is
+        acquired or released for any reason a <a href="#wakelockchanged" class=
+        "internalDFN">wakelockchanged</a> event must be sent.
+      </p>
+      <p>
+        User agents must deliver this event by <a href=
+        "http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">
+        queuing a task</a> to <a href=
+        "http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">
+        fire an event</a> of the appropriate name with its
+        <code>WakeLockType</code> attribute set to type of lock being acquired
+        or released.
+      </p>
     </section>
     <section id="navigator.wakelock">
-      <h2><code>Navigator</code> interface extensions</h2>
+      <h2>
+        <code>Navigator</code> interface extensions
+      </h2>
       <dl class="idl" title="partial interface Navigator">
-        <dt>readonly attribute WakeLock wakeLock</dt>
-        <dd>An object of type <code>WakeLock</code>, responsible for acquiring and releasing the screen wake lock. It is a global object, tied to current browsing context.</dd>
+        <dt>
+          readonly attribute WakeLock wakeLock
+        </dt>
+        <dd>
+          An object of type <code>WakeLock</code>, responsible for acquiring
+          and releasing the screen wake lock. It is a global object, tied to
+          current browsing context.
+        </dd>
       </dl>
     </section>
     <section id="WakeLock">
-      <h2><code>WakeLock</code> interface</h2>
-      <p>Objects of this type cannot be constructed, only one instance of it exists as a property of <code>Navigator</code>.
+      <h2>
+        <code>WakeLock</code> interface
+      </h2>
+      <p>
+        Objects of this type cannot be constructed, only one instance of it
+        exists as a property of <code>Navigator</code>.
+      </p>
       <dl class="idl" title="interface WakeLock">
-        <dt>attribute EventHandler? onlockchanged</dt>
+        <dt>
+          attribute EventHandler? onlockchanged
+        </dt>
         <dd>
-          An <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#event-handlers">event handler</a> for <a href="#wakelockchanged" class="internalDFN">wakelockchanged</a> events.
+          An <a href=
+          "http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#event-handlers">
+          event handler</a> for <a href="#wakelockchanged" class=
+          "internalDFN">wakelockchanged</a> events.
         </dd>
-        <dt>Promise request()</dt>
+        <dt>
+          Promise request()
+        </dt>
         <dd>
-          Calling this method should ask the underlying OS for acquiring the lock of specified type. Returned <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a> must be resolved when lock is actually acquired or acquiring failed. It may fail due to security reasons or bacause requested lock type is not supported by UA or by OS.
+          Calling this method should ask the underlying OS for acquiring the
+          lock of specified type. Returned <a href=
+          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
+          Promise</a> must be resolved when lock is actually acquired or
+          acquiring failed. It may fail due to security reasons or bacause
+          requested lock type is not supported by UA or by OS.
           <dl class="parameters">
-            <dt>WakeLockType type</dt>
-            <dd>Type of wake lock resource to request</dd>
+            <dt>
+              WakeLockType type
+            </dt>
+            <dd>
+              Type of wake lock resource to request
+            </dd>
           </dl>
         </dd>
-        <dt>Promise release()</dt>
+        <dt>
+          Promise release()
+        </dt>
         <dd>
-          Calling this method must release the previously acquired wake lock. If wake lock of given type is not actually held, it has no effect. Method returns <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a>, which is released with success when the wake lock is actually released (immediately if lock isn't held). It may resolve with failure if underlying OS failed to release wake lock for some reason.
+          Calling this method must release the previously acquired wake lock.
+          If wake lock of given type is not actually held, it has no effect.
+          Method returns <a href=
+          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
+          Promise</a>, which is released with success when the wake lock is
+          actually released (immediately if lock isn't held). It may resolve
+          with failure if underlying OS failed to release wake lock for some
+          reason.
           <dl class="parameters">
-            <dt>WakeLockType type</dt>
-            <dd>Type of wake lock resource to release</dd>
+            <dt>
+              WakeLockType type
+            </dt>
+            <dd>
+              Type of wake lock resource to release
+            </dd>
           </dl>
         </dd>
-        <dt>boolean isHeld()</dt>
+        <dt>
+          boolean isHeld()
+        </dt>
         <dd>
-          Calling this method must return actual status for wake lock of given type: is it currently acquired or not. If wake lock type is not supported by UA or by underlying OS, the method should return false.
+          Calling this method must return actual status for wake lock of given
+          type: is it currently acquired or not. If wake lock type is not
+          supported by UA or by underlying OS, the method should return false.
           <dl class="parameters">
-            <dt>WakeLockType type</dt>
-            <dd>Type of wake lock which status we'd like to determine</dd>
+            <dt>
+              WakeLockType type
+            </dt>
+            <dd>
+              Type of wake lock which status we'd like to determine
+            </dd>
           </dl>
         </dd>
       </dl>
     </section>
     <section id="WakeLockType">
-      <h2><code>WakeLockType enumeration</code></h2>
+      <h2>
+        <code>WakeLockType enumeration</code>
+      </h2>
       <dl class="idl" title="enum WakeLockType">
-        <dt>screen</dt>
-        <dd>This wake lock is intended to keep awake device screen preventing if from switching off and going to sleep.</dd>
-        <dt>system</dt>
-        <dd>This wake lock is intended to keep awake device cpu, radio and other system services. Screen may dim or switch off.</dd>
+        <dt>
+          screen
+        </dt>
+        <dd>
+          This wake lock is intended to keep awake device screen preventing if
+          from switching off and going to sleep.
+        </dd>
+        <dt>
+          system
+        </dt>
+        <dd>
+          This wake lock is intended to keep awake device cpu, radio and other
+          system services. Screen may dim or switch off.
+        </dd>
       </dl>
     </section>
     <section id="security">
-      <h2>Security considerations</h2>
-      <p>The primary use case for this API is to prevent a device from dimming or locking the device screen, as often happens when a device is left without user interactions.</p>
-      <p>Keeping the screen from dimming or locking can drain the underlying device power reserve. Preventing it from locking may expose the device and its content to unwanted parties if the user expected it to lock automatically.</p>
-      <p>To mitigate the risks mentioned above, user agents may want to:</p>
+      <h2>
+        Security considerations
+      </h2>
+      <p>
+        The primary use case for this API is to prevent a device from dimming
+        or locking the device screen, as often happens when a device is left
+        without user interactions.
+      </p>
+      <p>
+        Keeping the screen from dimming or locking can drain the underlying
+        device power reserve. Preventing it from locking may expose the device
+        and its content to unwanted parties if the user expected it to lock
+        automatically.
+      </p>
+      <p>
+        To mitigate the risks mentioned above, user agents may want to:
+      </p>
       <ul>
-        <li>Only resolve resulting Promise of <code>navigator.wakeLock.request</code> on visible browsing contexts;</li>
-        <li>Do not resolve resulting Promise of <code>navigator.wakeLock.request</code> when the power reserve reaches low levels;</li>
-        <li>Alert the user when the first request to lock screen happens, with the option of banning further use of that feature from the given origin;</li>
-        <li>Highlight in some way browsing contexts, keeping the screen lock to inform user about it.</li>
+        <li>Only resolve resulting Promise of
+        <code>navigator.wakeLock.request</code> on visible browsing contexts;
+        </li>
+        <li>Do not resolve resulting Promise of
+        <code>navigator.wakeLock.request</code> when the power reserve reaches
+        low levels;
+        </li>
+        <li>Alert the user when the first request to lock screen happens, with
+        the option of banning further use of that feature from the given
+        origin;
+        </li>
+        <li>Highlight in some way browsing contexts, keeping the screen lock to
+        inform user about it.
+        </li>
+      </ul>
     </section>
-
     <section id="examples">
-      <h2>Examples</h2>
+      <h2>
+        Examples
+      </h2>
       <pre class="example highlight">
 //lock display when the recipe is showing: 
 $( "#recipe" ).on( "show", function() {
@@ -163,15 +279,28 @@ $( "#recipe" ).on( "show", function() {
 $( "#recipe" ).on( "hide", function() {
     navigator.wakeLock.release("screen") 
 } ); 
-      </pre>
-      <p>Example of using wakelockchanged events</p>
+      
+</pre>
+      <p>
+        Example of using wakelockchanged events
+      </p>
       <pre class="example highlight">
 navigator.wakeLock.onlockchanged = function(locktype) {
     if (locktype === "screen") {
         console.log("Oops, screen wake lock was lost.");
     }
 }
-      </pre>
+      
+</pre>
+    </section>
+    <section class="appendix informative" id="acknowledgments">
+      <h2>
+        Acknowledgments
+      </h2>
+      <p>
+        I would like to offer my sincere thanks to Mounir Lamouri, Sergei
+        Konstantinov and Matvei Larionov for their contributions to this work.
+      </p>
     </section>
   </body>
 </html>
