@@ -90,14 +90,14 @@
       <p>User agents must deliver this event by <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">queuing a task</a> to <a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-event-fire">fire an event</a> of the appropriate name with its <code>WakeLockType</code> attribute set to type of lock being acquired or released.</p>
     </section>
     <section id="navigator.wakelock">
-      <h2><code>Navigator interface extensions</code></h2>
+      <h2><code>Navigator</code> interface extensions</h2>
       <dl class="idl" title="partial interface Navigator">
         <dt>readonly attribute WakeLock wakeLock</dt>
         <dd>An object of type <code>WakeLock</code>, responsible for acquiring and releasing the screen wake lock. It is a global object, tied to current browsing context.</dd>
       </dl>
     </section>
     <section id="WakeLock">
-      <h2><code>WakeLock interface</code></h2>
+      <h2><code>WakeLock</code> interface</h2>
       <p>Objects of this type cannot be constructed, only one instance of it exists as a property of <code>Navigator</code>.
       <dl class="idl" title="interface WakeLock">
         <dt>attribute EventHandler? onlockchanged</dt>
