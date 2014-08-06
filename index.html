@@ -11,7 +11,7 @@
     class='remove'>
 </script>
     <script class='remove'>
-  var respecConfig = {
+var respecConfig = {
           specStatus: "unofficial",
           shortName:  "screen-wake",
           editors: [
@@ -178,10 +178,15 @@
           If wake lock of given type is not actually held, it has no effect.
           Method returns <a href=
           "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
-          Promise</a>, which is released with success when the wake lock is
-          actually released (immediately if lock isn't held). It may resolve
+          Promise</a>, which is released with success when the wake lock object
+          is actually released (immediately if lock isn't held). It may resolve
           with failure if underlying OS failed to release wake lock for some
-          reason.
+          reason. If many browsing contexts hold a lock on some resource, then
+          locks should release separately from each other, but resource should
+          be held until all locks are released, i.e. <a href=
+          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
+          Promise</a>, returned from <code>release()</code> method of the
+          object should resolve when the object is released, not the resource.
           <dl class="parameters">
             <dt>
               WakeLockType type
