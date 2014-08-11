@@ -1,4 +1,4 @@
 Specs on Github
 ===============
 
-You can view the full document [here](http://w3c.github.io/screen-wake).
+You can view the full document [here](http://w3c.github.io/wake-lock).
