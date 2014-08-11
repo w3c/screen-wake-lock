@@ -147,8 +147,7 @@
         </dt>
         <dd>
           An object of type <code>WakeLock</code>, responsible for acquiring
-          and releasing the screen wake lock. It is a global object, tied to
-          current browsing context.
+          and releasing the wake lock.
         </dd>
       </dl>
     </section>
@@ -170,8 +169,8 @@
           Promise request()
         </dt>
         <dd>
-          Calling this method should ask the underlying OS for acquiring the
-          lock of specified type. Returned <a href=
+          Request a wake lock of specified type from the underlying system.
+          Returned <a href=
           "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
           Promise</a> must be resolved when lock is actually acquired or
           acquiring failed. It may fail due to security reasons or bacause
@@ -189,9 +188,8 @@
           Promise release()
         </dt>
         <dd>
-          Calling this method must release the previously acquired wake lock.
-          If wake lock of given type is not actually held, it has no effect.
-          Method returns <a href=
+          Releases a previously acquired wake lock. If wake lock of given type
+          is not actually held, it has no effect. Method returns <a href=
           "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
           Promise</a>, which is released with success when the wake lock object
           is actually released (immediately if lock isn't held). It may resolve
@@ -215,9 +213,9 @@
           boolean isHeld()
         </dt>
         <dd>
-          Calling this method must return actual status for wake lock of given
-          type: is it currently acquired or not. If wake lock type is not
-          supported by UA or by underlying OS, the method should return false.
+          Provides a means to determine if a wake lock is held for a particular
+          wake-lock type. If wake lock type is not supported by UA or by
+          underlying OS, the method should return false.
           <dl class="parameters">
             <dt>
               WakeLockType type
@@ -231,22 +229,23 @@
     </section>
     <section id="WakeLockType">
       <h2>
-        <code>WakeLockType enumeration</code>
+        <code>WakeLockType</code> enumeration
       </h2>
       <dl class="idl" title="enum WakeLockType">
         <dt>
           screen
         </dt>
         <dd>
-          This wake lock is intended to keep awake device screen preventing if
-          from switching off and going to sleep.
+          Prevents the screen(s) of the device from entering a power-saving
+          state.
         </dd>
         <dt>
           system
         </dt>
         <dd>
-          This wake lock is intended to keep awake device cpu, radio and other
-          system services. Screen may dim or switch off.
+          Prevent the device's cpu, radio(s), and other system services from
+          entering a power-saving state. The device's screen can dim or switch
+          off.
         </dd>
       </dl>
     </section>
