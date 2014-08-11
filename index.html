@@ -300,17 +300,6 @@ $( "#recipe" ).on( "hide", function() {
 } ); 
       
 </pre>
-      <p>
-        Example of using wakelockchanged events
-      </p>
-      <pre class="example highlight">
-navigator.wakeLock.onlockchanged = function(locktype) {
-    if (locktype === "screen") {
-        console.log("Oops, screen wake lock was lost.");
-    }
-}
-      
-</pre>
     </section>
     <section class="appendix informative" id="acknowledgments">
       <h2>
