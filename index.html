@@ -4,41 +4,72 @@
     <meta name="generator" content=
     "HTML Tidy for HTML5 (experimental) for Mac OS X https://github.com/w3c/tidy-html5/tree/c63cc39">
     <title>
-      Standby API
+      Wake Lock API
     </title>
     <meta charset='utf-8'>
     <script src='http://www.w3.org/Tools/respec/respec-w3c-common' async=""
     class='remove'>
 </script>
     <script class='remove'>
-var respecConfig = {
-          specStatus: "unofficial",
-          shortName:  "screen-wake",
-          editors: [
-                {   name:       "Ilya Bogdanovich",
-                    url:        "mailto:bogdanovichiy@yandex-team.ru", 
-                    company:    "Yandex"
-                },
-                {
-                    name:       "Marcos Caceres",
-                    url:        "mailto:marcos@marcosc.com",
-                    company:    "Mozilla" 
-                }
-          ],
-          edDraftURI:   "http://boiler23.github.io/screen-wake/",
-          wg:           "Device APIs Working Group",
-          wgURI:        "http://www.w3.org/2009/dap/",
-          wgPublicList: "public-device-apis",
-          wgPatentURI:  "http://www.w3.org/2004/01/pp-impl/43696/status",
-      };
+/*stops tidy screwing things up*/
+    var respecConfig = {
+        specStatus: "unofficial",
+        shortName: "wake-lock",
+        editors: [{
+            name: "Ilya Bogdanovich",
+            url: "mailto:bogdanovichiy@yandex-team.ru",
+            company: "Yandex"
+        }, {
+            name: "Marcos Caceres",
+            url: "mailto:marcos@marcosc.com",
+            company: "Mozilla"
+        }],
+        edDraftURI: "http://w3c.github.io/wake-lock/",
+        wg: "Device APIs Working Group",
+        wgURI: "http://www.w3.org/2009/dap/",
+        wgPublicList: "public-device-apis",
+        wgPatentURI: "http://www.w3.org/2004/01/pp-impl/43696/status",
+        otherLinks: [{
+            key: 'Use cases',
+            data: [{
+                value: 'Use Cases and Requirements',
+                href: 'http://w3c-webmob.github.io/wake-lock-use-cases/'
+            }]
+        }, {
+            key: 'Repository',
+            data: [{
+                value: 'We are on Github.',
+                href: 'https://github.com/w3c/wake-lock'
+            }, {
+                value: 'File a bug.',
+                href: 'https://github.com/w3c/wake-lock/issues'
+            }, {
+                value: 'Commit history.',
+                href: 'https://github.com/w3c/wake-lock/commits/gh-pages'
+            }, {
+                value: 'Mailing list.',
+                href: 'http://lists.w3.org/Archives/Public/public-device-apis/'
+            }]
+        }, {
+            key: "Implementation status",
+            data: [{
+                value: "Gecko",
+                href: ""
+            }, {
+                value: "Blink",
+                href: ""
+            }]
+        }],
+    };
     </script>
   </head>
   <body>
     <section id='abstract'>
       <p>
-        This document specifies a JavaScript Web API used to request a screen
-        wake lock on a top-level browsing context. This prevents the device
-        from entering a power-saving state (e.g, turning off the screen).
+        This document specifies an API to request a "wake lock" on a top-level
+        browsing context. A wake lock prevents some aspect of the device from
+        entering a power-saving state (e.g, preventing the system from turning
+        off the screen).
       </p>
     </section>
     <section id='sotd'>
@@ -55,32 +86,20 @@ var respecConfig = {
         it contains.
       </p>
       <p>
-        Implementations that use ECMAScript to implement the APIs defined in
-        this specification must implement them in a manner consistent with the
-        ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]],
-        as this specification uses that specification and terminology.
+        A <a>user agent</a> MUST implement the APIs defined in this
+        specification in a manner that conforms to the <a href=
+        "http://heycam.github.io/webidl/#ecmascript-binding">ECMAScript
+        Bindings</a> defined in [[!WEBIDL]].
       </p>
     </section>
-    <section>
+    <section class="informative">
       <h2>
         Use cases
       </h2>
       <p>
-        There is a number of use cases for this API:
+        The use cases and requirements are documented in
+        [[WAKE-LOCK-USECASES]].
       </p>
-      <ul>
-        <li>Applications that don't rely on finger/click based interaction,
-        such as games that use the acceleromenter or voice input;
-        </li>
-        <li>Applications where it's critical for a user to be able to see the
-        informations on screen while they are performing a different task.
-        E.g., an application for preparing meals, or for fixing appliances;
-        </li>
-        <li>Online video services, cinemas etc. - user is watching movie and
-        doesn't interact with screen for a long time, but it is critical to
-        keep screen awake;
-        </li>
-      </ul>
     </section>
     <section>
       <h2>
@@ -128,8 +147,7 @@ var respecConfig = {
         </dt>
         <dd>
           An object of type <code>WakeLock</code>, responsible for acquiring
-          and releasing the screen wake lock. It is a global object, tied to
-          current browsing context.
+          and releasing the wake lock.
         </dd>
       </dl>
     </section>
@@ -137,10 +155,6 @@ var respecConfig = {
       <h2>
         <code>WakeLock</code> interface
       </h2>
-      <p>
-        Objects of this type cannot be constructed, only one instance of it
-        exists as a property of <code>Navigator</code>.
-      </p>
       <dl class="idl" title="interface WakeLock">
         <dt>
           attribute EventHandler? onlockchanged
@@ -155,8 +169,8 @@ var respecConfig = {
           Promise request()
         </dt>
         <dd>
-          Calling this method should ask the underlying OS for acquiring the
-          lock of specified type. Returned <a href=
+          Request a wake lock of specified type from the underlying system.
+          Returned <a href=
           "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
           Promise</a> must be resolved when lock is actually acquired or
           acquiring failed. It may fail due to security reasons or bacause
@@ -174,9 +188,8 @@ var respecConfig = {
           Promise release()
         </dt>
         <dd>
-          Calling this method must release the previously acquired wake lock.
-          If wake lock of given type is not actually held, it has no effect.
-          Method returns <a href=
+          Releases a previously acquired wake lock. If wake lock of given type
+          is not actually held, it has no effect. Method returns <a href=
           "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
           Promise</a>, which is released with success when the wake lock object
           is actually released (immediately if lock isn't held). It may resolve
@@ -200,9 +213,9 @@ var respecConfig = {
           boolean isHeld()
         </dt>
         <dd>
-          Calling this method must return actual status for wake lock of given
-          type: is it currently acquired or not. If wake lock type is not
-          supported by UA or by underlying OS, the method should return false.
+          Provides a means to determine if a wake lock is held for a particular
+          wake-lock type. If wake lock type is not supported by UA or by
+          underlying OS, the method should return false.
           <dl class="parameters">
             <dt>
               WakeLockType type
@@ -216,22 +229,23 @@ var respecConfig = {
     </section>
     <section id="WakeLockType">
       <h2>
-        <code>WakeLockType enumeration</code>
+        <code>WakeLockType</code> enumeration
       </h2>
       <dl class="idl" title="enum WakeLockType">
         <dt>
           screen
         </dt>
         <dd>
-          This wake lock is intended to keep awake device screen preventing if
-          from switching off and going to sleep.
+          Prevents the screen(s) of the device from entering a power-saving
+          state.
         </dd>
         <dt>
           system
         </dt>
         <dd>
-          This wake lock is intended to keep awake device cpu, radio and other
-          system services. Screen may dim or switch off.
+          Prevent the device's cpu, radio(s), and other system services from
+          entering a power-saving state. The device's screen can dim or switch
+          off.
         </dd>
       </dl>
     </section>
@@ -286,25 +300,14 @@ $( "#recipe" ).on( "hide", function() {
 } ); 
       
 </pre>
-      <p>
-        Example of using wakelockchanged events
-      </p>
-      <pre class="example highlight">
-navigator.wakeLock.onlockchanged = function(locktype) {
-    if (locktype === "screen") {
-        console.log("Oops, screen wake lock was lost.");
-    }
-}
-      
-</pre>
     </section>
     <section class="appendix informative" id="acknowledgments">
       <h2>
         Acknowledgments
       </h2>
       <p>
-        I would like to offer my sincere thanks to Mounir Lamouri, Sergei
-        Konstantinov and Matvei Larionov for their contributions to this work.
+        I would like to offer my sincere thanks to Mounir Lamouri, Sergey
+        Konstantinov and Matvey Larionov for their contributions to this work.
       </p>
     </section>
   </body>
