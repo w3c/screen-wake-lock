@@ -13,6 +13,7 @@
     <script class='remove'>
 /*stops tidy screwing things up*/
     var respecConfig = {
+        noLegacyStyle: true,
         specStatus: "unofficial",
         shortName: "wake-lock",
         editors: [{
@@ -66,24 +67,28 @@
   <body>
     <section id='abstract'>
       <p>
-        This document specifies an API to request a "wake lock" on a top-level
-        browsing context. A wake lock prevents some aspect of the device from
-        entering a power-saving state (e.g, preventing the system from turning
+        This document specifies an API that allows web applications to request
+        a wake lock. A wake lock prevents some aspect of the device from
+        entering a power-saving state (e.g., preventing the system from turning
         off the screen).
       </p>
     </section>
     <section id='sotd'>
       <p>
-        This document is a public working draft of a potential specification.
-        It captures one of the proposals discussed by W3C DAP WG members and
-        decided to start with.
+        Implementors need to be aware that this specification is extremely
+        unstable. <strong>Implementors who are not taking part in the
+        discussions will find the specification changing out from under them in
+        incompatible ways.</strong> Vendors interested in implementing this
+        specification before it eventually reaches the Candidate Recommendation
+        phase should <a href=
+        "https://github.com/w3c/wake-lock/issues">subscribe to the repository
+        on GitHub</a> and take part in the discussions.
       </p>
     </section>
     <section id="conformance">
       <p>
-        This specification defines conformance criteria that apply to a single
-        product: the <dfn>user agent</dfn> that implements the interfaces that
-        it contains.
+        This specification defines conformance criteria for a single product: a
+        <dfn>user agent</dfn> that implements the interfaces that it contains.
       </p>
       <p>
         A <a>user agent</a> MUST implement the APIs defined in this
@@ -106,16 +111,80 @@
         Terminology
       </h2>
       <p>
-        The concept <a href=
-        "http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing
-        context</a> is defined in [[!HTML5]].
+        The following concepts are defined in [[!HTML]]:
       </p>
+      <ul>
+        <li>
+          <a href=
+          "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context">
+          <dfn>browsing context</dfn></a>.<br>
+        </li>
+        <li>
+          <a href=
+          "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#top-level-browsing-context">
+          <dfn>top-level browsing context</dfn></a>
+        </li>
+      </ul>
       <p>
         The <code><a href=
         "http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
-        Promise</a></code> interface this specification uses is defined in
-        [[!ECMASCRIPT]].
+        <dfn>Promise</dfn></a></code> interface is defined in [[!ECMASCRIPT]].
       </p>
+      <section>
+        <h3>
+          Wake Locks
+        </h3>
+        <p>
+          A <dfn>wake lock</dfn> prevents some aspect of the device or
+          operating system from entering a power-saving state.
+        </p>
+        <p>
+          This specification deals with the following wake lock <dfn title=
+          "wk-type">types</dfn> and their expected behavior:
+        </p>
+        <dl>
+          <dt>
+            <dfn>screen</dfn>
+          </dt>
+          <dd>
+            Prevents the screen(s) of the device from entering a power-saving
+            state.
+          </dd>
+          <dt>
+            <dfn>system</dfn>
+          </dt>
+          <dd>
+            Prevents the device's cpu, radio(s), and other system services from
+            entering a power-saving state. The device's screen can dim or
+            switch off.
+          </dd>
+        </dl>
+        <p>
+          In the API, the wake lock <a title="wk-type">types</a> are expressed
+          as the <code>WakeLockType</code> enum.
+        </p>
+        <p>
+          To <dfn>hold a lock</dfn> of some <var>type</var> means that the
+          document of a <a>top-level browsing context</a> has requested,
+          through the user agent, that the underlying system apply a particular
+          lock <a title="wk-type">type</a>. A top-level browsing context is
+          able to hold a lock even if the underlying operating system has not
+          explicitly signaled that the user agent has been granted the
+          lock.<br>
+        </p>
+        <p>
+          To <dfn>release a lock</dfn> of some <var>type</var> means that the
+          underlying system has explicitly signaled to the user agent that it
+          no longer holds a particular lock <a title="wk-type">type</a>.
+        </p>
+        <p>
+          The <a>user agent</a> MAY require that a <a>top-level browsing
+          context</a> meet one or more <dfn>security conditions</dfn> in order
+          to <a>hold a lock</a>. For example, the user could have indicated
+          through the user interface that they don't wish for a web application
+          to have this capability.
+        </p>
+      </section>
     </section>
     <section id="wakelockchanged">
       <h2>
@@ -139,17 +208,23 @@
     </section>
     <section id="navigator.wakelock">
       <h2>
-        <code>Navigator</code> interface extensions
+        Extension to the <code>Navigator</code> interface
       </h2>
       <dl class="idl" title="partial interface Navigator">
         <dt>
           readonly attribute WakeLock wakeLock
         </dt>
-        <dd>
-          An object of type <code>WakeLock</code>, responsible for acquiring
-          and releasing the wake lock.
-        </dd>
       </dl>
+      <section>
+        <h3>
+          <code>wakeLock</code> attribute
+        </h3>
+        <p>
+          The <dfn>wakeLock</dfn> attribute affords developers with a means of
+          acquiring and releasing a <a>wake lock</a>. It also allows developers
+          to check if a particular lock <a title="wk-type">type</a> is held.
+        </p>
+      </section>
     </section>
     <section id="WakeLock">
       <h2>
@@ -169,63 +244,135 @@
           Promise request()
         </dt>
         <dd>
-          Request a wake lock of specified type from the underlying system.
-          Returned <a href=
-          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
-          Promise</a> must be resolved when lock is actually acquired or
-          acquiring failed. It may fail due to security reasons or bacause
-          requested lock type is not supported by UA or by OS.
           <dl class="parameters">
             <dt>
               WakeLockType type
             </dt>
-            <dd>
-              Type of wake lock resource to request
-            </dd>
           </dl>
         </dd>
         <dt>
           Promise release()
         </dt>
         <dd>
-          Releases a previously acquired wake lock. If wake lock of given type
-          is not actually held, it has no effect. Method returns <a href=
-          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
-          Promise</a>, which is released with success when the wake lock object
-          is actually released (immediately if lock isn't held). It may resolve
-          with failure if underlying OS failed to release wake lock for some
-          reason. If many browsing contexts hold a lock on some resource, then
-          locks should release separately from each other, but resource should
-          be held until all locks are released, i.e. <a href=
-          "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">
-          Promise</a>, returned from <code>release()</code> method of the
-          object should resolve when the object is released, not the resource.
           <dl class="parameters">
             <dt>
               WakeLockType type
             </dt>
-            <dd>
-              Type of wake lock resource to release
-            </dd>
           </dl>
         </dd>
         <dt>
           boolean isHeld()
         </dt>
         <dd>
-          Provides a means to determine if a wake lock is held for a particular
-          wake-lock type. If wake lock type is not supported by UA or by
-          underlying OS, the method should return false.
           <dl class="parameters">
             <dt>
               WakeLockType type
             </dt>
-            <dd>
-              Type of wake lock which status we'd like to determine
-            </dd>
           </dl>
         </dd>
       </dl>
+      <section>
+        <h3>
+          <code>request()</code> method
+        </h3>
+        <p>
+          The <dfn id=
+          "widl-WakeLock-request-Promise-WakeLockType-type"><code>request()</code></dfn>
+          method causes the user agent to requests a wake lock of a particular
+          <a title="wk-type">type</a> from the underlying system. When called,
+          the user agent MUST run the <dfn>steps to request a wake lock</dfn>
+          with <code>WakeLockType</code> <var>T</var> as input. The algorithm
+          returns a <a>promise</a>.
+        </p>
+        <ol>
+          <li>Let <var>promise</var> be a newly created <a>promise</a>.
+          </li>
+          <li>Set a flag that wake lock of type <var>T</var> is held by the
+          top-level browsing context.
+          </li>
+          <li>Return <var>promise</var> and perform the following steps
+          asynchronously.
+          </li>
+          <li>If this algorithm was not called from a top-level browsing
+          context, or there is are <a>security conditions</a> that prevents the
+          user agent from <a title="hold a lock">holding a lock</a>:
+            <ol>
+              <li>Reject <var>promise</var> with a <code>DOMException</code>
+              whose name is <code>SecurityError</code> and abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>Attempt to attain a wake lock of the given <var>type</var> from
+          the underlying system.
+          </li>
+          <li>If the <a>system</a> does not support wake locks of <a title=
+          "wk-type">type</a> <var>T</var>, reject <var>promise</var> with a
+          <code>DOMException</code> whose name is
+          <code>NotSupportedError.</code>
+          </li>
+          <li>If the system rejects the request to grant the wake lock, reject
+          <var>promise</var> with a <code>DOMException</code> whose name is
+          <code>InvalidAccessError.</code>
+          </li>
+          <li>...
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>
+          <code>release()</code> method
+        </h3>
+        <p>
+          The <dfn id=
+          "widl-WakeLock-release-Promise-WakeLockType-type"><code>release()</code></dfn>
+          method releases a previously acquired wake lock of a particular
+          <a title="wk-type">type</a>. When called, the user agent MUST run the
+          <dfn>steps to release a wake lock</dfn> with
+          <code>WakeLockType</code> <var>T</var> as input. The algorithm
+          returns a <a>promise</a>.
+        </p>
+        <ol>
+          <li>Let <var>promise</var> be newly created <code>Promise</code>.
+          </li>
+          <li>Return <var>promise</var> and continue asynchronously.
+          </li>
+          <li>If the user agent is not holding a lock of type <var>T,</var>
+          resolve <var>promise</var> with <code>undefined</code> and terminate
+          this algorithm.
+          </li>
+          <li>Request to release lock of type <var>T</var> from the system.
+          </li>
+          <li>If the system cannot honor wake lock for some reason. If many
+          browsing contexts hold a lock on some resource, then locks should
+          release separately from each other, but resource should be held until
+          all locks are released, i.e. <a>Promise</a>, returned from
+          <code>release()</code> method of the object should resolve when the
+          object is released, not the resource.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>
+          <code>isHeld()</code> method
+        </h3>
+        <p>
+          The <dfn id=
+          "widl-WakeLock-isHeld-boolean-WakeLockType-type"><code>isHeld()</code></dfn>
+          method provides a means to determine if the <a>top-level browsing
+          context</a> is holding a particular wake lock <a title=
+          "wk-type">type</a>. When called, the user agent MUST run the
+          <dfn>steps to check if a lock is held</dfn> with
+          <code>WakeLockType</code> <var>type</var> as input. The algorithm
+          returns a boolean.
+        </p>
+        <ol>
+          <li>If the <a>top-level browsing context</a> is holding the lock of
+          the given type, return <code>true</code>.
+          </li>
+          <li>Otherwise, return <code>false</code>.
+          </li>
+        </ol>
+      </section>
     </section>
     <section id="WakeLockType">
       <h2>
@@ -235,18 +382,9 @@
         <dt>
           screen
         </dt>
-        <dd>
-          Prevents the screen(s) of the device from entering a power-saving
-          state.
-        </dd>
         <dt>
           system
         </dt>
-        <dd>
-          Prevent the device's cpu, radio(s), and other system services from
-          entering a power-saving state. The device's screen can dim or switch
-          off.
-        </dd>
       </dl>
     </section>
     <section id="security">
@@ -297,8 +435,7 @@ $( "#recipe" ).on( "show", function() {
 //release lock: 
 $( "#recipe" ).on( "hide", function() {
     navigator.wakeLock.release("screen") 
-} ); 
-      
+} );    
 </pre>
     </section>
     <section class="appendix informative" id="acknowledgments">
