@@ -342,7 +342,7 @@ navigator.wakeLock.onlost = lostHandler;
           </li>
           <li>Return <var>p</var> and continue asynchronously.
           </li>
-          <li>If the <a>top-level browsing context's</a> holding flag for type
+          <li>If the <a>top-level browsing context</a> is holding flag for type
           <var>T</var> is unset:
             <ol>
               <li>Reject <var>p</var> with a <code>DOMException</code> whose
@@ -378,7 +378,7 @@ navigator.wakeLock.onlost = lostHandler;
           returns a boolean.
         </p>
         <ol>
-          <li>If the <a>top-level browsing context's</a> holding flag for type
+          <li>If the <a>top-level browsing context</a> is holding flag for type
           <var>T</var> is set, return <code>true</code>.
           </li>
           <li>Otherwise, return <code>false</code>.
