@@ -107,6 +107,11 @@ function lostHandler(e){
     console.log( msg );
 }
 
+//get a list of all the locs held
+function showLockList(){
+    console.log(navigator.wakeLock.getCurrentLocks());
+}
+
 //register listener 
 navigator.wakeLock.onlost = lostHandler;
 </pre>
@@ -301,6 +306,9 @@ navigator.wakeLock.onlost = lostHandler;
           </dl>
         </dd>
         <dt>
+          sequence&lt;WakeLockType&gt; getCurrentLocks()
+        </dt>
+        <dt>
           Promise&lt;void&gt; release()
         </dt>
         <dd>
@@ -321,6 +329,34 @@ navigator.wakeLock.onlost = lostHandler;
           </dl>
         </dd>
       </dl>
+      <section>
+        <h3>
+          <code>getCurrentLocks()</code> method
+        </h3>
+        <p>
+          The <dfn id=
+          "widl-WakeLock-getCurrentLocks-sequence-WakeLockType"><code>getCurrentLocks()</code></dfn>
+          method returns a sequence that represents the <a title=
+          "wk-type">type</a> of wake locks held by the <a>top-level browsing
+          context</a> at the moment the call is made. When called, the user
+          agent MUST run the <dfn>steps to get the current locks</dfn>:
+        </p>
+        <ol>
+          <li>Let <var>locks</var> be the empty array.
+          </li>
+          <li>For each lock type <var>T</var> of the <code>WakeLockType</code>
+          enum:
+            <ol>
+              <li>Run the <a>steps to check if a lock is held</a> with
+              <var>T</var>. If it returns <code>true</code>, then append <var>
+                T</var> to <var>locks</var>.
+              </li>
+            </ol>
+          </li>
+          <li>Return <var>locks</var>.
+          </li>
+        </ol>
+      </section>
       <section>
         <h3>
           <code>request()</code> method
