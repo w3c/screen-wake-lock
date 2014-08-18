@@ -144,7 +144,10 @@ navigator.wakeLock.onlost = lostHandler;
         Each top-level browsing context has a <var>holding flag</var> for a
         lock <a title="wk-type">type</a> <var>T</var>. The holding flags are
         initially unset. The flags are used to track if a particular top-level
-        browsing context is holding a particular lock type.
+        browsing context is holding a particular lock type (for the purpose of
+        <a title="relinquish a wake lock">relinquishing</a> or <a title=
+        "reclaim a wake lock">reclaiming a wake lock</a> from the underlying
+        system).
       </p>
       <p>
         To <dfn>hold a lock</dfn> of some <a title="wk-type">type</a>
@@ -162,12 +165,55 @@ navigator.wakeLock.onlost = lostHandler;
         particular lock <a title="wk-type">type</a>.
       </p>
       <p>
+        If the <code>Document</code> of a top-level browsing context that is
+        holding a lock is either destroyed, or the top-level browsing context
+        is navigated, or the top-level browsing context is blurred, the user
+        agent MUST automatically relinquish the wake lock from the system: to
+        <dfn>relinquish a wake lock</dfn> means requesting from the underlying
+        system to no longer apply a particular lock type.
+      </p>
+      <div class="note">
+        <p>
+          From the user's perspective, the above is supposed to cover:
+        </p>
+        <ul>
+          <li>Closing a browser tab or window.
+          </li>
+          <li>Switching from one tab to another.
+          </li>
+          <li>Minimizing the browser.
+          </li>
+          <li>Switching from one browser window to another.
+          </li>
+          <li>Switching from a web browser to another (non-browser)
+          application.
+          </li>
+        </ul>
+      </div>
+      <p>
+        If the <code>Document</code> of a top-level browsing context that is
+        holding a lock becomes focused (and it has previously <a title=
+        "relinquish a wake lock">relinquished a wake lock</a>), the user agent
+        MUST automatically reclaim the wake lock from the system. To
+        <dfn>reclaim a wake lock</dfn> means (re)requesting a wake lock from
+        the system independently of script. If the user agent is unable to
+        automatically reclaim the wake lock, then the lock is <a>lost</a>.
+      </p>
+      <div class="note">
+        <p>
+          From the user's perspective, the above is supposed to automatically
+          re-apply a wake lock when they refocuses a browser tab or window that
+          is holding a wake lock.
+        </p>
+      </div>
+      <p>
         A <a>wake lock</a> of <a title="wk-type">type</a> <var>T</var> is
         <dfn>lost</dfn> when the underlying system has explicitly signaled to
         the user agent that it can no longer hold a particular lock <a title=
         "wk-type">type</a> (e.g., the battery level is too low to allow a wake
         lock). When a lock of type <var>T</var> is lost, the user agent MUST
-        run the steps to notify scripts that a lock was lost with <var>T</var>.
+        run the <a>steps to notify scripts that a lock was lost</a> with
+        <var>T</var>.
       </p>
       <p>
         The <dfn>steps to notify scripts that a lock was lost</dfn> with lock
@@ -202,6 +248,11 @@ navigator.wakeLock.onlost = lostHandler;
         <a>hold a lock</a>. For example, the user could have indicated through
         the user interface that they don't wish for a web application to have
         this capability.
+      </p>
+      <p>
+        The document of a top-level browsing context holds a wake-lock for as
+        long as the document exists, or until the the lock is either explicitly
+        released or lost.
       </p>
     </section>
     <section id="navigator.wakelock">
@@ -240,7 +291,7 @@ navigator.wakeLock.onlost = lostHandler;
           attribute EventHandler? onlost
         </dt>
         <dt>
-          Promise&lt;void> request()
+          Promise&lt;void&gt; request()
         </dt>
         <dd>
           <dl class="parameters">
@@ -250,7 +301,7 @@ navigator.wakeLock.onlost = lostHandler;
           </dl>
         </dd>
         <dt>
-          Promise&lt;void> release()
+          Promise&lt;void&gt; release()
         </dt>
         <dd>
           <dl class="parameters">
@@ -390,7 +441,7 @@ navigator.wakeLock.onlost = lostHandler;
           <code>onlost</code> attribute
         </h3>
         <p>
-          The <dfn id="widl-WakeLock-onlost"><code>onlost</code></dfn> event 
+          The <dfn id="widl-WakeLock-onlost"><code>onlost</code></dfn> event
           handler provides a means for scripts of a <a>top-level browsing
           context</a> to be notified if a <a>wake lock</a> is <a>lost</a>.
         </p>
