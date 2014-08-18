@@ -286,7 +286,7 @@ navigator.wakeLock.onlost = lostHandler;
       <h2>
         <code>WakeLock</code> interface
       </h2>
-      <dl class="idl" title="interface WakeLock">
+      <dl class="idl" title="interface WakeLock : EventTarget">
         <dt>
           attribute EventHandler? onlost
         </dt>
@@ -566,6 +566,10 @@ navigator.wakeLock.onlost = lostHandler;
         <li>
           <a href=
           "http://dom.spec.whatwg.org/#exception-domexception"><dfn>DOMException</dfn></a>.
+        </li>
+        <li>
+          <a href=
+          "http://dom.spec.whatwg.org/#interface-eventtarget"><dfn><code>EventTarget</code></dfn></a>.
         </li>
       </ul>
       <p>
