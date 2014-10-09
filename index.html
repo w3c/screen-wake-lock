@@ -98,23 +98,6 @@ document.keepScreenAwake = true;
 
 //stop keeping the display awake:
 document.keepScreenAwake = false;
-
-//check if the display is kept awake:
-if(navigator.screenAwake) {
-  doSomething();
-} else {
-  doSomethingElse();
-}
-
-//get notified whether the display is currently kept awake
-Object.observe(navigator, (changes) => {
-    var change = changes.filter( item => item.name === "screenAwake" );
-    if(change.length &amp;&amp; change.type === "update"){
-          //it changed... do whatever...
-          var e = new CustomEvent("Screen awake status changed");
-          document.dispatch(e);
-   }
-});
 </pre>
     </section>
     <section>
@@ -122,182 +105,130 @@ Object.observe(navigator, (changes) => {
         Wake Locks
       </h2>
       <p>
-        A <dfn title="wk-lock">wake lock</dfn> prevents some aspect of
-        the device or operating system from entering a power-saving
-        state.
+        A <dfn>wake lock</dfn> prevents some aspect of the device or operating
+        system from entering a power-saving state.
       </p>
       <p>
-        This specification deals with the following wake lock <dfn title=
-        "wk-type">types</dfn> and their expected behavior:
+        This specification deals specifically with the screen wake lock which
+        prevents the screen(s) of the device from entering a power-saving state.
       </p>
-      <dl>
-        <dt>
-          <dfn>screen</dfn>
-        </dt>
-        <dd>
-          Prevents the screen(s) of the device from entering a power-saving
-          state.
-        </dd>
-        <dt>
-          <dfn>system</dfn>
-        </dt>
-        <dd>
-          Prevents the device's cpu, radio(s), and other system services from
-          entering a power-saving state. The device's screen can dim or switch
-          off.
-        </dd>
-      </dl>
     </section>
     <section>
       <h2>Requesting Wake Locks</h2>
       <p>
-        Each browsing context has a <dfn>request flag</dfn> for a
-        lock <a title="wk-type">type</a> <var>T</var>. The request flags are
-        initially unset. The flags are used by <a>user agent</a> to track if a
-        particular browsing context is requesting a particular lock type (for
-        the purpose of <a title="wk-acq">acquiring</a> or
-        <a title="wk-rel">releasing</a> operating system locks).
+        Each <a><code>Document</code></a> has a <dfn>request flag</dfn> for the
+        <a>wake lock</a>. The request flag is unset when the
+        <a><code>Document</code></a> is created. Request flags are used by
+        <a>user agent</a> to track if a particular <a><code>Document</code></a>
+        is requesting the lock (for the purpose of
+        <a title="acquire">acquiring</a> or <a title="release">releasing</a> the
+        corresponding operating system lock).
       </p>
       <p>
-        A document in a browsing context <var>C</var>
-        <dfn title="rq-lock">requests a lock</dfn> of some
-        <a title="wk-type">type</a> <var>T</var> by indicating to the
-        <a>user agent</a> a preference that the underlying system apply a
-        particular lock <a title="wk-type">type</a>. User agent MUST set the
-        corresponsing request flag for lock <a title="wk-type">type</a>
-        <var>T</var> for context <var>C</var> in response to this request.
+        A <a><code>Document</code></a> <dfn title="rq-lock">requests wake lock
+        </dfn> by setting its lock <a>request flag</a>. This means that the
+        <a><code>Document</code></a> indicates to the <a>user agent</a> a
+        preference that the underlying operating system apply wake lock, i.e.
+        keep the screen on.
       </p>
       <p>
-        A document can successfully request a lock regardless of
-        whether the actual lock can be applied by the <a>user agent</a> and/or
-        the underlying operating system at the time when the request is made.
+        A <a><code>Document</code></a> can successfully request wake lock
+        regardless of whether the actual lock can be applied by the <a>user
+        agent</a> and/or the underlying operating system at the time when the
+        request is made.
       </p>
       <p>
-        Conversely, a document
-        <dfn title="cn-rq-lock">cancels a lock request</dfn>
-        of some <var>type</var> by indicating to the <a>user agent</a> that it
-        no longer prefers that the underlying system apply a particular lock
-        <a title="wk-type">type</a>. User agent MUST reset the corresponsing
-        request flag for lock <a title="wk-type">type</a> <var>T</var> for
-        the document's browsing context in response to this request.
-      </p>
-      <p>
-        It is not an error for the document to request a lock or cancel a lock
-        request multiple times in succession. The result of multiple consecutive
-        requests for the same lock <a title="wk-type">type</a> or multiple
-        cancellations thereof is the same as that of a single corresponding
-        operation (lock requests and lock request cancellations are idempotent).
-      </p>
-      <p>
-        <a>User agent</a> MAY require that a <a>browsing
-        context</a> meet one or more <dfn>security conditions</dfn> in order to
-        <a title="rq-lock">request a lock</a>. For example, the user could have
-        indicated through the user interface that they don't wish for a web
-        application to have this capability. In this case, it SHOULD be an error
-        for the document to request a lock.
+        Conversely, a <a><code>Document</code></a> <dfn title="cn-rq-lock">
+        cancels wake lock request</dfn> by resetting its lock <a>request flag
+        </a>. This means that the <a><code>Document</code></a> indicates to the
+        <a>user agent</a> that it no longer prefers that the underlying system
+        apply the wake lock.
       </p>
       <div class="note">
         <p>
-          Lock <a>request flag</a>s merely indicate a preference of the document
-          to have a certain type of wake lock applied. Requesting a lock or
-          cancelling a lock request does not entail synchronous acquisition or
-          release of the corresponding operating system lock, and can only
-          result in an error when the document is explicitly prohibited form
-          executing those operations by some security mechanism.
+          Lock <a>request flag</a> merely indicates a preference of the <a>
+          <code>Document</code></a> to have the wake lock applied. Requesting
+          the lock or cancelling wake lock request does not entail synchronous
+          acquisition or release of the corresponding operating system lock, and
+          can only result in an error when the document is explicitly prohibited
+          form executing those operations by some security mechanism.
         </p>
         <p>
-          No browsing context "owns" any operating system lock and the state of
-          operating system locks does not affect the state of any lock request
-          flags.
+          No <a><code>Document</code></a> "owns" the operating system lock and
+          the state of operating system lock does not affect the state of the
+          lock request flag for any <a><code>Document</code></a>.
+        </p>
+        <p>
           Instead, user agent is responsible for mapping the state of request
-          flags for all browsing contexts to the state of operating system
-          locks.
+          flags for all <a><code>Document</code></a>s to the state the operating
+          system lock.
         </p>
       </div>
-      <p>
-        User agent SHOULD recognize some form of document identity in order to
-        automatically reset all lock <a>request flag</a>s for a browsing context
-        when the document loaded into the browsing context is no longer the same
-        document as the one that requested the locks.
-      </p>
     </section>
     <section>
       <h2>Managing Wake Locks</h2>
       <p>
-        <a>User agent</a> <dfn title="wk-acq">acquires a lock</dfn> of
-        <a title="wk-type">type</a> <var>T</var> by requesting the undrelying
-        operating system to apply lock of that type.
+        <a>User agent</a> <dfn title="acquire">acquires</dfn> the wake lock by
+        requesting the undrelying operating system to apply the lock. The lock
+        is considered acquired only when the request to the operating system
+        succeeds.
       </p>
       <p>
-        Conversely, <a>user agent</a> <dfn title="wk-rel">releases a lock</dfn>
-        of <a title="wk-type">type</a> <var>T</var> by requesting the underlying
-        operating system to no longer apply lock of that type.
+        Conversely, <a>user agent</a> <dfn title="release">releases</dfn> wake
+        lock by requesting the underlying operating system to no longer apply
+        the wake lock. The lock is considered released only when the request to
+        the operating system succeeds.
       </p>
       <p>
-        <a>User agent</a> SHOULD maintain a
-        <dfn title="wk-glob">global lock flag</dfn> for each lock
-        <a title="wk-type">type</a> reflecting whether the corresponding
-        operaing system lock is currently acquired or released.
-      </p>
-      <p>
-        A browsing context is <dfn>relevant</dfn> to lock
-        <a title="wk-type">type</a> <var>T</var> if:
+        A <a><code>Document</code></a> is <dfn>relevant</dfn> to the wake lock
+        if:
       </p>
       <ol>
         <li>
-          It is in position to be granted a lock of type <var>T</var>.
+          The <a><code>Document</code></a> is <a>fully active</a>.
         </li>
         <li>
-          Its <a>request flag</a> for type <var>T</var> is set.
+          The <a><code>Document</code></a>'s <a>browsing context</a> is in
+          position to interact with the user, i.e. it is in an active tab
+          and the browser window is focused.
+        </li>
+        <li>
+          The <a><code>Document</code></a>'s wake lock <a>request flag</a> is
+          set.
         </li>
       </ol>
       <div class="note">
-        Semantics of the first condition are dependent on the lock type;
-        e.g. for <a>screen</a> lock it is reasonable to require that the
-        context is observable by the user, i.e. it is not blurred or
-        otherwise obscured. For <a>system</a> lock this condition might
-        differ as the context might use some non-visual mode of
-        interaction (e.g. playing a sound) and wish to keep the device
-        (but not the screen) awake.
+        If a <a><code>Document</code></a> does not have a
+        <a>browsing context</a>, it is not relevant to the wake lock.
       </div>
       <p>
-        A lock of <a title="wk-type">type</a> <var>T</var> is
-        <dfn>globally applicable</dfn> if the state of the operating system
-        permits application of that lock type (e.g. there is sufficient
-        battery charge and wake locking is not disabled by a setting).
+        The <a>wake lock</a> is <dfn>applicable</dfn> if the state of the
+        operating system permits application of the lock (e.g. there is
+        sufficient battery charge and wake locking is not disabled by a
+        user setting).
       </p>
       <p>
-        <a>User agent</a> MUST <a title="wk-acq">acquire</a> lock of
-        <a title="wk-type">type</a> <var>T</var> when all of the following
-        conditions become true:
+        <a>User agent</a> MUST <a>acquire</a> the wake lock when
+        all of the following conditions become true:
       </p>
       <ol>
         <li>
-          Lock of type <var>T</var> is <a>globally applicable</a>.
+          The wake lock is <a>applicable</a>.
         </li>
         <li>
-          There is at least one browsing context that is <a>relevant</a>
-          to lock type <var>T</var>.
+          There is at least one <a><code>Document</code></a> that is
+          <a>relevant</a> to the wake lock.
         </li>
       </ol>
       <p>
-        <a>User agent</a> MUST <a title="wk-rel">release</a> lock of
-         <a title="wk-type">type</a> <var>T</var> when any of the conditions
-         above become false.
-      </p>
-      <p>
-        <a>User agent</a> MUST update <a title="wk-glob">global lock flags</a>
-        according to acquire and release operations. If an operation fails,
-        the corresponding lock flag MUST NOT be modified. If an operating
-        system lock status changes asynchronously (e.g. preemptively released by
-        the operating system due to low battery charge), the global lock flag
-        MUST be updated accordingly.
+        <a>User agent</a> MUST <a>release</a> the wake lock when any of the
+        conditions above become false.
       </p>
       <div class="note">
         <p>
-          From the user's perspective, a browsing context which has requested
-          the screen lock will no longer cause the lock to be applied if one of
-          the following happens:
+          From the user's perspective, a <a><code>Document</code></a> which has
+          requested the wake lock will no longer cause the lock to be applied if
+          one of the following happens:
         </p>
         <ul>
           <li>Browser tab or window is closed.
@@ -311,6 +242,8 @@ Object.observe(navigator, (changes) => {
           <li>Switching from a web browser to another (non-browser)
           application.
           </li>
+          <li>Navigating to a different page or reloading a page.
+          </li>
         </ul>
         <p>
           Should the tab and/or browser window once again become focused,
@@ -320,59 +253,28 @@ Object.observe(navigator, (changes) => {
       </div>
     </section>
     <section>
-      <h2>Exposing Operating System Locks State Information to Documents</h2>
-      <a>User agent</a> SHOULD expose <a title="wk-glob">global lock flags</a>
-      state information to browsing context in a way that allows the documents
-      to query said information and subscribe to changes.
-      <div class="note">
-        While the documents can't directly manipulate the global state of
-        operating system wake locks, it may be benificial to allow them to
-        observe the actual state of operating system wake locks so that they
-        know whether the lock is actually applied and can adjust their actions
-        accordingly.
-      </div>
-    </section>
-    <section>
-      <h2>Extension to the <code>Document</code> interface</h2>
+      <h2>Extension to the <a><code>Document</code></a> interface</h2>
       <dl title="partial interface Document" class="idl">
         <dt>attribute boolean keepScreenAwake</dt>
         <dd>
-          Reflects the state of <a>screen</a> <a>wake lock</a> <a>request
+          Reflects the state of the <a>wake lock</a> <a>request
           flag</a>.
-          Document can set this attribute to <code>true</code> to
-          <a title="rq-lock">request</a> screen lock or to <code>false</code> to
-          <a title="cn-rq-lock">cancel</a> screen lock request.
-        </dd>
-        <dt>attribute boolean keepSystemAwake</dt>
-        <dd>
-          Reflects the state of <a>system</a> <a>wake lock</a> <a>request
-          flag</a>.
-          Document can set this attribute to <code>true</code> to
-          <a title="rq-lock">request</a> system lock or to <code>false</code> to
-          <a title="cn-rq-lock">cancel</a> system lock request.
+          Document script can set this attribute to <code>true</code> to
+          <a title="rq-lock">request</a> wake lock or to <code>false</code> to
+          <a title="cn-rq-lock">cancel</a> wake lock request.
         </dd>
       </dl>
     </section>
     <section>
-      <h2>Extension to the <code>Navigator</code> interface</h2>
-      <dl title="partial interface Navigator" class="idl">
-        <dt>[observable] readonly attribute boolean screenAwake</dt>
-        <dd>
-          Reflects the state of <a>screen</a>
-          <a title="wk-glob">global lock flag</a>.
-          This attribute has value of <code>true</code> when the lock is
-          applied by the operating system, <code>false</code> otherwise.
-          Applications can observe this attribute to get change notifications.
-        </dd>
-        <dt>[observable] readonly attribute boolean systemAwake</dt>
-        <dd>
-          Reflects the state of <a>system</a>
-          <a title="wk-glob">global lock flag</a>.
-          This attribute has value of <code>true</code> when the lock is
-          applied by the operating system, <code>false</code> otherwise.
-          Applications can observe this attribute to get change notifications.
-        </dd>
-      </dl>
+      <h2>Additional lock types</h2>
+      <p>
+        The lock request and management mechanism presented in this document can
+        be extended to support additional types of locks by adding new lock
+        request flags to <a><code>Document</code></a> interface. E.g. a "system"
+        wake lock could be introduced which would prevent the device's cpu,
+        radio(s), and other system services from entering a power-saving state
+        while allowing the screen to switch off.
+      </p>
     </section>
     <section>
       <h2>
@@ -384,8 +286,18 @@ Object.observe(navigator, (changes) => {
       <ul>
         <li>
           <a href=
+          "http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#document">
+          <dfn><code>Document</code></dfn></a>
+        </li>
+        <li>
+          <a href=
           "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context">
-          <dfn>browsing context</dfn></a>.<br>
+          <dfn>browsing context</dfn></a>
+        </li>
+        <li>
+          <a href=
+          "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#fully-active">
+          <dfn title="fully active">fully active document</dfn></a>
         </li>
       </ul>
     </section>
