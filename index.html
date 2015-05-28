@@ -13,7 +13,7 @@
     <script class='remove'>
 /*stops tidy screwing things up*/
     var respecConfig = {
-        specStatus: "ED", 
+        specStatus: "ED",
         shortName: "wake-lock",
         editors: [{
             name: "Ilya Bogdanovich",
@@ -188,22 +188,15 @@ document.keepScreenAwake = false;
       </p>
       <ol>
         <li>
-          The <a><code>Document</code></a> is <a>fully active</a>.
-        </li>
-        <li>
-          The <a><code>Document</code></a>'s <a>browsing context</a> is in
-          position to interact with the user, i.e. it is in an active tab
-          and the browser window is focused.
+          The <a><code>Document</code></a> is visible, i.e. it's <a><code>
+          visibilityState</code></a> attribute has value of <code>visible</code>
+          as defined by [[!PAGE-VISIBILITY]].
         </li>
         <li>
           The <a><code>Document</code></a>'s wake lock <a>request flag</a> is
           set.
         </li>
       </ol>
-      <div class="note">
-        If a <a><code>Document</code></a> does not have a
-        <a>browsing context</a>, it is not relevant to the wake lock.
-      </div>
       <p>
         The <a>wake lock</a> is <dfn>applicable</dfn> if the state of the
         operating system permits application of the lock (e.g. there is
@@ -240,18 +233,13 @@ document.keepScreenAwake = false;
           </li>
           <li>Browser is minimized.
           </li>
-          <li>Switching from one browser window to another.
-          </li>
-          <li>Switching from a web browser to another (non-browser)
-          application.
-          </li>
           <li>Navigating to a different page or reloading a page.
           </li>
         </ul>
         <p>
-          Should the tab and/or browser window once again become focused,
-          the lock will be applied again if it is still requested and
-          the state of operating system permits its application.
+          Should the tab and/or browser window once again come to foreground,
+          the lock will be applied again if it is still requested and the state
+          of the operating system permits its application.
         </p>
       </div>
     </section>
@@ -292,15 +280,15 @@ document.keepScreenAwake = false;
           "http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#document">
           <dfn><code>Document</code></dfn></a>
         </li>
+      </ul>
+      <p>
+        The following concepts and interfaces are defined in [[!PAGE-VISIBILITY]]:
+      </p>
+      <ul>
         <li>
           <a href=
-          "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context">
-          <dfn>browsing context</dfn></a>
-        </li>
-        <li>
-          <a href=
-          "http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#fully-active">
-          <dfn title="fully active">fully active document</dfn></a>
+          "http://www.w3.org/TR/page-visibility/#dom-document-visibilitystate">
+          Document <dfn><code>visibilityState</code></dfn> attribute</a>
         </li>
       </ul>
     </section>
