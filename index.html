@@ -97,10 +97,10 @@
       </h2>
       <pre class="example highlight">
 //request to keep the display awake when the recipe is showing:
-document.keepScreenAwake = true;
+screen.keepAwake = true;
 
 //stop keeping the display awake:
-document.keepScreenAwake = false;
+screen.keepAwake = false;
 </pre>
     </section>
     <section>
@@ -117,53 +117,70 @@ document.keepScreenAwake = false;
       </p>
     </section>
     <section>
+      <h2>Extension to Screen interface</h2>
+      <p>
+        This specification extends <code>Screen</code> interface defined by
+        [[!CSSOM-VIEW]] to allow document scripts to inform the browser that
+        they prefer to keep the device screen awake:
+      </p>
+      <dl title="partial interface Screen" class="idl">
+        <dt>attribute boolean keepAwake</dt>
+        <dd>
+          Reflects the state of the <a>wake lock</a> <a>request
+          flag</a>.
+          Document script can set this attribute to <code>true</code> to
+          <a title="rq-lock">request</a> wake lock or to <code>false</code> to
+          <a title="cn-rq-lock">cancel</a> wake lock request.
+        </dd>
+      </dl>
+    </section>
+    <section>
       <h2>Requesting Wake Locks</h2>
       <p>
-        Each <a><code>Document</code></a> has a <dfn>request flag</dfn> for the
-        <a>wake lock</a>. The request flag is unset when the
-        <a><code>Document</code></a> is created. Request flags are used by
-        <a>user agent</a> to track if a particular <a><code>Document</code></a>
-        is requesting the lock (for the purpose of
+        Each <a>browsing context</a> has a <dfn>request flag</dfn> for the
+        <a>wake lock</a>, represented by its <code>screen.keepAwake</code>
+        attribute. The request flag is set to <code>false</code> when the
+        <a>browsing context</a> is created or its <a>active document</a> is
+        changed. Request flags are used by <a>user agent</a> to track if a
+        particular document is requesting the lock (for the purpose of
         <a title="acquire">acquiring</a> or <a title="release">releasing</a> the
         corresponding operating system lock).
       </p>
       <p>
-        A <a><code>Document</code></a> <dfn title="rq-lock">requests wake lock
-        </dfn> by setting its lock <a>request flag</a>. This means that the
-        <a><code>Document</code></a> indicates to the <a>user agent</a> a
-        preference that the underlying operating system apply wake lock, i.e.
-        keep the screen on.
+        A document <dfn title="rq-lock">requests wake lock</dfn> by setting
+        <a>browsing context</a>'s lock <a>request flag</a>. This means that the
+        document indicates to the <a>user agent</a> a preference that the
+        underlying operating system apply wake lock, i.e. keep the screen on.
       </p>
       <p>
-        A <a><code>Document</code></a> can successfully request wake lock
-        regardless of whether the actual lock can be applied by the <a>user
-        agent</a> and/or the underlying operating system at the time when the
-        request is made.
+        A document can successfully request wake lock regardless of whether the
+        actual lock can be applied by the <a>user agent</a> and/or the
+        underlying operating system at the time when the request is made.
       </p>
       <p>
-        Conversely, a <a><code>Document</code></a> <dfn title="cn-rq-lock">
-        cancels wake lock request</dfn> by resetting its lock <a>request flag
-        </a>. This means that the <a><code>Document</code></a> indicates to the
-        <a>user agent</a> that it no longer prefers that the underlying system
-        apply the wake lock.
+        Conversely, a document <dfn title="cn-rq-lock">cancels wake lock request
+        </dfn> by resetting its <a>browsing context</a>'s lock <a>request flag
+        </a>. This means that the document indicates to the <a>user agent</a>
+        that it no longer prefers that the underlying system apply the wake
+        lock.
       </p>
       <div class="note">
         <p>
-          Lock <a>request flag</a> merely indicates a preference of the <a>
-          <code>Document</code></a> to have the wake lock applied. Requesting
+          Setting or resetting a lock <a>request flag</a> merely indicates a
+          preference of the document to have the wake lock applied. Requesting
           the lock or cancelling wake lock request does not entail synchronous
           acquisition or release of the corresponding operating system lock, and
           can only result in an error when the document is explicitly prohibited
           form executing those operations by some security mechanism.
         </p>
         <p>
-          No <a><code>Document</code></a> "owns" the operating system lock and
-          the state of operating system lock does not affect the state of the
-          lock request flag for any <a><code>Document</code></a>.
+          No document "owns" the operating system lock and the state of
+          operating system lock does not affect the state of the lock request
+          flag for any document's <a>browsing context</a>.
         </p>
         <p>
           Instead, user agent is responsible for mapping the state of request
-          flags for all <a><code>Document</code></a>s to the state the operating
+          flags for all <a>browsing context</a>s to the state the operating
           system lock.
         </p>
       </div>
@@ -183,25 +200,23 @@ document.keepScreenAwake = false;
         the operating system succeeds.
       </p>
       <p>
-        A <a><code>Document</code></a> is <dfn>relevant</dfn> to the wake lock
-        if:
+        A <a>browsing context</a> is <dfn>relevant</dfn> to the wake lock if:
       </p>
       <ol>
         <li>
-          The <a><code>Document</code></a> is visible, i.e. it's <a><code>
+          Its <a>active document</a> is visible, i.e. it's <a><code>
           visibilityState</code></a> attribute has value of <code>visible</code>
           as defined by [[!PAGE-VISIBILITY]].
         </li>
         <li>
-          The <a><code>Document</code></a>'s wake lock <a>request flag</a> is
-          set.
+          The <a>browsing context</a>'s wake lock <a>request flag</a> is set.
         </li>
       </ol>
       <p>
         The <a>wake lock</a> is <dfn>applicable</dfn> if the state of the
         operating system permits application of the lock (e.g. there is
-        sufficient battery charge and wake locking is not disabled by a
-        user setting).
+        sufficient battery charge and wake locking is not disabled by a user
+        setting).
       </p>
       <p>
         <a>User agent</a> MUST <a>acquire</a> the wake lock when
@@ -212,8 +227,8 @@ document.keepScreenAwake = false;
           The wake lock is <a>applicable</a>.
         </li>
         <li>
-          There is at least one <a><code>Document</code></a> that is
-          <a>relevant</a> to the wake lock.
+          There is at least one <a>browsing context</a> that is <a>relevant</a>
+          to the wake lock.
         </li>
       </ol>
       <p>
@@ -222,9 +237,9 @@ document.keepScreenAwake = false;
       </p>
       <div class="note">
         <p>
-          From the user's perspective, a <a><code>Document</code></a> which has
-          requested the wake lock will no longer cause the lock to be applied if
-          one of the following happens:
+          From the user's perspective, a document which has requested the wake
+          lock will no longer cause the lock to be applied if one of the
+          following happens:
         </p>
         <ul>
           <li>Browser tab or window is closed.
@@ -244,27 +259,14 @@ document.keepScreenAwake = false;
       </div>
     </section>
     <section>
-      <h2>Extension to the <a><code>Document</code></a> interface</h2>
-      <dl title="partial interface Document" class="idl">
-        <dt>attribute boolean keepScreenAwake</dt>
-        <dd>
-          Reflects the state of the <a>wake lock</a> <a>request
-          flag</a>.
-          Document script can set this attribute to <code>true</code> to
-          <a title="rq-lock">request</a> wake lock or to <code>false</code> to
-          <a title="cn-rq-lock">cancel</a> wake lock request.
-        </dd>
-      </dl>
-    </section>
-    <section>
       <h2>Additional lock types</h2>
       <p>
         The lock request and management mechanism presented in this document can
         be extended to support additional types of locks by adding new lock
-        request flags to <a><code>Document</code></a> interface. E.g. a "system"
-        wake lock could be introduced which would prevent the device's cpu,
-        radio(s), and other system services from entering a power-saving state
-        while allowing the screen to switch off.
+        request flags to appropriate interface objects. E.g. a "system" wake
+        lock could be introduced which would prevent the device's cpu, radio(s),
+        and other system services from entering a power-saving state while
+        allowing the screen to switch off.
       </p>
     </section>
     <section>
@@ -277,12 +279,18 @@ document.keepScreenAwake = false;
       <ul>
         <li>
           <a href=
-          "http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#document">
-          <dfn><code>Document</code></dfn></a>
+          "https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
+          <dfn>browsing context</dfn></a>
+        </li>
+        <li>
+          <a href=
+          "https://html.spec.whatwg.org/multipage/browsers.html#active-document">
+          <dfn>active document</dfn></a>
         </li>
       </ul>
       <p>
-        The following concepts and interfaces are defined in [[!PAGE-VISIBILITY]]:
+        The following concepts and interfaces are defined in
+        [[!PAGE-VISIBILITY]]:
       </p>
       <ul>
         <li>
