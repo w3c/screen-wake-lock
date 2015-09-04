@@ -1,4 +1,8 @@
 language: python
+branches:
+  only:
+    - gh-pages
+    - /.*/
 install:
  - git clone https://github.com/w3c/respec.git
  - git clone https://github.com/dontcallmedom/webidl-checker.git
@@ -13,4 +17,12 @@ script:
  - python webidl-checker/webidl-check build/output.html
  - "! (perl -T linkchecker/bin/checklink -S 0  -q -b build/output.html |grep \"^\")"
  - html5validator --root build/
-env: WIDLPROC_PATH=$TRAVIS_BUILD_DIR/widlproc/obj/widlproc
+env:
+  global:
+    - WIDLPROC_PATH=$TRAVIS_BUILD_DIR/widlproc/obj/widlproc
+    - URL="http://w3c.github.io/wake-lock/W3CTRMANIFEST"
+    - DECISION="http://www.w3.org/2009/dap/track/actions/738"
+    - secure="181374695455e961709ae925.72335658"
+
+after_success:
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "gh-pages" ] ; then curl "https://labs.w3.org/echidna/api/request" --data "url=$URL" --data "decision=$DECISION" --data "token=$TOKEN" ; fi
