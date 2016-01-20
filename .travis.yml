@@ -15,7 +15,7 @@ script:
  - mkdir build
  - phantomjs --ignore-ssl-errors=true --ssl-protocol=tlsv1 respec/tools/respec2html.js -e -w index.html build/output.html
  - python webidl-checker/webidl-check build/output.html
- - "! (perl -T linkchecker/bin/checklink -S 0  -q -b build/output.html |grep \"^\")"
+ - perl -T linkchecker/bin/checklink  -S 0  -q -b -X "^http(s)?:" build/output.html
  - html5validator --root build/
 env:
   global:
