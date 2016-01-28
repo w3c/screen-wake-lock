@@ -129,8 +129,8 @@ screen.keepAwake = false;
           Reflects the state of the <a>wake lock</a> <a>request
           flag</a>.
           Document script can set this attribute to <code>true</code> to
-          <a title="rq-lock">request</a> wake lock or to <code>false</code> to
-          <a title="cn-rq-lock">cancel</a> wake lock request.
+          <a>request</a> wake lock or to <code>false</code> to
+          <a>cancel</a> wake lock request.
         </dd>
       </dl>
     </section>
@@ -143,11 +143,11 @@ screen.keepAwake = false;
         <a>browsing context</a> is created or its <a>active document</a> is
         changed. Request flags are used by <a>user agent</a> to track if a
         particular document is requesting the lock (for the purpose of
-        <a title="acquire">acquiring</a> or <a title="release">releasing</a> the
+        <a data-lt="acquire">acquiring</a> or <a data-lt="release">releasing</a> the
         corresponding operating system lock).
       </p>
       <p>
-        A document <dfn title="rq-lock">requests wake lock</dfn> by setting
+        A document <dfn>requests wake lock</dfn> by setting
         <a>browsing context</a>'s lock <a>request flag</a>. This means that the
         document indicates to the <a>user agent</a> a preference that the
         underlying operating system apply wake lock, i.e. keep the screen on.
@@ -158,7 +158,7 @@ screen.keepAwake = false;
         underlying operating system at the time when the request is made.
       </p>
       <p>
-        Conversely, a document <dfn title="cn-rq-lock">cancels wake lock request
+        Conversely, a document <dfn>cancels wake lock request
         </dfn> by resetting its <a>browsing context</a>'s lock <a>request flag
         </a>. This means that the document indicates to the <a>user agent</a>
         that it no longer prefers that the underlying system apply the wake
@@ -188,13 +188,13 @@ screen.keepAwake = false;
     <section>
       <h2>Managing Wake Locks</h2>
       <p>
-        <a>User agent</a> <dfn title="acquire">acquires</dfn> the wake lock by
+        <a>User agent</a> <dfn data-lt="acquire">acquires</dfn> the wake lock by
         requesting the underlying operating system to apply the lock. The lock
         is considered acquired only when the request to the operating system
         succeeds.
       </p>
       <p>
-        Conversely, <a>user agent</a> <dfn title="release">releases</dfn> wake
+        Conversely, <a>user agent</a> <dfn data-lt="release">releases</dfn> wake
         lock by requesting the underlying operating system to no longer apply
         the wake lock. The lock is considered released only when the request to
         the operating system succeeds.
