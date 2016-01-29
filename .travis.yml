@@ -22,7 +22,7 @@ env:
     - WIDLPROC_PATH=$TRAVIS_BUILD_DIR/widlproc/obj/widlproc
     - URL="http://w3c.github.io/wake-lock/W3CTRMANIFEST"
     - DECISION="http://www.w3.org/2009/dap/track/actions/738"
-    - secure="181374695455e961709ae925.72335658"
+    - secure: "TwvUyb5luZr5jm3Q+xQS86i4M/dsFLpGISfocHCXXo9GsNPzNfsg+xphep0G83SM9DAO34f6S3Own5QKP4VRYSPGBi16y8bm0YS6VjOEXHtRQgb4UPUZsa0KXABrbxbJcTBO4gByD4Wu5qLR74Htis4N5N6y8z1Mx1QPSDrpXbA="
 
 after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "gh-pages" ] ; then curl "https://labs.w3.org/echidna/api/request" --data "url=$URL" --data "decision=$DECISION" --data "token=$TOKEN" ; fi
