@@ -212,7 +212,16 @@ screen.keepAwake = false;
         <li>
           The <a>browsing context</a>'s wake lock <a>request flag</a> is set.
         </li>
+        <li>
+          The <a>browsing context</a> is either a <a>top-level browsing context
+          </a> or its <a>active document</a> has the same <a>origin</a> as the
+          active document of its top-level browsing context.
+        </li>
       </ol>
+      <div class="note">
+        The same-origin requirement prevents unauthorized nested third-party
+        content from requesting a wake lock on behalf of the top-level page.
+      </div>
       <p>
         The <a>wake lock</a> is <dfn>applicable</dfn> if the state of the
         operating system permits application of the lock (e.g. there is
@@ -287,12 +296,6 @@ screen.keepAwake = false;
         wake lock application if they determine that the remaining battery
         capacity is low.
       </p>
-      <p>
-        Another concern is that a wake lock can be requested in a nested third
-        party context, which means that the top-level context may not be
-        completely in control whether a wake lock can potentially be requested
-        by this particular page if it incorporates third party content.
-      </p>
     </section>
     <section>
       <h2>
@@ -309,8 +312,18 @@ screen.keepAwake = false;
         </li>
         <li>
           <a href=
+          "https://html.spec.whatwg.org/multipage/browsers.html#top-level-browsing-context">
+          <dfn>top-level browsing context</dfn></a>
+        </li>
+        <li>
+          <a href=
           "https://html.spec.whatwg.org/multipage/browsers.html#active-document">
           <dfn>active document</dfn></a>
+        </li>
+        <li>
+          <a href=
+          "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin">
+          <dfn>origin</dfn></a>
         </li>
       </ul>
       <p>
