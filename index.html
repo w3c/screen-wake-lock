@@ -219,8 +219,21 @@ screen.keepAwake = false;
         </li>
       </ol>
       <div class="note">
-        The same-origin requirement prevents unauthorized nested third-party
-        content from requesting a wake lock on behalf of the top-level page.
+        <p>
+          The same-origin requirement prevents unauthorized nested third-party
+          content from requesting a wake lock on behalf of the top-level page.
+        </p>
+        <p>
+          An alternative approach could be requiring a permission as defined in
+          [[!PERMISSIONS]] which would effectively delegate decisions about
+          wake lock in nested browsing contexts to the <a>User agent</a>.
+          The downside is that permission inheritance model is currently
+          non-portable between implementations and sometimes inconsistent even
+          within the same implementation. For more details see e.g. this
+          <a
+          href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit?pref=2&pli=1#"
+          >Chromium design document</a>.
+        </p>
       </div>
       <p>
         The <a>wake lock</a> is <dfn>applicable</dfn> if the state of the
