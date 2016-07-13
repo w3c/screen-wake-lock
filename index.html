@@ -142,7 +142,7 @@ screen.keepAwake = false;
         <a>wake lock</a>, represented by its <code>screen.keepAwake</code>
         attribute. The request flag is set to <code>false</code> when the
         <a>browsing context</a> is created or its <a>active document</a> is
-        changed. Request flags are used by <a>user agent</a> to track if a
+        changed. Request flags are used by the <a>user agent</a> to track if a
         particular document is requesting the lock (for the purpose of
         <a data-lt="acquire">acquiring</a> or <a data-lt="release">releasing</a>
         the corresponding operating system lock).
@@ -160,10 +160,10 @@ screen.keepAwake = false;
       </p>
       <p>
         Conversely, a document <dfn>cancels wake lock request
-        </dfn> by resetting its <a>browsing context</a>'s lock <a>request flag
-        </a>. This means that the document indicates to the <a>user agent</a>
-        that it no longer prefers that the underlying system apply the wake
-        lock.
+        </dfn> by resetting its <a>browsing context</a>'s lock <a>request
+        flag</a>. This means that the document indicates to the <a>user
+        agent</a> that it no longer prefers that the underlying system apply the
+        wake lock.
       </p>
       <div class="note">
         <p>
@@ -172,7 +172,7 @@ screen.keepAwake = false;
           the lock or cancelling wake lock request does not entail synchronous
           acquisition or release of the corresponding operating system lock, and
           can only result in an error when the document is explicitly prohibited
-          form executing those operations by some security mechanism.
+          from executing those operations by some security mechanism.
         </p>
         <p>
           No document "owns" the operating system lock and the state of
@@ -180,32 +180,32 @@ screen.keepAwake = false;
           flag for any document's <a>browsing context</a>.
         </p>
         <p>
-          Instead, user agent is responsible for mapping the state of request
-          flags for all <a>browsing context</a>s to the state the operating
-          system lock.
+          Instead, the user agent is responsible for mapping the state of
+          request flags for all <a>browsing context</a>s to the state the
+          operating system lock.
         </p>
       </div>
     </section>
     <section>
       <h2>Managing Wake Locks</h2>
       <p>
-        <a>User agent</a> <dfn data-lt="acquire">acquires</dfn> the wake lock by
-        requesting the underlying operating system to apply the lock. The lock
-        is considered acquired only when the request to the operating system
-        succeeds.
+        The <a>user agent</a> <dfn data-lt="acquire">acquires</dfn> the wake
+        lock by requesting the underlying operating system to apply the lock.
+        The lock is considered acquired only when the request to the operating
+        system succeeds.
       </p>
       <p>
-        Conversely, <a>user agent</a> <dfn data-lt="release">releases</dfn> wake
-        lock by requesting the underlying operating system to no longer apply
-        the wake lock. The lock is considered released only when the request to
-        the operating system succeeds.
+        Conversely, the <a>user agent</a> <dfn data-lt="release">releases</dfn>
+        wake lock by requesting the underlying operating system to no longer
+        apply the wake lock. The lock is considered released only when the request
+        to the operating system succeeds.
       </p>
       <p>
         A <a>browsing context</a> is <dfn>relevant</dfn> to the wake lock if:
       </p>
       <ol>
         <li>
-          Its <a>active document</a> is visible, i.e. it's <a><code>
+          Its <a>active document</a> is visible, i.e. its <a><code>
           visibilityState</code></a> attribute has value of <code>visible</code>
           as defined by [[!PAGE-VISIBILITY]].
         </li>
@@ -226,7 +226,7 @@ screen.keepAwake = false;
         <p>
           An alternative approach could be requiring a permission as defined in
           [[!PERMISSIONS]] which would effectively delegate decisions about
-          wake lock in nested browsing contexts to the <a>User agent</a>.
+          wake lock in nested browsing contexts to the <a>user agent</a>.
           The downside is that permission inheritance model is currently
           non-portable between implementations and sometimes inconsistent even
           within the same implementation. For more details see e.g. this
@@ -242,7 +242,7 @@ screen.keepAwake = false;
         setting).
       </p>
       <p>
-        <a>User agent</a> MUST <a>acquire</a> the wake lock when
+        The <a>user agent</a> MUST <a>acquire</a> the wake lock when
         all of the following conditions become true:
       </p>
       <ol>
@@ -255,7 +255,7 @@ screen.keepAwake = false;
         </li>
       </ol>
       <p>
-        <a>User agent</a> MUST <a>release</a> the wake lock when any of the
+        The <a>user agent</a> MUST <a>release</a> the wake lock when any of the
         conditions above become false.
       </p>
       <div class="note">
@@ -366,7 +366,7 @@ screen.keepAwake = false;
         <dfn>user agent</dfn> that implements the interfaces that it contains.
       </p>
       <p>
-        A <a>user agent</a> MUST implement the APIs defined in this
+        The <a>user agent</a> MUST implement the APIs defined in this
         specification in a manner that conforms to the <a href=
         "http://heycam.github.io/webidl/#ecmascript-binding">ECMAScript
         Bindings</a> defined in [[!WEBIDL]].
