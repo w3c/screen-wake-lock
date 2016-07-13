@@ -124,16 +124,18 @@ screen.keepAwake = false;
         [[!CSSOM-VIEW]] to allow document scripts to inform the browser that
         they prefer to keep the device screen awake:
       </p>
-      <dl title="partial interface Screen" class="idl">
-        <dt>attribute boolean keepAwake</dt>
-        <dd>
-          Reflects the state of the <a>wake lock</a> <a>request
-          flag</a>.
-          Document script can set this attribute to <code>true</code> to
-          <a>request</a> wake lock or to <code>false</code> to
-          <a>cancel</a> wake lock request.
-        </dd>
-      </dl>
+      <pre class="idl">
+        partial interface Screen {
+          attribute boolean keepAwake;
+        };
+      </pre>
+      <p data-dfn-for="Screen">
+        The attribute <dfn>keepAwake</dfn> reflects the state of the <a>wake
+        lock</a> <a>request flag</a>. Document script can set this attribute to
+        <code>true</code> to <a data-lt="request">request wake lock</a> or to
+        <code>false</code> to <a data-lt="cancel request">cancel wake lock
+        request</a>.
+      </p>
     </section>
     <section>
       <h2>Requesting Wake Locks</h2>
@@ -148,7 +150,7 @@ screen.keepAwake = false;
         the corresponding operating system lock).
       </p>
       <p>
-        A document <dfn>requests wake lock</dfn> by setting
+        A document <dfn data-lt="request">requests wake lock</dfn> by setting
         <a>browsing context</a>'s lock <a>request flag</a>. This means that the
         document indicates to the <a>user agent</a> a preference that the
         underlying operating system apply wake lock, i.e. keep the screen on.
@@ -159,8 +161,8 @@ screen.keepAwake = false;
         underlying operating system at the time when the request is made.
       </p>
       <p>
-        Conversely, a document <dfn>cancels wake lock request
-        </dfn> by resetting its <a>browsing context</a>'s lock <a>request
+        Conversely, a document <dfn data-lt="cancel request">cancels wake lock
+        request</dfn> by resetting its <a>browsing context</a>'s lock <a>request
         flag</a>. This means that the document indicates to the <a>user
         agent</a> that it no longer prefers that the underlying system apply the
         wake lock.
