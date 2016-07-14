@@ -215,9 +215,10 @@ screen.keepAwake = false;
           The <a>browsing context</a>'s wake lock <a>request flag</a> is set.
         </li>
         <li>
-          The <a>browsing context</a> is either a <a>top-level browsing context
-          </a> or its <a>active document</a> has the same <a>origin</a> as the
-          active document of its top-level browsing context.
+          The <a>browsing context</a> is either a <a>top-level browsing
+          context</a> or its <a>active document</a>'s <a>origin</a> is the
+          <a data-lt="same origin">same</a> as that of the active document of
+          its top-level browsing context.
         </li>
       </ol>
       <div class="note">
@@ -340,6 +341,11 @@ screen.keepAwake = false;
           "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin">
           <dfn>origin</dfn></a>
         </li>
+        <li>
+          <a href=
+          "https://html.spec.whatwg.org/multipage/browsers.html#same-origin">
+          <dfn>same origin</dfn></a>
+        </li>
       </ul>
       <p>
         The following concepts and interfaces are defined in
@@ -379,7 +385,7 @@ screen.keepAwake = false;
         Acknowledgments
       </h2>
       <p>
-        We would like to offer my sincere thanks to Mounir Lamouri, Sergey
+        We would like to offer our sincere thanks to Mounir Lamouri, Sergey
         Konstantinov, Matvey Larionov, Dominique Hazael-Massieux (via the
         HTML5Apps project) for their contributions to this work.
       </p>
