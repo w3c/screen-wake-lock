@@ -7,11 +7,11 @@
       Wake Lock API
     </title>
     <meta charset='utf-8'>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async=""
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
     class='remove'>
-</script>
+    </script>
     <script class='remove'>
-/*stops tidy screwing things up*/
+    /*stops tidy screwing things up*/
     var respecConfig = {
         specStatus: "ED",
         shortName: "wake-lock",
@@ -131,9 +131,9 @@
       </p>
       <p>
         A <a>user agent</a> MAY check user settings or request user permission
-        in order to decide whether it will <a>deny wake lock</a> of a particular
-        <a data-lt="wake lock type">type</a> for a particular <a>browsing
-        context</a>.
+        in order to decide whether it will <a>deny wake lock</a> of a
+        particular <a data-lt="wake lock type">type</a> for a particular
+        <a>browsing context</a>.
       </p>
       <p>
         If the <a>browsing context</a> is not a <a>top-level browsing
@@ -150,41 +150,45 @@
         <p>
           An alternative approach could be requiring a permission as defined in
           [[!PERMISSIONS]] which would effectively delegate decisions about
-          wake lock in nested browsing contexts to the <a>user agent</a>.
-          The downside is that permission inheritance model is currently
+          wake lock in nested browsing contexts to the <a>user agent</a>. The
+          downside is that permission inheritance model is currently
           non-portable between implementations and sometimes inconsistent even
           within the same implementation. For more details see e.g. this
-          <a
-          href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit?pref=2&amp;pli=1#"
-          >Chromium design document</a>.
+          <a href=
+          "https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit?pref=2&amp;pli=1#">
+          Chromium design document</a>.
         </p>
       </div>
     </section>
-    <section>
+    <section data-dfn-for="WakeLockType">
       <h2>
-        The <a>WakeLockType</a> enum
+        The <dfn>WakeLockType</dfn> enum
       </h2>
       <p>
         For the purpose of wake lock type description, this specification
         defines the following enumeration:
-      </P>
+      </p>
       <pre class="idl">
         enum WakeLockType { "screen", "system" };
       </pre>
-      <dl data-dfn-for="WakeLockType">
-        <dt><dfn>screen</dfn></dt>
+      <dl>
+        <dt>
+          <dfn>screen</dfn>
+        </dt>
         <dd>
           <a>Screen wake lock</a> type.
         </dd>
-        <dt><dfn>system</dfn></dt>
+        <dt>
+          <dfn>system</dfn>
+        </dt>
         <dd>
           <a>System wake lock</a> type.
         </dd>
       </dl>
     </section>
-    <section>
+    <section data-dfn-for="Navigator">
       <h2>
-        The <a>Navigator</a> interface
+        Extensions to the <a>Navigator</a> interface
       </h2>
       <pre class="idl">
         partial interface Navigator {
@@ -194,55 +198,48 @@
       <p>
         For each <a>Navigator</a> object, there is a <dfn>wake lock map</dfn>
         which contains a single <dfn>wake lock promise</dfn> for each <a>wake
-        lock type</a>. Each <a>wake lock promise</a> in the <a>wake lock map</a>
-        is a <a>Promise</a> object which holds a <a>WakeLock</a>. All
+        lock type</a>. Each <a>wake lock promise</a> in the <a>wake lock
+        map</a> is a <a>Promise</a> object which holds a <a>WakeLock</a>. All
         <a data-lt="wake lock promise">wake lock promises</a> are initially set
         to <code>null</code>.
       </p>
       <p>
-        The <code>getWakeLock()</code> method, when invoked with an argument
+        The <dfn>getWakeLock()</dfn> method, when invoked with an argument
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
-        <li>
-          Let <var>wakeLockPromise</var> be the <a>wake lock promise</a>
-          associated with <var>type</var> in this <a>Navigator</a>'s <a>wake
-          lock map</a>.
+        <li>Let <var>wakeLockPromise</var> be the <a>wake lock promise</a>
+        associated with <var>type</var> in this <a>Navigator</a>'s <a>wake lock
+        map</a>.
         </li>
-        <li>
-          If <var>wakeLockPromise</var> is not <code>null</code>, return
-          <var>wakeLockPromise</var> and abort these steps.
+        <li>If <var>wakeLockPromise</var> is not <code>null</code>, return
+        <var>wakeLockPromise</var> and abort these steps.
         </li>
-        <li>
-          Otherwise, set <var>wakeLockPromise</var> to a newly created
-          <a>Promise</a> created in the <a>Realm</a> of this <a>Navigator</a>
-          object.
+        <li>Otherwise, set <var>wakeLockPromise</var> to a newly created
+        <a>Promise</a> created in the <a>Realm</a> of this <a>Navigator</a>
+        object.
         </li>
-        <li>
-          If the <a>user agent</a> does not support the <a>wake lock type</a>
-          denoted by <var>type</var>, or has otherwise determined it will
-          <a>deny wake lock</a> of this <var>type</var> for this <a>browsing
-          context</a>, reject <var>wakeLockPromise</var>, return
-          <var>wakeLockPromise</var> and abort these steps.
+        <li>If the <a>user agent</a> does not support the <a>wake lock type</a>
+        denoted by <var>type</var>, or has otherwise determined it will <a>deny
+        wake lock</a> of this <var>type</var> for this <a>browsing context</a>,
+        reject <var>wakeLockPromise</var>, return <var>wakeLockPromise</var>
+        and abort these steps.
         </li>
-        <li>
-          If the <a>user agent</a> cannot synchronously determine whether it
-          will <a>deny wake lock</a> of this <var>type</var> for this
-          <a>browsing context</a>, return <var>wakeLockPromise</var>, abort
-          these steps and run the <a>deferred wake lock initialization</a>
-          procedure asynchronously.
+        <li>If the <a>user agent</a> cannot synchronously determine whether it
+        will <a>deny wake lock</a> of this <var>type</var> for this <a>browsing
+        context</a>, return <var>wakeLockPromise</var>, abort these steps and
+        run the <a>deferred wake lock initialization</a> procedure
+        asynchronously.
         </li>
-        <li>
-          Create a new <a>WakeLock</a> object in the <a>Realm</a> of this
-          <a>Navigator</a> object, and let <var>wakeLock</var> be that object.
+        <li>Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
+          Navigator</a> object, and let <var>wakeLock</var> be that object.
         </li>
         <li>
           <a data-lt="initialize wake lock object">Initialize
           <var>wakeLock</var></a> with type <var>type</var>.
         </li>
-        <li>
-          Resolve <var>wakeLockPromise</var> with <var>wakeLock</var> and return
-          <var>wakeLockPromise</var>.
+        <li>Resolve <var>wakeLockPromise</var> with <var>wakeLock</var> and
+        return <var>wakeLockPromise</var>.
         </li>
       </ol>
       <p>
@@ -253,29 +250,26 @@
         procedure is performed asynchronously:
       </p>
       <ol>
-        <li>
-          If the <a>user agent</a> has determined that it will <a>deny wake
-          lock</a> of this <code>type</code> for this <a>browsing context</a>,
-          reject <code>wakeLockPromise</code> and abort these steps.
+        <li>If the <a>user agent</a> has determined that it will <a>deny wake
+        lock</a> of this <code>type</code> for this <a>browsing context</a>,
+        reject <code>wakeLockPromise</code> and abort these steps.
         </li>
-         <li>
-          Create a new <a>WakeLock</a> object with type <code>type</code> in the
-          <a>Realm</a> of this <a>Navigator</a> object, and let
-          <code>wakeLock</code> be that object.
+        <li>Create a new <a>WakeLock</a> object with type <code>type</code> in
+        the <a>Realm</a> of this <a>Navigator</a> object, and let
+        <code>wakeLock</code> be that object.
         </li>
-        <li>
-          Resolve <code>wakeLockPromise</code> with <code>wakeLock</code>.
+        <li>Resolve <code>wakeLockPromise</code> with <code>wakeLock</code>.
         </li>
       </ol>
     </section>
-    <section>
+    <section data-dfn-for="WakeLock" data-link-for="WakeLock">
       <h2>
-        The <a>WakeLock</a> interface
+        The <dfn>WakeLock</dfn> interface
       </h2>
       <p>
-        The <a>WakeLock</a> interface allows the page to request wake locks of a
-        particular type, to determine the current wake lock state and to receive
-        notifications when the wake lock state is changed.
+        The <a>WakeLock</a> interface allows the page to request wake locks of
+        a particular type, to determine the current wake lock state and to
+        receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
         interface WakeLock : EventTarget {
@@ -286,17 +280,23 @@
         };
       </pre>
       <dl data-dfn-for="WakeLock">
-        <dt><dfn>type</dfn></dt>
+        <dt>
+          <dfn>type</dfn>
+        </dt>
         <dd>
           <a>Wake lock type</a> associated with this <a>WakeLock</a> object.
         </dd>
-        <dt><dfn>active</dfn></dt>
+        <dt>
+          <dfn>active</dfn>
+        </dt>
         <dd>
-          Indicates whether wake lock if this
-          <a data-lt="wake lock type">type</a> is currently
-          <a data-lt="acquire wake lock">acquired</a> by the <a>user agent</a>.
+          Indicates whether wake lock if this <a data-lt=
+          "wake lock type">type</a> is currently <a data-lt=
+          "acquire wake lock">acquired</a> by the <a>user agent</a>.
         </dd>
-        <dt><dfn>onactivechange</dfn></dt>
+        <dt>
+          <dfn>onactivechange</dfn>
+        </dt>
         <dd>
           <a>Event handler</a> with the corresponding <a>event handler event
           type</a> of <code>activechange</code>. Fired when current wake lock
@@ -309,43 +309,38 @@
         steps MUST be performed:
       </p>
       <ol>
-        <li>
-          Set <a>WakeLock</a> object's <code>type</code> attribute to
-          <var>type</var>.
+        <li>Set <a>WakeLock</a> object's <code>type</code> attribute to
+        <var>type</var>.
         </li>
-        <li>
-          If the wake lock of type <var>type</var> is currently
-          <a data-lt="acquire wake lock">acquired</a>, set the <a>WakeLock</a>
-          object's <code>active</code> attribute to <code>true</code>, otherwise
-          to <code>false</code>.
+        <li>If the wake lock of type <var>type</var> is currently <a data-lt=
+        "acquire wake lock">acquired</a>, set the <a>WakeLock</a> object's
+        <code>active</code> attribute to <code>true</code>, otherwise to <code>
+          false</code>.
         </li>
       </ol>
       <p>
-        Internally, each <a>WakeLock</a> object contains
-        <dfn>request counter</dfn> which is initially set to zero. Each time the
-        <code>createRequest()</code> method is called on the object, the
-        <a>request counter</a> is increased by one.
+        Internally, each <a>WakeLock</a> object contains <dfn>request
+        counter</dfn> which is initially set to zero. Each time the
+        <a>createRequest()</a> method is called on the object, the <a>request
+        counter</a> is increased by one.
       </p>
       <p>
-        A <a>WakeLock</a> object has an <dfn>outstanding wake lock request</dfn>
-        when its <a>request counter</a> is greater than zero.
+        A <a>WakeLock</a> object has an <dfn>outstanding wake lock
+        request</dfn> when its <a>request counter</a> is greater than zero.
       </p>
       <p>
-        When the <code>createRequest()</code> method is invoked, the following
+        When the <dfn>createRequest()</dfn> method is invoked, the following
         steps MUST be performed:
       </p>
       <ol>
-        <li>
-          Create a new <a>WakeLockRequest</a> object in the <a>Realm</a> of this
-          <a>WakeLock</a> object and let <var>wakeLockRequest</var> be that
-          object.
+        <li>Create a new <a>WakeLockRequest</a> object in the <a>Realm</a> of
+        this <a>WakeLock</a> object and let <var>wakeLockRequest</var> be that
+        object.
         </li>
-        <li>
-          Set <var>wakeLockRequest</var>'s <a>owner wake lock reference</a> to
-          this <a>WakeLock</a> object.
+        <li>Set <var>wakeLockRequest</var>'s <a>owner wake lock reference</a>
+        to this <a>WakeLock</a> object.
         </li>
-        <li>
-          Return <var>wakeLockRequest</var>.
+        <li>Return <var>wakeLockRequest</var>.
         </li>
       </ol>
       <div class="note">
@@ -354,9 +349,9 @@
         independently.
       </div>
     </section>
-    <section>
+    <section data-dfn-for="WakeLockRequest" data-link-for="WakeLockRequest">
       <h2>
-        The <a>WakeLockRequest</a> interface
+        The <dfn>WakeLockRequest</dfn> interface
       </h2>
       <pre class="idl">
         interface WakeLockRequest {
@@ -366,94 +361,89 @@
       <p>
         Each <a>WakeLockRequest</a> object has an implicit <dfn>owner wake lock
         reference</dfn> to the <a>WakeLock</a> object through which this object
-        was created. When the <code>cancel()</code> method is invoked, the
+        was created. When the <dfn>cancel()</dfn> method is invoked, the
         following steps MUST be performed:
       </p>
       <ol>
-        <li>
-          If the <code>cancel()</code> method has already been invoked on this
-          object, abort these steps.
+        <li>If the <a>cancel()</a> method has already been invoked on this
+        object, abort these steps.
         </li>
-        <li>
-          Let <code>wakeLock</code> be the object referred to by this object's
-          <a>owner wake lock reference</a>. Decrease <code>wakeLock</code>'s
-          <a>request counter</a> by one.
+        <li>Let <var>wakeLock</var> be the object referred to by this object's
+        <a>owner wake lock reference</a>. Decrease <var>wakeLock</var>'s
+        <a>request counter</a> by one.
         </li>
       </ol>
     </section>
     <section>
-      <h2>Managing Wake Locks</h2>
+      <h2>
+        Managing Wake Locks
+      </h2>
       <p>
         This section applies to each <a>wake lock type</a> equally and
         independently, unless a particular <a>wake lock type</a> is explicitly
         mentioned.
       </p>
       <p>
-        The <a>user agent</a> <dfn data-lt="acquire wake lock">acquires the wake
-        lock</dfn> by requesting the underlying operating system to apply the
-        lock. The lock is considered acquired only when the request to the
+        The <a>user agent</a> <dfn data-lt="acquire wake lock">acquires the
+        wake lock</dfn> by requesting the underlying operating system to apply
+        the lock. The lock is considered acquired only when the request to the
         operating system succeeds.
       </p>
       <p>
-        Conversely, the <a>user agent</a> <dfn data-lt="release wake lock">
-        releases the wake lock</dfn> by requesting the underlying operating
-        system to no longer apply the wake lock. The lock is considered released
-        only when the request to the operating system succeeds.
+        Conversely, the <a>user agent</a> <dfn data-lt=
+        "release wake lock">releases the wake lock</dfn> by requesting the
+        underlying operating system to no longer apply the wake lock. The lock
+        is considered released only when the request to the operating system
+        succeeds.
       </p>
       <p>
-        A <a>browsing context</a> is <dfn>requesting the wake lock</dfn> of type
-        <var>type</var> if and only if the following procedure returns
+        A <a>browsing context</a> is <dfn>requesting the wake lock</dfn> of
+        type <var>type</var> if and only if the following procedure returns
         <code>true</code>:
       </p>
       <ol>
-        <li>
-          Let <var>navigator</var> be the <a>Navigator</a> object associated
-          with this <a>browsing context</a>.
+        <li>Let <var>navigator</var> be the <a>Navigator</a> object associated
+        with this <a>browsing context</a>.
         </li>
-        <li>
-          Let <var>wakeLockMap</var> be the <a>wake lock map</a> associated with
-          <var>navigator</var>.
+        <li>Let <var>wakeLockMap</var> be the <a>wake lock map</a> associated
+        with <var>navigator</var>.
         </li>
-        <li>
-          Let <var>wakeLockPromise</var> be the <a>wake lock promise</a> for
-          type <var>type</var> in <var>wakeLockMap</var>.
+        <li>Let <var>wakeLockPromise</var> be the <a>wake lock promise</a> for
+        type <var>type</var> in <var>wakeLockMap</var>.
         </li>
-        <li>
-          If <var>wakeLockPromise</var> is either <code>null</code>, pending, or
-          rejected, return <code>false</code> and abort these steps.
+        <li>If <var>wakeLockPromise</var> is either <code>null</code>, pending,
+        or rejected, return <code>false</code> and abort these steps.
         </li>
-        <li>
-          If <var>type</var> is <code>"screen"</code> and <a>browsing
-          context</a>'s <a>active document</a> is <a>hidden</a>, return
-          <code>false</code> and abort these steps.
+        <li>If <var>type</var> is "<a data-lt="WakeLockType.screen">screen</a>"
+        and <a>browsing context</a>'s <a>active document</a> is <a>hidden</a>,
+        return <code>false</code> and abort these steps.
         </li>
-        <li>
-          Let <var>wakeLock</var> be the object with which
-          <var>wakeLockPromise</var> was resolved. If <var>wakeLock</var> has an
-          <a>outstanding wake lock request</a>, return <code>true</code>,
-          otherwise return <code>false</code>.
+        <li>Let <var>wakeLock</var> be the object with which
+        <var>wakeLockPromise</var> was resolved. If <var>wakeLock</var> has an
+        <a>outstanding wake lock request</a>, return <code>true</code>,
+        otherwise return <code>false</code>.
         </li>
       </ol>
       <div class="note">
-        The additional visibility requirement for screen wake lock is to prevent
-        keeping the screen on when the page is not visible, such as when the
-        browser is minimized. As this condition is transient and not under
-        control of the web page, the specification chooses to automatically
-        acquire and release the lock when visibility changes rather than having
-        the page to deal with it, e.g by re-requesting the lock each time the
-        page becomes visible again.
+        The additional visibility requirement for screen wake lock is to
+        prevent keeping the screen on when the page is not visible, such as
+        when the browser is minimized. As this condition is transient and not
+        under control of the web page, the specification chooses to
+        automatically acquire and release the lock when visibility changes
+        rather than having the page to deal with it, e.g by re-requesting the
+        lock each time the page becomes visible again.
       </div>
       <p>
-        <dfn>The wake lock is applicable</dfn> if the state of the
-        operating system permits application of the lock (e.g. there is
-        sufficient battery charge).
+        <dfn>The wake lock is applicable</dfn> if the state of the operating
+        system permits application of the lock (e.g. there is sufficient
+        battery charge).
       </p>
       <div class="note">
         Whether the wake lock is applicable is a transient condition, e.g. when
-        the battery charge is low but then the battery is recharged. So like the
-        visibility requirement, this is part of automatic wake lock management
-        and not part of the decision process whether to allow or deny the wake
-        lock.
+        the battery charge is low but then the battery is recharged. So like
+        the visibility requirement, this is part of automatic wake lock
+        management and not part of the decision process whether to allow or
+        deny the wake lock.
       </div>
       <p>
         The <a>user agent</a> MUST <a data-lt="acquire wake lock">acquire the
@@ -461,13 +451,11 @@
         conditions become true:
       </p>
       <ol>
-        <li>
-          The wake lock of type <var>type</var> is
-          <a data-lt="the wake lock is applicable">applicable</a>.
+        <li>The wake lock of type <var>type</var> is <a data-lt=
+        "the wake lock is applicable">applicable</a>.
         </li>
-        <li>
-          There is at least one <a>browsing context</a> that is <a>requesting
-          the wake lock</a> of type <var>type</var>.
+        <li>There is at least one <a>browsing context</a> that is <a>requesting
+        the wake lock</a> of type <var>type</var>.
         </li>
       </ol>
       <p>
@@ -475,14 +463,13 @@
         wake lock</a> when any of the conditions above become false.
       </p>
       <p>
-        Whenever <a>user agent</a> acquires or releases a wake lock, the <a>user
-        agent</a> MUST perform the following steps for each <a>WakeLock</a>
-        object:
+        Whenever <a>user agent</a> acquires or releases a wake lock, the
+        <a>user agent</a> MUST perform the following steps for each
+        <a>WakeLock</a> object:
       </p>
       <ol>
-        <li>
-          If <a>WakeLock</a> object's <code>type</code> attribute is not equal
-          to <var>type</var>, abort these steps.
+        <li>If <a>WakeLock</a> object's <a data-lt="WakeLock.type">type</a>
+        attribute is not equal to <var>type</var>, abort these steps.
         </li>
         <li>
           <a>Queue a task</a> which updates the <a>WakeLock</a> object's
@@ -492,10 +479,10 @@
         </li>
       </ol>
       <p>
-        In the task described above, the <a>WakeLock</a> objects's <code>active
-        </code> attribute MUST be set to <code>true</code> if the wake lock has
-        been acquired or to <code>false</code> if the wake lock has been
-        released.
+        In the task described above, the <a>WakeLock</a> objects's
+        <code>active</code> attribute MUST be set to <code>true</code> if the
+        wake lock has been acquired or to <code>false</code> if the wake lock
+        has been released.
       </p>
     </section>
     <section>
@@ -511,9 +498,9 @@
         may not have a stationary power source readily available. Complete
         battery depletion at an unexpected time can lead to inability of the
         user to make or receive calls and use network services, including the
-        emergency call service. Implementations should consider preventing
-        wake lock application if they determine that the remaining battery
-        capacity is low.
+        emergency call service. Implementations should consider preventing wake
+        lock application if they determine that the remaining battery capacity
+        is low.
       </p>
       <div class="issue">
         This section needs revision considering the changes in the API. In
@@ -551,8 +538,8 @@
         });
       </pre>
       <p>
-        In this example, two screen wake lock requests are created and cancelled
-        independently:
+        In this example, two screen wake lock requests are created and
+        cancelled independently:
       </p>
       <pre class="example highlight">
         var request1;
@@ -578,63 +565,45 @@
         Dependencies
       </h2>
       <p>
-        The following concepts and interfaces are defined in [[!HTML]]:
+        The following concepts and interfaces are defined in [[!WHATWG-HTML]]:
       </p>
       <ul>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
-          <dfn>browsing context</dfn></a>
+          <dfn data-cite="WHATWG-HTML#browsing-context">browsing context</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/browsers.html#top-level-browsing-context">
-          <dfn>top-level browsing context</dfn></a>
+          <dfn data-cite="WHATWG-HTML#top-level-browsing-context">top-level
+          browsing context</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/browsers.html#active-document">
-          <dfn>active document</dfn></a>
+          <dfn data-cite="WHATWG-HTML#active-document">active document</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin">
-          <dfn>origin</dfn></a>
+          <dfn data-cite="WHATWG-HTML#concept-origin">origin</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/browsers.html#same-origin">
-          <dfn>same origin</dfn></a>
+          <dfn data-cite="WHATWG-HTML#same-origin">same origin</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/webappapis.html#the-navigator-object">
-          <dfn>Navigator</dfn></a>
+          <dfn data-cite="WHATWG-HTML#the-navigator-object">Navigator</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">
-          <dfn>queue a task</dfn></a>
+          <dfn data-cite="WHATWG-HTML#queue-a-task">queue a task</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers">
-          <dfn>event handler</dfn></a>
+          <dfn data-cite="WHATWG-HTML#event-handlers">event handler</dfn>
         </li>
         <li>
-          <a href=
-          "https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-event-type">
-          <dfn>event handler event type</dfn></a>
+          <dfn data-cite="WHATWG-HTML#event-handler-event-type">event handler
+          event type</dfn>
         </li>
       </ul>
       <p>
-        The following concepts and interfaces are defined in [[!DOM]]:
+        The following concepts and interfaces are defined in [[!WHATWG-DOM]]:
       </p>
       <ul>
         <li>
-          <a href=
-          "https://dom.spec.whatwg.org/#concept-event-fire">
-          <dfn>fire an event</dfn></a>
+          <dfn data-cite="!WHATWG-DOM#">fire an event</dfn>
         </li>
       </ul>
       <p>
@@ -642,13 +611,11 @@
       </p>
       <ul>
         <li>
-          <a href=
-          "https://tc39.github.io/ecma262/#sec-promise-objects">
-          <dfn>Promise</dfn></a>
+          <code><dfn data-cite=
+          "!ECMASCRIPT#sec-promise-objects">Promise</dfn></code>
         </li>
         <li>
-          <a href="https://tc39.github.io/ecma262/#realm">
-          <dfn>Realm</dfn></a>
+          <dfn data-cite="!ECMASCRIPT#realm">Realm</dfn>
         </li>
       </ul>
       <p>
@@ -656,10 +623,8 @@
         [[!PAGE-VISIBILITY]]:
       </p>
       <ul>
-        <li>
-          <a href=
-          "https://www.w3.org/TR/page-visibility/#dom-document-hidden">
-          Document's <dfn><code>hidden</code></dfn> attribute</a>
+        <li>Document's <code><dfn data-cite=
+        "!PAGE-VISIBILITY#dom-document-hidden">hidden</dfn></code> attribute
         </li>
       </ul>
     </section>
