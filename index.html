@@ -8,8 +8,7 @@
     </title>
     <meta charset='utf-8'>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
-    class='remove'>
-    </script>
+    class='remove'></script>
     <script class='remove'>
     /*stops tidy screwing things up*/
     var respecConfig = {
@@ -196,71 +195,83 @@
         };
       </pre>
       <p>
-        For each <a>Navigator</a> object, there is a <dfn>wake lock map</dfn>
-        which contains a single <dfn>wake lock promise</dfn> for each <a>wake
-        lock type</a>. Each <a>wake lock promise</a> in the <a>wake lock
-        map</a> is a <a>Promise</a> object which holds a <a>WakeLock</a>. All
-        <a data-lt="wake lock promise">wake lock promises</a> are initially set
-        to <code>null</code>.
+        For each <a>Navigator</a> object, there is a <dfn>wake lock
+        resolution</dfn> for each <a>wake lock type</a> which is one of:
+      </p>
+      <ul>
+        <li>A <a>WakeLock</a> object
+        </li>
+        <li>
+          <dfn>Rejected wake lock resolution</dfn>
+        </li>
+        <li>
+          <dfn>Pending wake lock resolution</dfn>
+        </li>
+      </ul>
+      <p>
+        Each <a>wake lock resolution</a> is initially set to <a>pending wake
+        lock resolution</a>.
       </p>
       <p>
         The <dfn>getWakeLock()</dfn> method, when invoked with an argument
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
-        <li>Let <var>wakeLockPromise</var> be the <a>wake lock promise</a>
-        associated with <var>type</var> in this <a>Navigator</a>'s <a>wake lock
-        map</a>.
+        <li>Let <var>wakeLockResolution</var> be the <a>wake lock
+        resolution</a> for <a>wake lock type</a> <var>type</var>.
         </li>
-        <li>If <var>wakeLockPromise</var> is not <code>null</code>, return
-        <var>wakeLockPromise</var> and abort these steps.
+        <li>If <var>wakeLockResolution</var> is <a>pending wake lock
+        resolution</a> and the <a>user agent</a> does not support the <a>wake
+        lock type</a> denoted by <var>type</var>, or has otherwise determined
+        it will <a>deny wake lock</a> of this <var>type</var> for this
+        <a>browsing context</a>, set <var>wakeLockResolution</var> to
+        <a>rejected wake lock resolution</a>.
         </li>
-        <li>Otherwise, set <var>wakeLockPromise</var> to a newly created
-        <a>Promise</a> created in the <a>Realm</a> of this <a>Navigator</a>
-        object.
+        <li>If <var>wakeLockResolution</var> is <a>pending wake lock
+        resolution</a> and the <a>user agent</a> has determined it will not <a>
+          deny wake lock</a> of this <var>type</var> for this <a>browsing
+          context</a>, <a>create and initialize a wake lock object</a> of type
+          <var>type</var> and let <var>wakeLock</var> be that object. Set
+          <var>wakeLockResolution</var> to <var>wakeLock</var>.
         </li>
-        <li>If the <a>user agent</a> does not support the <a>wake lock type</a>
-        denoted by <var>type</var>, or has otherwise determined it will <a>deny
-        wake lock</a> of this <var>type</var> for this <a>browsing context</a>,
-        reject <var>wakeLockPromise</var>, return <var>wakeLockPromise</var>
-        and abort these steps.
+        <li>If <var>wakeLockResolution</var> is <a>rejected wake lock
+        resolution</a>, return <a>a promise rejected with</a> a new
+        <a>unsupported wake lock type exception</a> and abort these steps.
         </li>
-        <li>If the <a>user agent</a> cannot synchronously determine whether it
-        will <a>deny wake lock</a> of this <var>type</var> for this <a>browsing
-        context</a>, return <var>wakeLockPromise</var>, abort these steps and
-        run the <a>deferred wake lock initialization</a> procedure
-        asynchronously.
+        <li>If <var>wakeLockResolution</var> is a <a>WakeLock</a> object,
+        return <a>a promise resolved with</a> <var>wakeLockResolution</var> and
+        abort these steps.
         </li>
-        <li>Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
-          Navigator</a> object, and let <var>wakeLock</var> be that object.
+        <li>Let <var>wakeLockPromise</var> be <a>a new promise</a>. Return
+        <var>wakeLockPromise</var> and run the remaining steps <a>in
+        parallel</a>.
+        </li>
+        <li>Determine whether the <a>user agent</a> will <a>deny wake lock</a>
+        of this <var>type</var> for this <a>browsing context</a>.
+        </li>
+        <li>If the <a>user agent</a> has determined that it will <a data-lt=
+        "deny wake lock">deny the wake lock</a>, set
+        <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>,
+        <a data-lt="reject promise">reject</a> <var>wakeLockPromise</var> with
+        a new <a>unsupported wake lock type exception</a> and abort these
+        steps.
         </li>
         <li>
-          <a data-lt="initialize wake lock object">Initialize
-          <var>wakeLock</var></a> with type <var>type</var>.
+          <a>Create and initialize a wake lock object</a> of type
+          <var>type</var> and let <var>wakeLock</var> be that object.
         </li>
-        <li>Resolve <var>wakeLockPromise</var> with <var>wakeLock</var> and
-        return <var>wakeLockPromise</var>.
+        <li>Set <var>wakeLockResolution</var> to <var>wakeLock</var>.
+        </li>
+        <li>
+          <a data-lt="resolve promise">Resolve</a> <code>wakeLockPromise</code>
+          with <code>wakeLock</code>.
         </li>
       </ol>
       <p>
-        When the <a>user agent</a> cannot synchronously determine if it will
-        <a>deny wake lock</a> of the given <a data-lt="wake lock type">type</a>
-        for the given <a>browsing context</a>, such as when user permission is
-        required, the following <dfn>deferred wake lock initialization</dfn>
-        procedure is performed asynchronously:
+        An <dfn>unsupported wake lock type exception</dfn> is a
+        <a>DOMException</a> whose name is
+        <code>"WakeLockTypeNotSupported"</code>.
       </p>
-      <ol>
-        <li>If the <a>user agent</a> has determined that it will <a>deny wake
-        lock</a> of this <code>type</code> for this <a>browsing context</a>,
-        reject <code>wakeLockPromise</code> and abort these steps.
-        </li>
-        <li>Create a new <a>WakeLock</a> object with type <code>type</code> in
-        the <a>Realm</a> of this <a>Navigator</a> object, and let
-        <code>wakeLock</code> be that object.
-        </li>
-        <li>Resolve <code>wakeLockPromise</code> with <code>wakeLock</code>.
-        </li>
-      </ol>
     </section>
     <section data-dfn-for="WakeLock" data-link-for="WakeLock">
       <h2>
@@ -304,18 +315,23 @@
         </dd>
       </dl>
       <p>
-        To <dfn data-lt="initialize wake lock object">initialize a
-        <a>WakeLock</a> object</dfn> of type <var>type</var>, the following
-        steps MUST be performed:
+        To <dfn data-lt="create and initialize a wake lock object">create and
+        initialize</dfn> a <a>WakeLock</a> object of type <var>type</var>, the
+        following steps MUST be performed:
       </p>
       <ol>
-        <li>Set <a>WakeLock</a> object's <code>type</code> attribute to
+        <li>Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
+          Navigator</a> object and let <var>wakeLock</var> be that object.
+        </li>
+        <li>Set <code>type</code> attribute of <var>wakeLock</var> to
         <var>type</var>.
         </li>
         <li>If the wake lock of type <var>type</var> is currently <a data-lt=
-        "acquire wake lock">acquired</a>, set the <a>WakeLock</a> object's
-        <code>active</code> attribute to <code>true</code>, otherwise to <code>
-          false</code>.
+        "acquire wake lock">acquired</a>, set <code>active</code> attribute of
+        <var>wakeLock</var> to <code>true</code>, otherwise to
+        <code>false</code>.
+        </li>
+        <li>Return <var>wakeLock</var>.
         </li>
       </ol>
       <p>
@@ -405,23 +421,21 @@
         <li>Let <var>navigator</var> be the <a>Navigator</a> object associated
         with this <a>browsing context</a>.
         </li>
-        <li>Let <var>wakeLockMap</var> be the <a>wake lock map</a> associated
-        with <var>navigator</var>.
+        <li>Let <var>wakeLockResolution</var> be the <a>wake lock
+        resolution</a> associated with <var>navigator</var> and
+        <var>type</var>.
         </li>
-        <li>Let <var>wakeLockPromise</var> be the <a>wake lock promise</a> for
-        type <var>type</var> in <var>wakeLockMap</var>.
-        </li>
-        <li>If <var>wakeLockPromise</var> is either <code>null</code>, pending,
-        or rejected, return <code>false</code> and abort these steps.
+        <li>If <var>wakeLockResolution</var> is either <a>pending wake lock
+        resolution</a> or <a>rejected wake lock resolution</a>, return
+        <code>false</code> and abort these steps.
         </li>
         <li>If <var>type</var> is "<a data-lt="WakeLockType.screen">screen</a>"
         and <a>browsing context</a>'s <a>active document</a> is <a>hidden</a>,
         return <code>false</code> and abort these steps.
         </li>
-        <li>Let <var>wakeLock</var> be the object with which
-        <var>wakeLockPromise</var> was resolved. If <var>wakeLock</var> has an
-        <a>outstanding wake lock request</a>, return <code>true</code>,
-        otherwise return <code>false</code>.
+        <li>If <var>wakeLockResolution</var>, which is a <a>WakeLock</a>
+        object, has an <a>outstanding wake lock request</a>, return
+        <code>true</code>, otherwise return <code>false</code>.
         </li>
       </ol>
       <div class="note">
@@ -515,7 +529,7 @@
       <p>
         This example acquires a screen wake lock and releases it after a while:
       </p>
-      <pre class="example highlight">
+      <pre class="example">
         navigator.getWakeLock("screen").then(function(wakeLock) {
           var request = wakeLock.createRequest();
           setTimeout(function() {
@@ -527,7 +541,7 @@
         This example requests a screen wake lock and listens to wake lock state
         changes:
       </p>
-      <pre class="example highlight">
+      <pre class="example">
         var request;
         navigator.getWakeLock("screen").then(function(wakeLock) {
           request = wakeLock.createRequest();
@@ -541,7 +555,7 @@
         In this example, two screen wake lock requests are created and
         cancelled independently:
       </p>
-      <pre class="example highlight">
+      <pre class="example">
         var request1;
         navigator.getWakeLock("screen").then(function(wakeLock) {
           request1 = wakeLock.createRequest();
@@ -597,23 +611,53 @@
           <dfn data-cite="WHATWG-HTML#event-handler-event-type">event handler
           event type</dfn>
         </li>
+        <li>
+          <dfn data-cite="WHATWG-HTML#in-parallel">in parallel</dfn>
+        </li>
       </ul>
       <p>
         The following concepts and interfaces are defined in [[!WHATWG-DOM]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!WHATWG-DOM#">fire an event</dfn>
+          <dfn data-cite="!WHATWG-DOM#concept-event-fire">fire an event</dfn>
+        </li>
+      </ul>
+      <p>
+        The following concepts and interfaces are defined in [[!WEBIDL-LS]]:
+      </p>
+      <ul>
+        <li>
+          <dfn data-cite="!WEBIDL-LS#dfn-DOMException">DOMException</dfn>
+        </li>
+      </ul>
+      <p>
+        The following concepts are defined in [[!PROMISES-GUIDE]]:
+      </p>
+      <ul>
+        <li>
+          <dfn data-cite="!PROMISES-GUIDE#a-new-promise">a new promise</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!PROMISES-GUIDE#a-promise-rejected-with">a promise
+          rejected with</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!PROMISES-GUIDE#a-promise-resolved-with">a promise
+          resolved with</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!PROMISES-GUIDE#reject-promise">reject promise</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!PROMISES-GUIDE#resolve-promise">resolve
+          promise</dfn>
         </li>
       </ul>
       <p>
         The following concepts and interfaces are defined in [[!ECMASCRIPT]]:
       </p>
       <ul>
-        <li>
-          <code><dfn data-cite=
-          "!ECMASCRIPT#sec-promise-objects">Promise</dfn></code>
-        </li>
         <li>
           <dfn data-cite="!ECMASCRIPT#realm">Realm</dfn>
         </li>
