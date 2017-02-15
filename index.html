@@ -8,8 +8,7 @@
     </title>
     <meta charset='utf-8'>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
-    class='remove'>
-    </script>
+    class='remove'></script>
     <script class='remove'>
     /*stops tidy screwing things up*/
     var respecConfig = {
@@ -437,6 +436,14 @@
         <dfn>The wake lock is applicable</dfn> if the state of the operating
         system permits application of the lock (e.g. there is sufficient
         battery charge).
+      </p>
+      <p>
+        The <a>screen wake lock</a> MUST NOT be <a data-lt=
+        "the wake lock is applicable">applicable</a> when the device is
+        manually locked by the user. Putting the device into the locked state
+        MUST NOT affect the <a data-lt=
+        "the wake lock is applicable">applicability</a> of the <a>system wake
+        lock</a>.
       </p>
       <div class="note">
         Whether the wake lock is applicable is a transient condition, e.g. when
