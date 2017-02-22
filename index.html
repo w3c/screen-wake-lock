@@ -524,11 +524,19 @@
         lock application if they determine that the remaining battery capacity
         is low.
       </p>
-      <div class="issue">
-        This section needs revision considering the changes in the API. In
-        particular, side communication channel possibility needs to be
-        re-evaluated as wake lock state is now observable.
-      </div>
+      <p>
+        The ability to observe the global state of a wake lock can create a
+        communication channel between two otherwise isolated <a data-lt=
+        "browsing context">browsing contexts</a>. One context can request wake
+        lock which changes the global wake lock state, and another context can
+        observe this change by subscribing to events in <a>WakeLock</a>.
+      </p>
+      <p>
+        When the <a>user agent</a> does not <a>acquire wake lock</a> even
+        though a browsing context has requested it, this can be observed by the
+        browsing context and can possibly disclose sensitive information about
+        the state of the device such as that battery level is low.
+      </p>
     </section>
     <section id="examples" class="informative">
       <h2>
@@ -591,36 +599,36 @@
       </p>
       <ul>
         <li>
-          <dfn data-cite="WHATWG-HTML#browsing-context">browsing context</dfn>
+          <dfn data-cite="!WHATWG-HTML#browsing-context">browsing context</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#top-level-browsing-context">top-level
+          <dfn data-cite="!WHATWG-HTML#top-level-browsing-context">top-level
           browsing context</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#active-document">active document</dfn>
+          <dfn data-cite="!WHATWG-HTML#active-document">active document</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#concept-origin">origin</dfn>
+          <dfn data-cite="!WHATWG-HTML#concept-origin">origin</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#same-origin">same origin</dfn>
+          <dfn data-cite="!WHATWG-HTML#same-origin">same origin</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#the-navigator-object">Navigator</dfn>
+          <dfn data-cite="!WHATWG-HTML#the-navigator-object">Navigator</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#queue-a-task">queue a task</dfn>
+          <dfn data-cite="!WHATWG-HTML#queue-a-task">queue a task</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#event-handlers">event handler</dfn>
+          <dfn data-cite="!WHATWG-HTML#event-handlers">event handler</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#event-handler-event-type">event handler
+          <dfn data-cite="!WHATWG-HTML#event-handler-event-type">event handler
           event type</dfn>
         </li>
         <li>
-          <dfn data-cite="WHATWG-HTML#in-parallel">in parallel</dfn>
+          <dfn data-cite="!WHATWG-HTML#in-parallel">in parallel</dfn>
         </li>
       </ul>
       <p>
