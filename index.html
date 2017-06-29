@@ -451,9 +451,9 @@
       </p>
       <p>
         The <a>screen wake lock</a> MUST NOT be <a data-lt=
-        "the wake lock is applicable">applicable</a> when the device is
-        manually locked by the user. Putting the device into the locked state
-        MUST NOT affect the <a data-lt=
+        "the wake lock is applicable">applicable</a> after the screen is
+        manually swiched off by the user until it is switched on again.
+        Manually switching off the screen MUST NOT affect the <a data-lt=
         "the wake lock is applicable">applicability</a> of the <a>system wake
         lock</a>.
       </p>
@@ -592,40 +592,40 @@
         Dependencies
       </h2>
       <p>
-        The following concepts and interfaces are defined in [[!WHATWG-HTML]]:
+        The following concepts and interfaces are defined in [[!HTML]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!WHATWG-HTML#browsing-context">browsing context</dfn>
+          <dfn data-cite="!HTML#browsing-context">browsing context</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#top-level-browsing-context">top-level
-          browsing context</dfn>
+          <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
+          context</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#active-document">active document</dfn>
+          <dfn data-cite="!HTML#active-document">active document</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#concept-origin">origin</dfn>
+          <dfn data-cite="!HTML#concept-origin">origin</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#same-origin">same origin</dfn>
+          <dfn data-cite="!HTML#same-origin">same origin</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#the-navigator-object">Navigator</dfn>
+          <dfn data-cite="!HTML#the-navigator-object">Navigator</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#queue-a-task">queue a task</dfn>
+          <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#event-handlers">event handler</dfn>
+          <dfn data-cite="!HTML#event-handlers">event handler</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#event-handler-event-type">event handler
-          event type</dfn>
+          <dfn data-cite="!HTML#event-handler-event-type">event handler event
+          type</dfn>
         </li>
         <li>
-          <dfn data-cite="!WHATWG-HTML#in-parallel">in parallel</dfn>
+          <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
         </li>
       </ul>
       <p>
@@ -637,11 +637,11 @@
         </li>
       </ul>
       <p>
-        The following concepts and interfaces are defined in [[!WEBIDL-LS]]:
+        The following concepts and interfaces are defined in [[!WEBIDL]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!WEBIDL-LS#dfn-DOMException">DOMException</dfn>
+          <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn>
         </li>
       </ul>
       <p>
