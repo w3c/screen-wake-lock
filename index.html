@@ -410,6 +410,16 @@
         succeeds.
       </p>
       <p>
+        When the <a>user agent</a> <a data-lt="release wake lock">releases wake
+        lock</a> of type <a data-lt="WakeLockType.screen">screen</a> it MUST
+        reset the platform-specific inactivity timer after which the screen is
+        actually turned off.
+      </p>
+      <div class="note">
+        Resetting the inactivity timer prevents the screen from going blank
+        immediately after the wake lock is released.
+      </div>
+      <p>
         A <a>browsing context</a> is <dfn>requesting the wake lock</dfn> of
         type <var>type</var> if and only if the following procedure returns
         <code>true</code>:
