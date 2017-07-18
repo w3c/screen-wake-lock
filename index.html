@@ -132,27 +132,38 @@
         <a>browsing context</a>.
       </p>
       <p>
-        If the <a>browsing context</a> is not a <a>top-level browsing
-        context</a> and its <a>active document</a>'s <a>origin</a> is not the
-        <a data-lt="same origin">same</a> as that of the active document of its
-        top-level browsing context, the <a>user agent</a> MUST <a>deny wake
-        lock</a>.
+        The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
+        with <a>feature name</a> <code>wake-lock</code> and <a>default
+        allowlist</a> <code>["self"]</code>.
+      </p>
+      <p>
+        If <a>browsing context</a>'s <a>active document</a>'s <a>feature
+        policy</a> disables the <a>wake lock feature</a>, the <a>user agent</a>
+        MUST <a>deny wake lock</a>.
       </p>
       <div class="note">
         <p>
-          The same-origin requirement prevents unauthorized nested third-party
-          content from requesting a wake lock on behalf of the top-level page.
+          The <a>default allowlist</a> of <code>["self"]</code> allows wake
+          lock usage in same-origin nested frames but prevents third-party
+          content from using wake locks.
         </p>
         <p>
-          An alternative approach could be requiring a permission as defined in
-          [[!PERMISSIONS]] which would effectively delegate decisions about
-          wake lock in nested browsing contexts to the <a>user agent</a>. The
-          downside is that permission inheritance model is currently
-          non-portable between implementations and sometimes inconsistent even
-          within the same implementation. For more details see e.g. this
-          <a href=
-          "https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit?pref=2&amp;pli=1#">
-          Chromium design document</a>.
+          Third-party usage can be selectively enabled by adding
+          <code>allow="wake-lock"</code> attribute to the frame container
+          element:
+        </p>
+        <pre class="example html">
+          &lt;iframe src="https://third-party.com" allow="wake-lock"/&gt;&lt;/iframe&gt;
+        </pre>
+        <p>
+          Alternatively, the wake lock feature can be disabled completely by
+          specifying the feature policy in a HTTP response header:
+        </p>
+        <pre class="example">
+          Feature-Policy: {"wake-lock": []}
+        </pre>
+        <p>
+          See [[FEATURE-POLICY]] for more details.
         </p>
       </div>
     </section>
@@ -609,10 +620,6 @@
           <dfn data-cite="!HTML#browsing-context">browsing context</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
-          context</dfn>
-        </li>
-        <li>
           <dfn data-cite="!HTML#active-document">active document</dfn>
         </li>
         <li>
@@ -692,6 +699,27 @@
       <ul>
         <li>Document's <code><dfn data-cite=
         "!PAGE-VISIBILITY#dom-document-hidden">hidden</dfn></code> attribute
+        </li>
+      </ul>
+      <p>
+        The following concepts and interfaces are defined in
+        [[!FEATURE-POLICY]]:
+      </p>
+      <ul>
+        <li>
+          <dfn data-cite=
+          "!FEATURE-POLICY#policy-controlled-feature">policy-controlled
+          feature</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!FEATURE-POLICY#feature-name">feature name</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!FEATURE-POLICY#feature-policy">feature policy</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!FEATURE-POLICY#default-allowlist">default
+          allowlist</dfn>
         </li>
       </ul>
     </section>
