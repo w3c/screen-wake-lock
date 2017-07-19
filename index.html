@@ -141,6 +141,11 @@
         policy</a> disables the <a>wake lock feature</a>, the <a>user agent</a>
         MUST <a>deny wake lock</a>.
       </p>
+      <p>
+        If the <a>browsing context</a> is not a <a>secure browsing
+        context</a> the <a>user agent</a> MUST <a>deny wake
+        lock</a>.
+      </p>
       <div class="note">
         <p>
           The <a>default allowlist</a> of <code>["self"]</code> allows wake
@@ -199,7 +204,7 @@
       </h2>
       <pre class="idl">
         partial interface Navigator {
-          Promise&lt;WakeLock&gt; getWakeLock(WakeLockType type);
+          [SecureContext] Promise&lt;WakeLock&gt; getWakeLock(WakeLockType type);
         };
       </pre>
       <p>
@@ -230,10 +235,10 @@
         </li>
         <li>If <var>wakeLockResolution</var> is <a>pending wake lock
         resolution</a> and the <a>user agent</a> does not support the <a>wake
-        lock type</a> denoted by <var>type</var>, or has otherwise determined
-        it will <a>deny wake lock</a> of this <var>type</var> for this
-        <a>browsing context</a>, set <var>wakeLockResolution</var> to
-        <a>rejected wake lock resolution</a>.
+        lock type</a> denoted by <var>type</var>, the request has been made from
+        an insecure context, or has otherwise determined it will <a>deny wake
+        lock</a> of this <var>type</var> for this <a>browsing context</a>, set
+        <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>.
         </li>
         <li>If <var>wakeLockResolution</var> is <a>pending wake lock
         resolution</a> and the <a>user agent</a> has determined it will not <a>
@@ -292,10 +297,10 @@
       </p>
       <pre class="idl">
         interface WakeLock : EventTarget {
-          readonly attribute WakeLockType type;
-          readonly attribute boolean active;
-          attribute EventHandler onactivechange;
-          WakeLockRequest createRequest();
+          [SecureContext] readonly attribute WakeLockType type;
+          [SecureContext] readonly attribute boolean active;
+          [SecureContext] attribute EventHandler onactivechange;
+          [SecureContext] WakeLockRequest createRequest();
         };
       </pre>
       <dl data-dfn-for="WakeLock">
@@ -379,7 +384,7 @@
       </h2>
       <pre class="idl">
         interface WakeLockRequest {
-          void cancel();
+          [SecureContext] void cancel();
         };
       </pre>
       <p>
@@ -554,6 +559,12 @@
         though a browsing context has requested it, this can be observed by the
         browsing context and can possibly disclose sensitive information about
         the state of the device such as that battery level is low.
+      </p>
+      <p>
+        A <dfn>wake lock</dfn> can only be granted when requested within a
+        <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">secure context</a>. This means that any wake lock request should come from
+        a page served over HTTPS. A <dfn>user agent</dfn> MAY allow <code>localhost</code>,
+        (see <a href="https://w3c.github.io/webappsec-secure-contexts/#localhost">the requirements</a>), <code>127.0.0.0/8</code>, and <code>::1/128</code> for development purposes.
       </p>
     </section>
     <section id="examples" class="informative">
