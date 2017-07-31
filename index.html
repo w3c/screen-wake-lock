@@ -120,6 +120,9 @@
         types of wake locks as independent.
       </div>
       <p>
+        The Wake Lock API MUST be <a>available only in secure context</a>.
+      </p>
+      <p>
         A <a>user agent</a> MAY <dfn>deny wake lock</dfn> of a particular
         <a data-lt="wake lock type">type</a> or all types for a particular
         <a>Document</a>, and MUST do so in cases explicitly defined by this
@@ -198,7 +201,7 @@
       </h2>
       <pre class="idl">
         partial interface Navigator {
-          Promise&lt;WakeLock&gt; getWakeLock(WakeLockType type);
+          [SecureContext] Promise&lt;WakeLock&gt; getWakeLock(WakeLockType type);
         };
       </pre>
       <p>
@@ -290,7 +293,7 @@
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
-        interface WakeLock : EventTarget {
+        [SecureContext] interface WakeLock : EventTarget {
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
@@ -377,7 +380,7 @@
         The <dfn>WakeLockRequest</dfn> interface
       </h2>
       <pre class="idl">
-        interface WakeLockRequest {
+        [SecureContext] interface WakeLockRequest {
           void cancel();
         };
       </pre>
@@ -669,6 +672,14 @@
       <ul>
         <li>
           <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!WEBIDL#SecureContext">Secure context</dfn>
+        </li>
+        <li>
+          <dfn data-cite=
+          "!WEBIDL#dfn-available-only-in-secure-contexts">available only in
+          secure context</dfn>
         </li>
       </ul>
       <p>
