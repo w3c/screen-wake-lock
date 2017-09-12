@@ -293,7 +293,7 @@
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
-        [SecureContext] interface WakeLock : EventTarget {
+        [SecureContext, Exposed=Window] interface WakeLock : EventTarget {
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
@@ -380,7 +380,7 @@
         The <dfn>WakeLockRequest</dfn> interface
       </h2>
       <pre class="idl">
-        [SecureContext] interface WakeLockRequest {
+        [SecureContext, Exposed=Window] interface WakeLockRequest {
           void cancel();
         };
       </pre>
