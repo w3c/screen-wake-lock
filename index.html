@@ -120,7 +120,7 @@
         details which may not always be true, this specification treats all
         types of wake locks as independent.
       </div>
-      <p>
+      <p data-tests="wakelock-insecure-context.html">
         The Wake Lock API MUST be <a>available only in secure context</a>.
       </p>
       <p>
@@ -135,12 +135,16 @@
         particular <a data-lt="wake lock type">type</a> for a particular
         <a>Document</a>.
       </p>
-      <p>
+      <p data-tests=
+      "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html,
+       wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html,
+       wakelock-enabled-by-feature-policy-attribute.https.sub.html,
+       wakelock-enabled-by-feature-policy.https.sub.html">
         The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
         with <a>feature name</a> <code>wake-lock</code> and <a>default
         allowlist</a> <code>["self"]</code>.
       </p>
-      <p>
+      <p data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
         If <a>Document</a>'s <a>feature policy</a> disables the <a>wake lock
         feature</a>, the <a>user agent</a> MUST <a>deny wake lock</a>.
       </p>
@@ -223,7 +227,7 @@
         Each <a>wake lock resolution</a> is initially set to <a>pending wake
         lock resolution</a>.
       </p>
-      <p>
+      <p data-tests="wakelock-type.https.html">
         The <dfn>getWakeLock()</dfn> method, when invoked with an argument
         <var>type</var>, MUST run the following steps:
       </p>
@@ -317,14 +321,14 @@
           <dfn>active</dfn>
         </dt>
         <dd>
-          Indicates whether wake lock if this <a data-lt=
+          Indicates whether wake lock of this <a data-lt=
           "wake lock type">type</a> is currently <a data-lt=
           "acquire wake lock">acquired</a> by the <a>user agent</a>.
         </dd>
         <dt>
           <dfn>onactivechange</dfn>
         </dt>
-        <dd>
+        <dd data-tests="wakelock-onactivechange.https.html">
           <a>Event handler</a> with the corresponding <a>event handler event
           type</a> of <code>activechange</code>. Fired when current wake lock
           status indicated by the <code>active</code> attribute changes.
@@ -336,13 +340,13 @@
         following steps MUST be performed:
       </p>
       <ol>
-        <li>Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
+        <li data-tests="wakelock-api.https.html">Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
           Navigator</a> object and let <var>wakeLock</var> be that object.
         </li>
-        <li>Set <code>type</code> attribute of <var>wakeLock</var> to
+        <li data-tests="wakelock-type.https.html">Set <code>type</code> attribute of <var>wakeLock</var> to
         <var>type</var>.
         </li>
-        <li>If the wake lock of type <var>type</var> is currently <a data-lt=
+        <li data-tests="wakelock-onactivechange.https.html">If the wake lock of type <var>type</var> is currently <a data-lt=
         "acquire wake lock">acquired</a>, set <code>active</code> attribute of
         <var>wakeLock</var> to <code>true</code>, otherwise to
         <code>false</code>.
@@ -360,7 +364,7 @@
         A <a>WakeLock</a> object has an <dfn>outstanding wake lock
         request</dfn> when its <a>request counter</a> is greater than zero.
       </p>
-      <p>
+      <p data-tests="wakelock-api.https.html">
         When the <dfn>createRequest()</dfn> method is invoked, the following
         steps MUST be performed:
       </p>
@@ -390,14 +394,14 @@
           void cancel();
         };
       </pre>
-      <p>
+      <p data-tests="wakelock-onactivechange.https.html">
         Each <a>WakeLockRequest</a> object has an implicit <dfn>owner wake lock
         reference</dfn> to the <a>WakeLock</a> object through which this object
         was created. When the <dfn>cancel()</dfn> method is invoked, the
         following steps MUST be performed:
       </p>
       <ol>
-        <li>If the <a>cancel()</a> method has already been invoked on this
+        <li data-tests="wakelock-cancel-twice.https.html">If the <a>cancel()</a> method has already been invoked on this
         object, abort these steps.
         </li>
         <li>Let <var>wakeLock</var> be the object referred to by this object's
@@ -410,7 +414,7 @@
       <h2>
         Managing Wake Locks
       </h2>
-      <p>
+      <p data-tests="wakelock-object-is-independent.https.html">
         This section applies to each <a>wake lock type</a> equally and
         independently, unless a particular <a>wake lock type</a> is explicitly
         mentioned.
@@ -466,7 +470,7 @@
         resolution</a> or <a>rejected wake lock resolution</a>, return
         <code>false</code> and abort these steps.
         </li>
-        <li>If <var>type</var> is "<a data-lt="WakeLockType.screen">screen</a>"
+        <li data-tests="wakelock-document-hidden.https.html">If <var>type</var> is "<a data-lt="WakeLockType.screen">screen</a>"
         and <var>document</var> is <a>hidden</a>, return <code>false</code> and
         abort these steps.
         </li>
@@ -489,7 +493,7 @@
         system permits application of the lock (e.g. there is sufficient
         battery charge).
       </p>
-      <p>
+      <p data-tests="wakelock-applicability-manual.https.html">
         The <a>screen wake lock</a> MUST NOT be <a data-lt=
         "the wake lock is applicable">applicable</a> after the screen is
         manually swiched off by the user until it is switched on again.
@@ -504,7 +508,7 @@
         management and not part of the decision process whether to allow or
         deny the wake lock.
       </div>
-      <p>
+      <p data-tests="wakelock-applicability-manual.https.html">
         The <a>user agent</a> MUST <a data-lt="acquire wake lock">acquire the
         wake lock</a> of type <var>type</var> when all of the following
         conditions become true:
@@ -517,7 +521,9 @@
         wake lock</a> of type <var>type</var>.
         </li>
       </ol>
-      <p>
+      <p data-tests=
+      "wakelock-applicability-manual.https.html,
+      wakelock-document-hidden.https.html">
         The <a>user agent</a> MUST <a data-lt="release wake lock">release the
         wake lock</a> when any of the conditions above become false.
       </p>
@@ -527,17 +533,21 @@
         <a>WakeLock</a> object:
       </p>
       <ol>
-        <li>If <a>WakeLock</a> object's <a data-lt="WakeLock.type">type</a>
+        <li data-tests="wakelock-type.https.html">If <a>WakeLock</a> object's <a data-lt="WakeLock.type">type</a>
         attribute is not equal to <var>type</var>, abort these steps.
         </li>
-        <li>
+        <li data-tests="wakelock-onactivechange.https.html">
           <a>Queue a task</a> which updates the <a>WakeLock</a> object's
           <code>active</code> attribute and <a data-lt="fire an event">fires an
           event</a> named <code>activechange</code> at the <a>WakeLock</a>
           object.
         </li>
       </ol>
-      <p>
+      <p data-tests=
+      "wakelock-onactivechange.https.html,
+      wakelock-object-is-independent.https.html,
+      wakelock-applicability-manual.https.html,
+      wakelock-document-hidden.https.html">
         In the task described above, the <a>WakeLock</a> objects's
         <code>active</code> attribute MUST be set to <code>true</code> if the
         wake lock has been acquired or to <code>false</code> if the wake lock
