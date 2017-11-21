@@ -228,6 +228,11 @@
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
+        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+        If this <a>Document</a> is not <a>allowed to use</a> the
+        <a>policy-controlled feature</a> named <code>wake-lock</code>, return
+        <a>a promise rejected with</a> a newly created <a>SecurityError</a>.
+        </li>
         <li>Let <var>wakeLockResolution</var> be the <a>wake lock
         resolution</a> for <a>wake lock type</a> <var>type</var>.
         </li>
@@ -631,6 +636,9 @@
       </p>
       <ul>
         <li>
+          <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>
+        </li>
+        <li>
           <dfn data-cite="!HTML#document">Document</dfn>
         </li>
         <li>
@@ -676,6 +684,9 @@
         </li>
         <li>
           <dfn data-cite="!WEBIDL#SecureContext">Secure context</dfn>
+        </li>
+        <li>
+          <dfn data-cite="!WEBIDL#securityerror">SecurityError</dfn>
         </li>
         <li>
           <dfn data-cite=
