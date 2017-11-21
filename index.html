@@ -228,7 +228,8 @@
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
-        <li>If this <a>Document</a> is not <a>allowed to use</a> the
+        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+        If this <a>Document</a> is not <a>allowed to use</a> the
         <a>policy-controlled feature</a> named <code>wake-lock</code>, return
         <a>a promise rejected with</a> a newly created <a>SecurityError</a>.
         </li>
