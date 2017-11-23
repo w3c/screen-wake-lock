@@ -1,43 +1,14 @@
-language: python
+language: node
 
 branches:
   only:
-    - /.*/
     - gh-pages
 
-python:
-  - "2.7_with_system_site_packages"
-sudo: false
-cache:
-  - apt
-addons:
-  apt:
-    sources:
-      - george-edison55-precise-backports
-      - ubuntu-toolchain-r-test
-    packages:
-      - libwww-perl
-      - libcss-dom-perl
-      - python-lxml
-      - cmake
-      - cmake-data
-      - gcc-4.8
-      - g++-4.8
-before_install:
-  - export CXX="g++-4.8" CC="gcc-4.8"
-  - nvm install --lts
-  - "export DISPLAY=:99.0"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
-  - sh -e /etc/init.d/xvfb start
-install:
- - make travissetup
-script:
- - make check
 env:
   global:
     - URL="http://w3c.github.io/wake-lock/W3CTRMANIFEST"
     - DECISION="http://www.w3.org/2009/dap/track/actions/738"
     - secure: "TwvUyb5luZr5jm3Q+xQS86i4M/dsFLpGISfocHCXXo9GsNPzNfsg+xphep0G83SM9DAO34f6S3Own5QKP4VRYSPGBi16y8bm0YS6VjOEXHtRQgb4UPUZsa0KXABrbxbJcTBO4gByD4Wu5qLR74Htis4N5N6y8z1Mx1QPSDrpXbA="
 
-after_success:
+script:
   - test $TRAVIS_BRANCH = "gh-pages" -a $TRAVIS_PULL_REQUEST = false && curl "https://labs.w3.org/echidna/api/request" --data "url=$URL" --data "decision=$DECISION" --data "token=$TOKEN"
