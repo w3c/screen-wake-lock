@@ -12,7 +12,11 @@
     <script class='remove'>
     /*stops tidy screwing things up*/
     var respecConfig = {
-        specStatus: "ED",
+        specStatus: "CR",
+        publishDate: "2017-12-14",
+        crEnd: "2018-01-25",
+        previousMaturity: "WD",
+        previousPublishDate: "2017-12-04",
         shortName: "wake-lock",
         editors: [{
             name: "Ilya Bogdanovich",
@@ -31,7 +35,7 @@
             w3cid: "39125"
         }],
         github: "https://github.com/w3c/wake-lock/",
-        wg: "Device APIs Working Group",
+        wg: "Device and Sensors Working Group",
         wgURI: "https://www.w3.org/2009/dap/",
         wgPublicList: "public-device-apis",
         wgPatentURI: "https://www.w3.org/2004/01/pp-impl/43696/status",
@@ -70,14 +74,11 @@
     </section>
     <section id='sotd'>
       <p>
-        Implementors need to be aware that this specification is extremely
-        unstable. <strong>Implementors who are not taking part in the
-        discussions will find the specification changing out from under them in
-        incompatible ways.</strong> Vendors interested in implementing this
-        specification before it eventually reaches the Candidate Recommendation
-        phase should <a href=
-        "https://github.com/w3c/wake-lock/issues">subscribe to the repository
-        on GitHub</a> and take part in the discussions.
+        The CR exit criterion is two interoperable deployed implementations of
+        each feature.
+      </p>
+      <p>
+        No features are marked as 'at-risk'.
       </p>
     </section>
     <section>
@@ -635,61 +636,61 @@
         Dependencies
       </h2>
       <p>
-        The following concepts and interfaces are defined in [[!HTML]]:
+        The following concepts and interfaces are defined in [[!HTML52]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>
+          <dfn data-cite="!HTML52/single-page.html#allowed-to-use">allowed to use</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#document">Document</dfn>
+          <dfn data-cite="!HTML52/single-page.html#document">Document</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#dom-document-defaultview">defaultView</dfn>
+          <dfn data-cite="!HTML52/single-page.html#dom-document-defaultview">defaultView</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#window">Window</dfn>
+          <dfn data-cite="!HTML52/single-page.html#window">Window</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#windowproxy">WindowProxy</dfn>
+          <dfn data-cite="!HTML52/single-page.html#windowproxy">WindowProxy</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#navigator">Navigator</dfn>
+          <dfn data-cite="!HTML52/single-page.html#navigator">Navigator</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>
+          <dfn data-cite="!HTML52/single-page.html#queuing">queue a task</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#event-handlers">event handler</dfn>
+          <dfn data-cite="!HTML52/single-page.html#event-handler">event handler</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#event-handler-event-type">event handler event
+          <dfn data-cite="!HTML52/single-page.html#event-handler-event-type">event handler event
           type</dfn>
         </li>
         <li>
-          <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
+          <dfn data-cite="!HTML52/single-page.html#in-parallel">in parallel</dfn>
         </li>
       </ul>
       <p>
-        The following concepts and interfaces are defined in [[!WHATWG-DOM]]:
+        The following concepts and interfaces are defined in [[!DOM4]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!WHATWG-DOM#concept-event-fire">fire an event</dfn>
+          <dfn data-cite="!DOM4#concept-event-fire">fire an event</dfn>
         </li>
       </ul>
       <p>
-        The following concepts and interfaces are defined in [[!WEBIDL]]:
+        The following concepts and interfaces are defined in [[!WEBIDL-1]] and [[!WEBIDL]]:
       </p>
       <ul>
         <li>
-          <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn>
+          <dfn data-cite="!WEBIDL-1#dfn-DOMException">DOMException</dfn>
         </li>
         <li>
           <dfn data-cite="!WEBIDL#SecureContext">Secure context</dfn>
         </li>
         <li>
-          <dfn data-cite="!WEBIDL#securityerror">SecurityError</dfn>
+          <dfn data-cite="!WEBIDL-1#securityerror">SecurityError</dfn>
         </li>
         <li>
           <dfn data-cite=
