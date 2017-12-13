@@ -1,4 +1,4 @@
-Specs on Github
-===============
+Wake Lock API
+=============
 
-You can view the full document [here](http://w3c.github.io/wake-lock).
+You can view the full document [here](https://w3c.github.io/wake-lock/).
