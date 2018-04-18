@@ -335,11 +335,8 @@
         <li data-tests="wakelock-type.https.html">Set <code>type</code>
         attribute of <var>wakeLock</var> to <var>type</var>.
         </li>
-        <li data-tests="wakelock-onactivechange.https.html">If the wake lock of
-        type <var>type</var> is currently <a data-lt=
-        "acquire wake lock">acquired</a>, set <code>active</code> attribute of
-        <var>wakeLock</var> to <code>true</code>, otherwise to
-        <code>false</code>.
+        <li>Set <code>active</code> attribute of <var>wakeLock</var> to <code>
+          false</code>.
         </li>
         <li>Return <var>wakeLock</var>.
         </li>
@@ -435,18 +432,16 @@
         immediately after the wake lock is released.
       </div>
       <p>
-        A <a>Document</a> is <dfn>requesting the wake lock</dfn> of type
-        <var>type</var> if and only if the following procedure returns
-        <code>true</code>:
+        To determine the <dfn>associated wake lock object</dfn> for
+        <a>Document</a> <var>document</var> and <a>WakeLockType</a>
+        <var>type</var>, the user agent must perform the following steps:
       </p>
       <ol>
-        <li>Let <var>document</var> be this <a>Document</a>.
-        </li>
         <li>Let <var>windowProxy</var> be the <a>WindowProxy</a> object
         returned by <code>document.<a>defaultView</a></code>.
         </li>
         <li>If <var>windowProxy</var> is <code>null</code>, return
-        <code>false</code> and abort these steps.
+        <code>null</code> and abort these steps.
         </li>
         <li>Let <var>window</var> be the <a>Window</a> object wrapped by <var>
           windowProxy</var>.
@@ -460,6 +455,22 @@
         </li>
         <li>If <var>wakeLockResolution</var> is either <a>pending wake lock
         resolution</a> or <a>rejected wake lock resolution</a>, return
+        <code>null</code> and abort these steps.
+        </li>
+        <li>Return the <a>WakeLock</a> object denoted by
+        <var>wakeLockResolution</var>.
+        </li>
+      </ol>
+      <p>
+        A <a>Document</a> is <dfn>requesting the wake lock</dfn> of type
+        <var>type</var> if and only if the following procedure returns
+        <code>true</code>:
+      </p>
+      <ol>
+        <li>Let <var>wakeLock</var> be the <a>associated wake lock object</a>
+        for this <a>Document</a>.
+        </li>
+        <li>If <var>wakeLock</var> is <code>null</code>, return
         <code>false</code> and abort these steps.
         </li>
         <li data-tests="wakelock-document-hidden.https.html">If <var>type</var>
@@ -467,9 +478,8 @@
         <var>document</var> is <a>hidden</a>, return <code>false</code> and
         abort these steps.
         </li>
-        <li>If <var>wakeLockResolution</var>, which is a <a>WakeLock</a>
-        object, has an <a>outstanding wake lock request</a>, return
-        <code>true</code>, otherwise return <code>false</code>.
+        <li>If <var>wakeLock</var> has an <a>outstanding wake lock request</a>,
+        return <code>true</code>, otherwise return <code>false</code>.
         </li>
       </ol>
       <div class="note">
@@ -481,6 +491,11 @@
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
       </div>
+      <p>
+        Whenever the wake lock request status for <var>document</var> and
+        <var>type</var> changes, the user agent must <a>update reported wake
+        lock status</a> for <var>document</var> and <var>type</var>.
+      </p>
       <p>
         <dfn>The wake lock is applicable</dfn> if the state of the operating
         system permits application of the lock (e.g. there is sufficient
@@ -520,22 +535,11 @@
         wake lock</a> when any of the conditions above become false.
       </p>
       <p>
-        Whenever <a>user agent</a> acquires or releases a wake lock, the
-        <a>user agent</a> MUST perform the following steps for each
-        <a>WakeLock</a> object:
+        Whenever the <a>user agent</a> acquires or releases a wake lock of
+        <a>WakeLockType</a> <var>type</var>, it must <a>update reported wake
+        lock status</a> for each <a>Document</a> that is <a>requesting the wake
+        lock</a> of type <var>type</var>.
       </p>
-      <ol>
-        <li data-tests="wakelock-type.https.html">If <a>WakeLock</a> object's
-        <a data-lt="WakeLock.type">type</a> attribute is not equal to
-        <var>type</var>, abort these steps.
-        </li>
-        <li data-tests="wakelock-onactivechange.https.html">
-          <a>Queue a task</a> which updates the <a>WakeLock</a> object's
-          <code>active</code> attribute and <a data-lt="fire an event">fires an
-          event</a> named <code>activechange</code> at the <a>WakeLock</a>
-          object.
-        </li>
-      </ol>
       <p data-tests=
       "wakelock-onactivechange.https.html, wakelock-state-is-global.https.html, wakelock-applicability-manual.https.html, wakelock-document-hidden.https.html">
         In the task described above, the <a>WakeLock</a> objects's
@@ -543,6 +547,44 @@
         wake lock has been acquired or to <code>false</code> if the wake lock
         has been released.
       </p>
+      <p>
+        To determine the <dfn>reported wake lock status</dfn> for
+        <a>Document</a> <var>document</var> and <a>WakeLockType</a>
+        <var>type</var>, the user agent must execute the following steps:
+      </p>
+      <ol>
+        <li>If <var>document</var> is not <a>requesting the wake lock</a> of
+        type <var>type</var>, return <code>false</code> and abort these steps.
+        </li>
+        <li>If the user agent has <a data-lt="acquire wake lock">acquired the
+        wake lock</a> of type <var>type</var>, return <code>true</code>,
+        otherwise return <code>false</code>.
+        </li>
+      </ol>
+      <p>
+        To <dfn>update reported wake lock status</dfn> for <a>Document</a>
+        <var>document</var> and <a>WakeLockType</a> <var>type</var> the user
+        agent must <a>queue a task</a> which performs the following steps:
+      </p>
+      <ol>
+        <li>Let <var>wakeLock</var> be the <a>associated wake lock object</a>
+        for <var>document</var> and <var>type</var>.
+        </li>
+        <li>Let <var>status</var> be the <a>reported wake lock status</a> for
+        <var>document</var> and <var>type</var>.
+        </li>
+        <li>If <var>status</var> is equal to the value of <a data-lt=
+        "WakeLock.active">active</a> attribute of <var>wakeLock</var>, abort
+        these steps.
+        </li>
+        <li>Set <a data-lt="WakeLock.active">active</a> attribute of
+        <var>wakeLock</var> to <var>status</var>.
+        </li>
+        <li>
+          <a>Fire an event</a> named <code>activechange</code> at
+          <var>wakeLock</var>.
+        </li>
+      </ol>
     </section>
     <section>
       <h2>
@@ -561,12 +603,17 @@
         lock application if they determine that the remaining battery capacity
         is low.
       </p>
-      <p data-tests="wakelock-state-is-global.https.html">
-        The ability to observe the global state of a wake lock can create a
-        communication channel between two otherwise isolated <a data-lt=
-        "document">documents</a>. One document can request wake lock which
-        changes the global wake lock state, and another document can observe
-        this change by subscribing to events in <a>WakeLock</a>.
+      <p>
+        To prevent a document from observing wake lock actions of other
+        documents, the actual wake lock status is only reported when the
+        document has itself requested the wake lock.
+      </p>
+      <p>
+        To prevent documents from observing wake lock related actions outside
+        of the user agent, the reported wake lock status is based only on the
+        user agent actions, such as that if the user agent has not acquired the
+        wake lock, the wake lock status is reported as inactive even though
+        another application might have acquired the same type of wake lock.
       </p>
       <p>
         When the <a>user agent</a> does not <a>acquire wake lock</a> even
