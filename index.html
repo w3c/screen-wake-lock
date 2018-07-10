@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'>
     <meta name="generator" content=
     "HTML Tidy for HTML5 (experimental) for Mac OS X https://github.com/w3c/tidy-html5/tree/c63cc39">
     <title>
       Wake Lock API
     </title>
+    <meta charset='utf-8'>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
     class='remove'></script>
     <script class='remove'>
@@ -127,7 +127,10 @@
         <a>Document</a>.
       </p>
       <p data-tests=
-      "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
+      "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html,
+       wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html,
+       wakelock-enabled-by-feature-policy-attribute.https.sub.html,
+       wakelock-enabled-by-feature-policy.https.sub.html">
         The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
         with <a>feature name</a> <code>wake-lock</code> and <a>default
         allowlist</a> <code>["self"]</code>.
@@ -220,8 +223,8 @@
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
-        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">If
-        this <a>Document</a> is not <a>allowed to use</a> the
+        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+        If this <a>Document</a> is not <a>allowed to use</a> the
         <a>policy-controlled feature</a> named <code>wake-lock</code>, return
         <a>a promise rejected with</a> a newly created <a>SecurityError</a>.
         </li>
@@ -244,7 +247,7 @@
         </li>
         <li>If <var>wakeLockResolution</var> is <a>rejected wake lock
         resolution</a>, return <a>a promise rejected with</a> a new
-        "NotSupportedError" DOMException and abort these steps.
+        <a>unsupported wake lock type exception</a> and abort these steps.
         </li>
         <li>If <var>wakeLockResolution</var> is a <a>WakeLock</a> object,
         return <a>a promise resolved with</a> <var>wakeLockResolution</var> and
@@ -261,7 +264,8 @@
         "deny wake lock">deny the wake lock</a>, set
         <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>,
         <a data-lt="reject promise">reject</a> <var>wakeLockPromise</var> with
-        a new "NotSupportedError" DOMException and abort these steps.
+        a new <a>unsupported wake lock type exception</a> and abort these
+        steps.
         </li>
         <li>
           <a>Create and initialize a wake lock object</a> of type
@@ -274,6 +278,11 @@
           with <code>wakeLock</code>.
         </li>
       </ol>
+      <p>
+        An <dfn>unsupported wake lock type exception</dfn> is a
+        <a>DOMException</a> whose name is
+        <code>"WakeLockTypeNotSupported"</code>.
+      </p>
     </section>
     <section data-dfn-for="WakeLock" data-link-for="WakeLock">
       <h2>
@@ -322,15 +331,13 @@
         following steps MUST be performed:
       </p>
       <ol>
-        <li data-tests="wakelock-api.https.html">Create a new <a>WakeLock</a>
-        object in the <a>Realm</a> of this <a>Navigator</a> object and let
-        <var>wakeLock</var> be that object.
+        <li data-tests="wakelock-api.https.html">Create a new <a>WakeLock</a> object in the <a>Realm</a> of this <a>
+          Navigator</a> object and let <var>wakeLock</var> be that object.
         </li>
-        <li data-tests="wakelock-type.https.html">Set <code>type</code>
-        attribute of <var>wakeLock</var> to <var>type</var>.
+        <li data-tests="wakelock-type.https.html">Set <code>type</code> attribute of <var>wakeLock</var> to
+        <var>type</var>.
         </li>
-        <li data-tests="wakelock-onactivechange.https.html">If the wake lock of
-        type <var>type</var> is currently <a data-lt=
+        <li data-tests="wakelock-onactivechange.https.html">If the wake lock of type <var>type</var> is currently <a data-lt=
         "acquire wake lock">acquired</a>, set <code>active</code> attribute of
         <var>wakeLock</var> to <code>true</code>, otherwise to
         <code>false</code>.
@@ -385,9 +392,8 @@
         following steps MUST be performed:
       </p>
       <ol>
-        <li data-tests="wakelock-cancel-twice.https.html">If the
-        <a>cancel()</a> method has already been invoked on this object, abort
-        these steps.
+        <li data-tests="wakelock-cancel-twice.https.html">If the <a>cancel()</a> method has already been invoked on this
+        object, abort these steps.
         </li>
         <li>Let <var>wakeLock</var> be the object referred to by this object's
         <a>owner wake lock reference</a>. Decrease <var>wakeLock</var>'s
@@ -400,7 +406,8 @@
         Managing Wake Locks
       </h2>
       <p data-tests=
-      "wakelockrequest-is-independent.https.html, wakelock-promise.https.html">
+      "wakelockrequest-is-independent.https.html,
+      wakelock-promise.https.html">
         This section applies to each <a>wake lock type</a> equally and
         independently, unless a particular <a>wake lock type</a> is explicitly
         mentioned.
@@ -456,9 +463,8 @@
         resolution</a> or <a>rejected wake lock resolution</a>, return
         <code>false</code> and abort these steps.
         </li>
-        <li data-tests="wakelock-document-hidden.https.html">If <var>type</var>
-        is "<a data-lt="WakeLockType.screen">screen</a>" and
-        <var>document</var> is <a>hidden</a>, return <code>false</code> and
+        <li data-tests="wakelock-document-hidden.https.html">If <var>type</var> is "<a data-lt="WakeLockType.screen">screen</a>"
+        and <var>document</var> is <a>hidden</a>, return <code>false</code> and
         abort these steps.
         </li>
         <li>If <var>wakeLockResolution</var>, which is a <a>WakeLock</a>
@@ -509,7 +515,8 @@
         </li>
       </ol>
       <p data-tests=
-      "wakelock-applicability-manual.https.html, wakelock-document-hidden.https.html">
+      "wakelock-applicability-manual.https.html,
+      wakelock-document-hidden.https.html">
         The <a>user agent</a> MUST <a data-lt="release wake lock">release the
         wake lock</a> when any of the conditions above become false.
       </p>
@@ -519,9 +526,8 @@
         <a>WakeLock</a> object:
       </p>
       <ol>
-        <li data-tests="wakelock-type.https.html">If <a>WakeLock</a> object's
-        <a data-lt="WakeLock.type">type</a> attribute is not equal to
-        <var>type</var>, abort these steps.
+        <li data-tests="wakelock-type.https.html">If <a>WakeLock</a> object's <a data-lt="WakeLock.type">type</a>
+        attribute is not equal to <var>type</var>, abort these steps.
         </li>
         <li data-tests="wakelock-onactivechange.https.html">
           <a>Queue a task</a> which updates the <a>WakeLock</a> object's
@@ -531,7 +537,10 @@
         </li>
       </ol>
       <p data-tests=
-      "wakelock-onactivechange.https.html, wakelock-state-is-global.https.html, wakelock-applicability-manual.https.html, wakelock-document-hidden.https.html">
+      "wakelock-onactivechange.https.html,
+      wakelock-state-is-global.https.html,
+      wakelock-applicability-manual.https.html,
+      wakelock-document-hidden.https.html">
         In the task described above, the <a>WakeLock</a> objects's
         <code>active</code> attribute MUST be set to <code>true</code> if the
         wake lock has been acquired or to <code>false</code> if the wake lock
