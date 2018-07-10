@@ -244,7 +244,7 @@
         </li>
         <li>If <var>wakeLockResolution</var> is <a>rejected wake lock
         resolution</a>, return <a>a promise rejected with</a> a new
-        <a>unsupported wake lock type exception</a> and abort these steps.
+        "<a>NotSupportedError</a>" <a>DOMException</a> and abort these steps.
         </li>
         <li>If <var>wakeLockResolution</var> is a <a>WakeLock</a> object,
         return <a>a promise resolved with</a> <var>wakeLockResolution</var> and
@@ -261,7 +261,7 @@
         "deny wake lock">deny the wake lock</a>, set
         <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>,
         <a data-lt="reject promise">reject</a> <var>wakeLockPromise</var> with
-        a new <a>unsupported wake lock type exception</a> and abort these
+        a new "<a>NotSupportedError</a>" <a>DOMException</a> and abort these
         steps.
         </li>
         <li>
@@ -275,11 +275,6 @@
           with <code>wakeLock</code>.
         </li>
       </ol>
-      <p>
-        An <dfn>unsupported wake lock type exception</dfn> is a
-        <a>DOMException</a> whose name is
-        <code>"WakeLockTypeNotSupported"</code>.
-      </p>
     </section>
     <section data-dfn-for="WakeLock" data-link-for="WakeLock">
       <h2>
@@ -679,6 +674,9 @@
         The following concepts and interfaces are defined in [[!WEBIDL]]:
       </p>
       <ul>
+        <li>"<dfn data-cite=
+        "!WEBIDL#notsupportederror">NotSupportedError</dfn>"
+        </li>
         <li>
           <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn>
         </li>
