@@ -1,5 +1,9 @@
- {
-    "group":      ["43696"]
-,   "contacts":   ["dontcallmedom"]
-,   "shortName":  "wake-lock"
+{
+  "group": 43696,
+  "contacts": [
+    "xfq"
+  ],
+  "shortName": "wake-lock",
+  "repo-type": "rec-track",
+  "policy": "open"
 }
