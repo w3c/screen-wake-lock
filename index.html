@@ -112,30 +112,17 @@
         details which may not always be true, this specification treats all
         types of wake locks as independent.
       </div>
-      <p data-tests="wakelock-insecure-context.html">
-        The Wake Lock API MUST be <a>available only in secure context</a>.
-      </p>
       <p>
-        A <a>user agent</a> MAY <dfn>deny wake lock</dfn> of a particular
-        <a data-lt="wake lock type">type</a> or all types for a particular
-        <a>Document</a>, and MUST do so in cases explicitly defined by this
-        specification.
-      </p>
-      <p>
-        A <a>user agent</a> MAY check user settings or request user permission
-        in order to decide whether it will <a>deny wake lock</a> of a
-        particular <a data-lt="wake lock type">type</a> for a particular
-        <a>Document</a>.
+        A <a>user agent</a> can <dfn>deny wake lock</dfn> of a particular
+        <a data-lt="wake lock type">type</a> for a particular <a>Document</a>
+        by any implementation-specific reason, for example, a user or platform
+        setting or preference.
       </p>
       <p data-tests=
       "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
         The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
         with <a>feature name</a> <code>wake-lock</code> and <a>default
         allowlist</a> <code>["self"]</code>.
-      </p>
-      <p data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-        If <a>Document</a>'s <a>feature policy</a> disables the <a>wake lock
-        feature</a>, the <a>user agent</a> MUST <a>deny wake lock</a>.
       </p>
       <div class="note">
         <p>
@@ -224,7 +211,8 @@
         <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">If
         this <a>Document</a> is not <a>allowed to use</a> the
         <a>policy-controlled feature</a> named <code>wake-lock</code>, return
-        <a>a promise rejected with</a> a newly created <a>SecurityError</a>.
+        <a>a promise rejected with</a> a newly created "<a>SecurityError</a>"
+        <a>DOMException</a>.
         </li>
         <li>Let <var>wakeLockResolution</var> be the <a>wake lock
         resolution</a> for <a>wake lock type</a> <var>type</var>.
@@ -255,11 +243,8 @@
         <var>wakeLockPromise</var> and run the remaining steps <a>in
         parallel</a>.
         </li>
-        <li>Determine whether the <a>user agent</a> will <a>deny wake lock</a>
-        of this <var>type</var> for this <a>Document</a>.
-        </li>
-        <li>If the <a>user agent</a> has determined that it will <a data-lt=
-        "deny wake lock">deny the wake lock</a>, set
+        <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
+        wake lock</a> of this <var>type</var> for this <a>Document</a>, set
         <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>,
         <a data-lt="reject promise">reject</a> <var>wakeLockPromise</var> with
         a new "<a>NotSupportedError</a>" <a>DOMException</a> and abort these
