@@ -569,48 +569,58 @@
         This example acquires a screen wake lock and releases it after a while:
       </p>
       <pre class="example">
-        navigator.getWakeLock("screen").then(function(wakeLock) {
-          var request = wakeLock.createRequest();
-          setTimeout(function() {
-            request.cancel();
-          }, 1000);
-        });
+        async function tryKeepScreenAlive(minutes) {
+          const lock = await navigator.getWakeLock("screen");
+          const request = lock.createRequest();
+
+          setTimeout(() => request.cancel(), minutes * 60 * 1000);
+        }
+
+        tryKeepScreenAlive(10);
       </pre>
       <p>
         This example requests a screen wake lock and listens to wake lock state
         changes:
       </p>
       <pre class="example">
-        var request;
-        navigator.getWakeLock("screen").then(function(wakeLock) {
-          request = wakeLock.createRequest();
-          document.getElementById("wakeLockActive").innerHTML = wakeLock.active;
-          wakeLock.onactivechange = function() {
-            document.getElementById("wakeLockActive").innerHTML = wakeLock.active;
+        let request;
+
+        const checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        document.body.appendChild(checkbox);
+
+        navigator.getWakeLock("screen").then(lock => {
+          lock.onactivechange = () => {
+            checkbox.checked = lock.active;
           };
+          request = lock.createRequest();
         });
+
+        setTimeout(() => request.cancel(), 5 * 1000);
       </pre>
       <p>
         In this example, two screen wake lock requests are created and
         cancelled independently:
       </p>
       <pre class="example">
-        var request1;
-        navigator.getWakeLock("screen").then(function(wakeLock) {
-          request1 = wakeLock.createRequest();
+        let request1;
+        let request2;
+
+        const p1 = navigator.getWakeLock("screen");
+        const p2 = navigator.getWakeLock("screen");
+
+        p1.then(lock => request1 = lock.createRequest());
+
+        // ...somewhere else
+
+        p2.then(lock => request2 = lock.createRequest());
+
+        // ...somewhere else
+
+        Promise.all([p1, p2]).then(() => {
+          request1.cancel();
+          request2.cancel();
         });
-
-        // ...
-
-        var request2;
-        navigator.getWakeLock("screen").then(function(wakeLock) {
-          request2 = wakeLock.createRequest();
-        });
-
-        // ...
-
-        request1.cancel();
-        request2.cancel();
       </pre>
     </section>
     <section>
