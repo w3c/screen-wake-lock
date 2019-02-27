@@ -339,32 +339,50 @@
         <var>wakeLock</var> to <code>true</code>, otherwise to
         <code>false</code>.
         </li>
-        <li>Return <var>wakeLock</var>.
+        <li>
+          Return <var>wakeLock</var>.
         </li>
       </ol>
       <p>
-        Internally, each <a>WakeLock</a> object contains <dfn>request
-        counter</dfn> which is initially set to zero. Each time the
-        <a>createRequest()</a> method is called on the object, the <a>request
-        counter</a> is increased by one.
-      </p>
-      <p>
-        A <a>WakeLock</a> object has an <dfn>outstanding wake lock
-        request</dfn> when its <a>request counter</a> is greater than zero.
+        Instances of <a>WakeLock</a> are created with the <a>internal slots</a>
+        described in the following table:
+
+        <table class="simple">
+          <thead>
+           <tr>
+            <th>Internal Slot</th>
+            <th>Initial value</th>
+            <th>Description (<em>non-normative</em>)</th>
+           </tr>
+          </thead>
+          <tbody>
+           <tr>
+            <td><dfn>[[\RequestCounter]]</dfn></td>
+            <td>0</td>
+            <td>
+              A number indicates the amount of current requests. A number
+              greater than zero indicates an <dfn>outstanding wake lock request</dfn>
+            </td>
+           </tr>
+          </tbody>
+        </table>
       </p>
       <p data-tests="wakelock-api.https.html">
-        When the <dfn>createRequest()</dfn> method is invoked, the following
-        steps MUST be performed:
+        The <dfn>createRequest()</dfn> method, when invoked, MUST run the
+        following algorithm:
       </p>
       <ol>
-        <li>Create a new <a>WakeLockRequest</a> object in the <a>Realm</a> of
-        this <a>WakeLock</a> object and let <var>wakeLockRequest</var> be that
-        object.
+        <li>
+          Let <var>request</var> be a new <a>WakeLockRequest</a> object.
         </li>
-        <li>Set <var>wakeLockRequest</var>'s <a>owner wake lock reference</a>
-        to this <a>WakeLock</a> object.
+        <li>
+          Increase <code>this</code>.<a>[[\RequestCounter]]</a> by one.
         </li>
-        <li>Return <var>wakeLockRequest</var>.
+        <li>
+          Set <var>request</var>.<a>[[\OwnerWakeLock]]</a> to <code>this</code>.
+        </li>
+        <li>
+          Return <var>request</var>.
         </li>
       </ol>
       <div class="note">
@@ -383,19 +401,42 @@
         };
       </pre>
       <p data-tests="wakelock-onactivechange.https.html">
-        Each <a>WakeLockRequest</a> object has an implicit <dfn>owner wake lock
-        reference</dfn> to the <a>WakeLock</a> object through which this object
-        was created. When the <dfn>cancel()</dfn> method is invoked, the
+        Instances of <a>WakeLockRequest</a> are created with the <a>internal slots</a>
+        described in the following table:
+
+        <table class="simple">
+          <thead>
+            <tr>
+            <th>Internal Slot</th>
+            <th>Initial value</th>
+            <th>Description (<em>non-normative</em>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            <td><dfn>[[\OwnerWakeLock]]</dfn></td>
+            <td>null</td>
+            <td>
+              Set to a <a>WakeLock</a> while initializing a new <a>WakeLockRequest</a>
+              object.
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </p>
+        When the <dfn>cancel()</dfn> method is invoked, the
         following steps MUST be performed:
       </p>
       <ol>
-        <li data-tests="wakelock-cancel-twice.https.html">If the
-        <a>cancel()</a> method has already been invoked on this object, abort
-        these steps.
+        <li data-tests="wakelock-cancel-twice.https.html">
+          If the <a>cancel()</a> method has already been invoked on this
+          object, abort these steps.
         </li>
-        <li>Let <var>wakeLock</var> be the object referred to by this object's
-        <a>owner wake lock reference</a>. Decrease <var>wakeLock</var>'s
-        <a>request counter</a> by one.
+        <li>
+          Let <var>lock</var> be <code>this</code>.<a>[[\OwnerWakeLock]]</a>.
+        </li>
+        <li>
+          Decrease <var>lock</var>.<a>[[\RequestCounter]]</a> by one.
         </li>
       </ol>
     </section>
@@ -711,8 +752,9 @@
         are defined in [[!HTML]].
       </p>
       <p>
-        <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn>,
-        is defined in [[!ECMASCRIPT]].
+        <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn> and
+        <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slots</dfn>
+        are defined in [[!ECMASCRIPT]].
       </p>
       <p>
         The following concepts are defined in [[!PROMISES-GUIDE]]:
