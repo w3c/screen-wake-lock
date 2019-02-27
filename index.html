@@ -213,57 +213,69 @@
         <var>type</var>, MUST run the following steps:
       </p>
       <ol>
-        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">If
-        this <a>Document</a> is not <a>allowed to use</a> the
-        <a>policy-controlled feature</a> named <code>wake-lock</code>, return
-        <a>a promise rejected with</a> a newly created "<a>SecurityError</a>"
-        <a>DOMException</a>.
+        <li>
+          Let <var>p</var> be a new <a>Promise</a> object.
         </li>
-        <li>Let <var>wakeLockResolution</var> be the <a>wake lock
-        resolution</a> for <a>wake lock type</a> <var>type</var>.
+        <li>
+          Let <var>document</var> be the <a>responsible document</a> of the
+          <a>current settings object</a>.
         </li>
-        <li>If <var>wakeLockResolution</var> is <a>pending wake lock
-        resolution</a> and the <a>user agent</a> does not support the <a>wake
-        lock type</a> denoted by <var>type</var>, or has otherwise determined
-        it will <a>deny wake lock</a> of this <var>type</var> for this
-        <a>Document</a>, set <var>wakeLockResolution</var> to <a>rejected wake
-        lock resolution</a>.
+        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+          If <var>document</var> is not <a>allowed to use</a> the
+          <a>policy-controlled feature</a> named <code>wake-lock</code>,
+          reject <var>p</var> with a
+          <code>"<a>SecurityError</a>"</code> <a>DOMException</a>
+          and return <var>p</var>.
         </li>
-        <li>If <var>wakeLockResolution</var> is <a>pending wake lock
-        resolution</a> and the <a>user agent</a> has determined it will not <a>
-          deny wake lock</a> of this <var>type</var> for this <a>Document</a>,
+        <li>
+          Let <var>resolution</var> be the <a>wake lock
+          resolution</a> for the <a>wake lock type</a> <var>type</var>.
+        </li>
+        <li>
+          If <var>resolution</var> is a <a>pending wake lock
+          resolution</a> and the <a>user agent</a> does not support the <a>wake
+          lock type</a> denoted by <var>type</var>, or has otherwise determined
+          it will <a>deny wake lock</a> of this <var>type</var> for <var>document</var>,
+          set <var>resolution</var> to <a>rejected wake lock resolution</a>.
+        </li>
+        <li>
+          If <var>resolution</var> is a <a>pending wake lock
+          resolution</a> and the <a>user agent</a> has determined it will not <a>
+          deny wake lock</a> of this <var>type</var> for <var>document</var>,
           <a>create and initialize a wake lock object</a> of type
-          <var>type</var> and let <var>wakeLock</var> be that object. Set
-          <var>wakeLockResolution</var> to <var>wakeLock</var>.
-        </li>
-        <li>If <var>wakeLockResolution</var> is <a>rejected wake lock
-        resolution</a>, return <a>a promise rejected with</a> a new
-        "<a>NotSupportedError</a>" <a>DOMException</a> and abort these steps.
-        </li>
-        <li>If <var>wakeLockResolution</var> is a <a>WakeLock</a> object,
-        return <a>a promise resolved with</a> <var>wakeLockResolution</var> and
-        abort these steps.
-        </li>
-        <li>Let <var>wakeLockPromise</var> be <a>a new promise</a>. Return
-        <var>wakeLockPromise</var> and run the remaining steps <a>in
-        parallel</a>.
-        </li>
-        <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
-        wake lock</a> of this <var>type</var> for this <a>Document</a>, set
-        <var>wakeLockResolution</var> to <a>rejected wake lock resolution</a>,
-        <a data-lt="reject promise">reject</a> <var>wakeLockPromise</var> with
-        a new "<a>NotSupportedError</a>" <a>DOMException</a> and abort these
-        steps.
+          <var>type</var> and set <var>resolution</var> be that object.
         </li>
         <li>
-          <a>Create and initialize a wake lock object</a> of type
-          <var>type</var> and let <var>wakeLock</var> be that object.
-        </li>
-        <li>Set <var>wakeLockResolution</var> to <var>wakeLock</var>.
+          If <var>resolution</var> is <a>rejected wake lock resolution</a>,
+          reject <var>p</var> with a <code>"<a>NotSupportedError</a>"</code>
+          <a>DOMException</a> and return <var>p</var>.
         </li>
         <li>
-          <a data-lt="resolve promise">Resolve</a> <code>wakeLockPromise</code>
-          with <code>wakeLock</code>.
+          If <var>resolution</var> is a <a>WakeLock</a> object,
+          resolve <var>p</var> with <var>resolution</var> and return <var>p</var>.
+        </li>
+        <li>
+          Run the following steps <a>in parallel</a>:
+        </li>
+        <ol>
+          <li>
+            If the <a>user agent</a> <a data-lt="deny wake lock">denies the
+            wake lock</a> of this <var>type</var> for <var>document</var>, set
+            <var>resolution</var> to <a>rejected wake lock resolution</a>,
+            <a data-lt="reject promise">reject</a> <var>p</var> with
+            <code>"<a>NotSupportedError</a>"</code> and abort these steps.
+          </li>
+          <li>
+            <a>Create and initialize a wake lock object</a> of type
+            <var>type</var> and set <var>resolution</var> to that object.
+          </li>
+          <li>
+            <a data-lt="resolve promise">Resolve</a> <code>p</code>
+            with <var>resolution</var>.
+          </li>
+        </ol>
+        <li>
+          Return <var>p</var>.
         </li>
       </ol>
     </section>
@@ -694,12 +706,18 @@
         </li>
       </ul>
       <p>
+        <dfn data-cite="!HTML#responsible-document">responsible document</dfn> and
+        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>
+        are defined in [[!HTML]].
+      </p>
+      <p>
+        <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn>,
+        is defined in [[!ECMASCRIPT]].
+      </p>
+      <p>
         The following concepts are defined in [[!PROMISES-GUIDE]]:
       </p>
       <ul>
-        <li>
-          <dfn data-cite="!PROMISES-GUIDE#a-new-promise">a new promise</dfn>
-        </li>
         <li>
           <dfn data-cite="!PROMISES-GUIDE#a-promise-rejected-with">a promise
           rejected with</dfn>
