@@ -464,6 +464,21 @@
         management and not part of the decision process whether to allow or
         deny the wake lock.
       </div>
+      <p>
+        A user agent may <a>release a wake lock</a> at any time it:
+      </p>
+      <ul>
+        <li>
+          Detects abnormal operation: such as infinite loops and tasks
+          exceeding imposed time limits (if any).
+        </li>
+        <li>
+          Battery is considered low and discharging.
+        </li>
+        <li>
+          The user turns on some kind of device power conservation mode.
+        </li>
+      </ul>
 
       <section> <h3>Acquire wake lock algorithm</h3>
         To <dfn>acquire a wake lock</dfn> for a given <a>WakeLock</a> object
