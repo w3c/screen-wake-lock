@@ -181,30 +181,48 @@
         </dd>
       </dl>
     </section>
-    <section><h3>Wake lock state associated with the settings object</h3>
+    <section><h3>Concepts and state record</h3>
       <p>
-        The <a>relevant settings object</a> of the <a>active document</a> of a
-        <a>browsing context</a> has an associated <dfn>wake lock state record</dfn>
-        with the following <a>internal slots</a>:
+        The term <dfn>platform wake lock</dfn> refers to platform interfaces
+        with which the user agent interacts to query state and acquire and
+        release a wake lock.
+      </p>
+      <p>
+        A <a>platform wake lock</a> can be defined by the underlying platform
+        (e.g. in a native wake lock framework) or by the user agent, if it has
+        direct hardware control.
+      </p>
+      <p>
+        Each <a>platform wake lock</a> (one per <a>wake lock type</a>) has an
+        associated <dfn>state record</dfn> with the following
+        <a>internal slots</a>:
       </p>
       <table class="simple">
         <thead>
           <tr>
-          <th>Internal Slot</th>
+          <th>Internal slot</th>
           <th>Initial value</th>
           <th>Description (<em>non-normative</em>)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td><dfn>[[\InstanceList]]</dfn></td>
+            <td>
+              The <a>empty</a> <a>set</a>.
+            </td>
+            <td>
+              A <a>set</a> of <a>WakeLock</a> instances.
+            </td>
+          </tr>
+          <tr>
           <td><dfn>[[\RequestCounter]]</dfn></td>
           <td>
-            A <a>set</a> with entries for each <a>wake lock type</a>
-            with the values equal to 0.
+            0.
           </td>
           <td>
-            The values indicates the amount of current requests per
-            <a>wake lock type</a>.
+            The value indicates the amount of current
+            requests for the <a>wake lock type</a>.
             A number greater than zero indicates an
             <dfn>outstanding wake lock request</dfn>
           </td>
@@ -326,6 +344,14 @@
         <li data-tests="wakelock-type.https.html">
           Set <var>lock</var>'s type to <var>type</var>.
         </li>
+        <li>
+          Let <var>record</var> be the <a>platform wake lock</a>'s
+          <a>state record</a> associated with
+          <var>type</var>.
+        </li>
+        <li>
+          Add <var>lock</var> to <var>record</var>.<a>[[\InstanceList]]</a>.
+        </li>
         <li data-tests="wakelock-onactivechange.https.html">
           If the wake lock of type <var>type</var> is currently <a data-lt=
           "acquire wake lock">acquired</a>, set <var>lock</var>'s
@@ -361,8 +387,9 @@
           of the same name if present, or <code>null</code> otherwise.
         </li>
         <li>
-          Let <var>record</var> be the <a>current settings object</a>'s
-          associated <a>wake lock state record</a>.
+          Let <var>record</var> be the <a>platform wake lock</a>'s
+          <a>state record</a> associated with
+          <code>this</code>'s <var>type</var>.
         </li>
         <li>
           If <var>signal</var>’s <a>aborted flag</a> is set, abort these steps.
@@ -372,10 +399,10 @@
           <a>add the following abort steps</a> to <var>signal</var>:
           <ol>
             <li>
-              Decrease <var>record</var>.<a>[[\RequestCounter]]</a>[<var>type</var>] by one.
+              Decrease <var>record</var>.<a>[[\RequestCounter]]</a> by one.
             </li>
             <li>
-              If <var>record</var>.<a>[[\RequestCounter]]</a>[<var>type</var>] is 0, then
+              If <var>record</var>.<a>[[\RequestCounter]]</a> is 0, then
               run the following steps <a>in parallel</a>:
               <ol>
                 <li>
@@ -399,10 +426,10 @@
           </ol>
         </li>
         <li>
-          Increase <var>record</var>.<a>[[\RequestCounter]]</a>[<var>type</var>] by one.
+          Increase <var>record</var>.<a>[[\RequestCounter]]</a> by one.
         </li>
         <li>
-          If <var>record</var>.<a>[[\RequestCounter]]</a>[<var>type</var>] is 1,
+          If <var>record</var>.<a>[[\RequestCounter]]</a> is 1,
           run the following steps <a>in parallel</a>:
           <ol>
             <li>
@@ -464,6 +491,8 @@
         management and not part of the decision process whether to allow or
         deny the wake lock.
       </div>
+
+      <section> <h3>Auto-releasing wake locks</h3>
       <p>
         A user agent may <a>release a wake lock</a> at any time it:
       </p>
@@ -479,6 +508,41 @@
           The user turns on some kind of device power conservation mode.
         </li>
       </ul>
+      </section>
+
+      <section> <h3>Handling document visibility</h3>
+        When the user agent determines that the <a>visibility state</a> of
+        the <a>responsible document</a> of the <a>current settings object</a>
+        changes, it must run these steps:
+        <ol>
+          <li>
+            Let <var>document</var> be the <a>responsible document</a> of the
+            <a>current settings object</a>.
+          </li>
+          <li>
+            If <var>document</var>'s <a>visibility state</a> is
+            <code>"visible"</code>, abort these steps.
+          </li>
+          <li>
+            Let <var>screenRecord</var> be the <a>platform wake lock</a>'s
+            <a>state record</a> associated with <a>wake lock type</a>
+            <code>"screen"</code>.
+          </li>
+          <li>
+            <a>For each</a> <var>lock</var> in <var>screenRecord</var>.<a>[[\InstanceList]]</a>:
+            <ol>
+              <li>
+                Run <a>release a wake lock</a> on <var>lock</var>.
+              </li>
+            </ol>
+          </li>
+        </ol>
+        <div class="note">
+          As some locks like <code>"system"</code> are allowed to run while
+          the <a>responsible document</a> is not visible, it is encouraged
+          that user agents show some UI indicating this.
+        </div>
+      </section>
 
       <section> <h3>Acquire wake lock algorithm</h3>
         To <dfn>acquire a wake lock</dfn> for a given <a>WakeLock</a> object
@@ -686,6 +750,7 @@
         are defined in [[!HTML]].
       </p>
       <p>
+        <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
         <dfn data-cite="!INFRA#ordered-set">set</dfn>,
         <dfn data-cite="!INFRA#map-exists">exists</dfn> and
         <dfn data-cite="!INFRA#list-is-empty">empty</dfn>
@@ -697,15 +762,16 @@
         are defined in [[!ECMASCRIPT]].
       </p>
       <p>
-        Document's <dfn data-cite="!PAGE-VISIBILITY#dom-document-hidden">hidden</dfn>
-        attribute is defined in [[!PAGE-VISIBILITY]]:
+        Document's <dfn data-cite="!PAGE-VISIBILITY#dom-document-hidden">hidden</dfn> attribute, and
+        <dfn data-cite="!PAGE-VISIBILITY#dfn-visibility-states">visibility state</dfn>
+        are defined in [[!PAGE-VISIBILITY]].
       </p>
       <p>
         <dfn data-cite="!FEATURE-POLICY#policy-controlled-feature">policy-controlled feature</dfn>,
         <dfn data-cite="!FEATURE-POLICY#feature-name">feature name</dfn>,
         <dfn data-cite="!FEATURE-POLICY#feature-policy">feature policy</dfn> and
         <dfn data-cite="!FEATURE-POLICY#default-allowlist">default allowlist</dfn>
-        are defined in [[!FEATURE-POLICY]]:
+        are defined in [[!FEATURE-POLICY]].
       </p>
     </section>
     <section class="informative">
@@ -736,8 +802,8 @@
       </h2>
       <p>
         We would like to offer our sincere thanks to Mounir Lamouri, Sergey
-        Konstantinov, Matvey Larionov, Dominique Hazael-Massieux (via the
-        HTML5Apps project) for their contributions to this work.
+        Konstantinov, Matvey Larionov, Dominique Hazael-Massieux, Domenic Denicola,
+        Thomas Steiner for their contributions to this work.
       </p>
     </section>
   </body>
