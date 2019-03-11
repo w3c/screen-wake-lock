@@ -231,65 +231,6 @@
       </table>
     </section>
 
-    <section data-dfn-for="Navigator">
-      <h2>
-        Extensions to the <a>Navigator</a> interface
-      </h2>
-      <pre class="idl">
-        partial interface Navigator {
-          [SecureContext] Promise&lt;WakeLock&gt; getWakeLock(WakeLockType type);
-        };
-      </pre>
-      <p data-tests="wakelock-type.https.html">
-        The <dfn>getWakeLock()</dfn> method, when invoked with an argument
-        <var>type</var>, MUST run the following steps:
-      </p>
-      <ol>
-        <li>
-          Let <var>document</var> be the <a>responsible document</a> of the
-          <a>current settings object</a>.
-        </li>
-        <li>
-          Let <var>context</var> be the <var>document</var>'s <a>browsing context</a>.
-        </li>
-        <li>
-          If <var>context</var> is <code>null</code>, return a new
-          <a>Promise</a> object, rejected with a
-          <code>"<a>NotSupportedError</a>"</code> <a>DOMException</a>.
-        </li>
-        <li>
-          Let <var>p</var> be a new <a>Promise</a> object.
-        </li>
-        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-          If <var>document</var> is not <a>allowed to use</a> the
-          <a>policy-controlled feature</a> named "<code>wake-lock</code>",
-          reject <var>p</var> with a
-          <code>"<a>SecurityError</a>"</code> <a>DOMException</a>
-          and return <var>p</var>.
-        </li>
-        <li>
-          Run the following steps <a>in parallel</a>:
-          <ol>
-            <li>
-              If the <a>user agent</a> <a data-lt="deny wake lock">denies the
-              wake lock</a> of this <var>type</var> for <var>document</var>,
-              reject <var>p</var> with <code>"<a>NotSupportedError</a>"</code>
-              and abort these steps.
-            </li>
-            <li>
-              Let <var>lock</var> be the result of <a>create and initialize a
-              wake lock object</a> of type <var>type</var>.
-            </li>
-            <li>
-              Resolve <code>p</code> with <var>lock</var>.
-            </li>
-          </ol>
-        </li>
-        <li>
-          Return <var>p</var>.
-        </li>
-      </ol>
-    </section>
     <section data-dfn-for="WakeLock" data-link-for="WakeLock">
       <h2>
         The <dfn>WakeLock</dfn> interface
@@ -300,7 +241,8 @@
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
-        [SecureContext, Exposed=Window] interface WakeLock : EventTarget {
+        [Constructor(WakeLockType type), SecureContext, Exposed=Window]
+        interface WakeLock : EventTarget {
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
@@ -338,6 +280,27 @@
         following steps MUST be performed:
       </p>
       <ol>
+        <li>
+          Let <var>document</var> be the <a>responsible document</a> of the
+          <a>current settings object</a>.
+        </li>
+        <li>
+          Let <var>context</var> be the <var>document</var>'s <a>browsing context</a>.
+        </li>
+        <li>
+          If <var>context</var> is <code>null</code>, throw a
+          <code>"<a>NotSupportedError</a>"</code> <a>DOMException</a>.
+        </li>
+        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+          If <var>document</var> is not <a>allowed to use</a> the
+          <a>policy-controlled feature</a> named "<code>wake-lock</code>",
+          throw a <code>"<a>SecurityError</a>"</code> <a>DOMException</a>.
+        </li>
+        <li>
+          If the <a>user agent</a> <a data-lt="deny wake lock">denies the
+          wake lock</a> of this <var>type</var> for <var>document</var>,
+          throw a <code>"<a>NotSupportedError</a>"</code> <a>DOMException</a>.
+        </li>
         <li data-tests="wakelock-api.https.html">
           Let <var>lock</var> be a new <a>WakeLock</a> object.
         </li>
@@ -346,8 +309,7 @@
         </li>
         <li>
           Let <var>record</var> be the <a>platform wake lock</a>'s
-          <a>state record</a> associated with
-          <var>type</var>.
+          <a>state record</a> associated with <var>type</var>.
         </li>
         <li>
           Add <var>lock</var> to <var>record</var>.<a>[[\InstanceList]]</a>.
@@ -654,7 +616,7 @@
       </p>
       <pre class="example">
         async function tryKeepScreenAlive(minutes) {
-          const lock = await navigator.getWakeLock("screen");
+          const lock = new WakeLock("screen");
 
           const controller = new AbortController();
           const signal = controller.signal;
@@ -678,12 +640,11 @@
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
 
-        navigator.getWakeLock("screen").then(lock => {
-          lock.onactivechange = () => {
-            checkbox.checked = lock.active;
-          };
-          lock.request({ signal });
-        });
+        const lock = new WakeLock("screen");
+        lock.onactivechange = () => {
+          checkbox.checked = lock.active;
+        };
+        lock.request({ signal });
 
         setTimeout(() => controller.abort(), 5 * 1000);
       </pre>
@@ -695,14 +656,14 @@
         const controller = new AbortController();
         const signal = controller.signal;
 
-        const p1 = navigator.getWakeLock("screen");
-        const p2 = navigator.getWakeLock("screen");
+        const lock1 = new WakeLock("screen");
+        const lock2 = new WakeLock("screen");
 
-        p1.then(lock => lock.request({ signal }));
+        lock1.request({ signal }));
 
         // ...somewhere else
 
-        p2.then(lock => lock.request({ signal }));
+        lock2.request({ signal }));
 
         // ...somewhere else
 
@@ -717,7 +678,6 @@
         <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
         <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>
         <dfn data-cite="!HTML#document">Document</dfn>
-        <dfn data-cite="!HTML#navigator">Navigator</dfn>
         <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>
         <dfn data-cite="!HTML#event-handlers">event handler</dfn>
         <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>
