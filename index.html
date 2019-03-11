@@ -123,10 +123,12 @@
         by any implementation-specific reason, for example, a user or platform
         setting or preference.
       </p>
+    </section>
+    <section> <h3>Policy control</h3>
       <p data-tests=
       "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
         The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
-        with <a>feature name</a> <code>wake-lock</code> and <a>default
+        with <a>feature name</a> <code>"wake-lock"</code> and <a>default
         allowlist</a> <code>["self"]</code>.
       </p>
       <div class="note">
@@ -155,6 +157,83 @@
         </p>
       </div>
     </section>
+    <section> <h3>Permissions and user prompts</h3>
+      <p>
+        The term <a>obtain permission</a>
+        is used for acquiring trust for a given operation.
+      </p>
+      <p>
+        The term <dfn>expressed permission</dfn> refers to an act by the user, e.g.
+        via user interface or setting or host device platform features, through which
+        the user approves the permission of a <a>browsing context</a> to access the
+        given functionality.
+      </p>
+      <p>
+        All <a>expressed permission</a>s that are preserved beyond the current
+        browsing session MUST be revocable.
+      </p>
+      <p>
+        The term <dfn id="askforgiveness">ask for forgiveness</dfn> refers to some
+        form of unobtrusive notification that informs the user of an operation
+        while it is running.
+      </p>
+      <p>
+        UAs SHOULD provide the user with the means to block the ongoing operation
+        from the current <a>origin</a>, or simply dismiss the notification,
+        and the choice should be remembered.
+      </p>
+      <p>
+        The term <dfn>prearranged trust relationship</dfn> means that the
+        UA has already established a trust relationship for a
+        certain operation using a platform specific mechanism, so that an
+        <a>expressed permission</a> from the user is not any more needed.
+      </p>
+      <p>
+        The term <a>obtain permission</a> for a certain operation indicates
+        that the UA has either obtained <a>expressed permission</a>, and/or
+        <a href="#askforgiveness">asked for forgiveness</a>, and/or ensured a
+        <a>prearranged trust relationship</a> exists.
+      </p>
+      <p>
+        The
+        <a href="https://www.w3.org/TR/permissions/#dictdef-permissiondescriptor">
+        <dfn>wake lock permission name</dfn></a> is
+        <a href="https://github.com/w3c/permissions/issues/47">defined</a> as
+        <code>"wake-lock"</code>.
+      </p>
+      <p>
+        To <dfn>obtain permission</dfn>, run these steps <a>in parallel</a>:
+      </p>
+      <ol>
+        <li>
+          If there is a <a>prearranged trust relationship</a>,
+          return <code>true</code>.
+        </li>
+        <li>
+          Run the
+          <a>query a permission</a> steps for the
+          <a>wake lock permission name</a>  until completion.
+          <ul>
+            <li>
+              If it resolved with <code><a>"granted"</a></code>
+              (i.e. an <a>expressed permission</a> has been granted
+              to the <a>origin</a> and <a>global object</a> using
+              the Permissions API [[!PERMISSIONS]]), return <code>true</code>.
+            </li>
+            <li>
+              Otherwise, if it resolved with <code><a>"prompt"</a></code>, then optionally
+              <a>request permission</a> from the user for the
+              <a>wake lock permission name</a>.
+              If that is granted, return <code>true</code>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Return <code>false</code>.
+        </li>
+      </ol>
+    </section>
+
     <section data-dfn-for="WakeLockType">
       <h2>
         The <dfn>WakeLockType</dfn> enum
@@ -246,7 +325,7 @@
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
-          void request(optional WakeLockRequestOptions options);
+          Promise&lt;void> request(optional WakeLockRequestOptions options);
         };
       </pre>
       <dl data-dfn-for="WakeLock">
@@ -342,6 +421,19 @@
       </p>
       <ol>
         <li>
+          Let <var>p</var> be a new <a>Promise</a> object.
+        </li>
+        <li>
+          Run the following steps <a>in parallel</a>:
+          <ol>
+            <li>
+              If <a>obtain permission</a> steps return <code>false</code>,
+              then reject <var>p</var> with <code>"<a>SecurityError</a>"</code>
+              <a>DOMException</a>, and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
           Let <var>options</var> be the first argument.
         </li>
         <li>
@@ -383,7 +475,9 @@
               <a>current settings object</a>.
             </li>
             <li data-tests="wakelock-document-hidden.https.html">
-              If <var>document</var> is <a>hidden</a>, abort these steps.
+              If <var>document</var> is <a>hidden</a>, reject <var>p</var>
+              with <code>"<a>SecurityError</a>"</code>
+              <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
         </li>
@@ -395,9 +489,18 @@
           run the following steps <a>in parallel</a>:
           <ol>
             <li>
-              Run <a>Acquire a wake lock</a> on <code>this</code>.
+              Let <var>success</var> the the result of running
+              <a>acquire a wake lock</a> on <code>this</code>.
+            </li>
+            <li>
+              If <var>success</var> is <code>false</code> then reject
+              <var>p</var> with <code>"<a>SecurityError</a>"</code>
+              <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
+        </li>
+        <li>
+          Fulfill <var>p</var>.
         </li>
       </ol>
       <div class="note">
@@ -682,6 +785,8 @@
         <dfn data-cite="!HTML#event-handlers">event handler</dfn>
         <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>
         <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
+        <dfn data-cite="!HTML#global-object">global object</dfn>,
+        <dfn data-cite="!HTML#origin">origin</dfn>,
         <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn> and
         <dfn data-cite="!HTML#active-document">active document</dfn>
         are defined in [[!HTML]].
@@ -703,6 +808,13 @@
         "!WEBIDL#dfn-available-only-in-secure-contexts">available only in
         secure context</dfn>
         are defined in [[!WEBIDL]].
+      </p>
+      <p>
+        The terms <dfn data-cite="!PERMISSIONS#query-a-permission">query a permission</dfn>,
+        <dfn data-cite="!PERMISSIONS##request-permission-to-use">request permission</dfn>,
+        <dfn data-cite="!PERMISSIONS#dom-permissionstate-granted"><code>"granted"</code></dfn> and
+        <dfn data-cite="!PERMISSIONS##dom-permissionstate-prompt"><code>"prompt"</code></dfn>
+        are defined in [[!PERMISSIONS]].
       </p>
       <p>
         <dfn data-cite="!HTML#responsible-document">responsible document</dfn> and
