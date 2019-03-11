@@ -241,7 +241,7 @@
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
-        [Constructor(WakeLockType type), SecureContext, Exposed=Window]
+        [Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock : EventTarget {
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
