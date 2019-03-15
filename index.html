@@ -210,28 +210,53 @@
           return <code>true</code>.
         </li>
         <li>
-          Run the
-          <a>query a permission</a> steps for the
-          <a>wake lock permission name</a>  until completion.
-          <ul>
+          Let <var>permission</var> be the result of running
+          <a>query a permission</a> for the
+          <a>wake lock permission name</a>.
+        </li>
+        <li>
+          If <var>permission</var> is <code><a>"granted"</a></code>
+          (i.e. an <a>expressed permission</a> has been granted
+          to the <a>origin</a> and <a>global object</a> using
+          the Permissions API [[!PERMISSIONS]]), return <code>true</code>.
+        </li>
+        <li>
+          If <var>permission</var> is <code><a>"denied"</a></code>,
+          return <code>false</code>.
+        </li>
+        <li>
+          If <var>permission</var> is <code><a>"prompt"</a></code>, run
+          the following steps:
+          <ol>
             <li>
-              If it resolved with <code><a>"granted"</a></code>
-              (i.e. an <a>expressed permission</a> has been granted
-              to the <a>origin</a> and <a>global object</a> using
-              the Permissions API [[!PERMISSIONS]]), return <code>true</code>.
+              If the <a>obtain permission</a> steps were not <a>triggered by
+              user activation</a>, return <code>false</code>.
             </li>
             <li>
-              Otherwise, if it resolved with <code><a>"prompt"</a></code>, then optionally
-              <a>request permission</a> from the user for the
-              <a>wake lock permission name</a>.
-              If that is granted, return <code>true</code>.
+              Optionally, return the result of running <a>request permission</a>
+              from the user for the <a>wake lock permission name</a>.
             </li>
-          </ul>
+          </ol>
         </li>
         <li>
           Return <code>false</code>.
         </li>
       </ol>
+      <div class="note">
+        The <a>prearranged trust relationship</a> may consider things
+        like <a>origin</a> or whether the <a>responsible document</a> is
+        associated a dedicated worker or not.
+      </div>
+      <div class="note">
+        In the case the steps are run from a dedicated worker, then the
+        <a>global object</a> is a <a>DedicatedWorkerGlobalScope</a>,
+        which  means that the <a>obtain permission</a> steps can never be
+        <a>triggered by user activation</a>, meaning that in order to use
+        wake locks from a dedicated worker, prior permission needs to
+        granted from the <a>browsing context</a> who created it,
+        e.g. the <a>browsing context</a> that is exists in the
+        <a>DedicatedWorkerGlobalScope</a>'s <a>owner set</a>.
+      </div>
     </section>
 
     <section data-dfn-for="WakeLockType">
@@ -373,7 +398,7 @@
         <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If <var>document</var> is not <a>allowed to use</a> the
           <a>policy-controlled feature</a> named "<code>wake-lock</code>",
-          throw a <code>"<a>SecurityError</a>"</code> <a>DOMException</a>.
+          throw a <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
         </li>
         <li>
           If the <a>user agent</a> <a data-lt="deny wake lock">denies the
@@ -428,7 +453,7 @@
           <ol>
             <li>
               If <a>obtain permission</a> steps return <code>false</code>,
-              then reject <var>p</var> with <code>"<a>SecurityError</a>"</code>
+              then reject <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -476,7 +501,7 @@
             </li>
             <li data-tests="wakelock-document-hidden.https.html">
               If <var>document</var> is <a>hidden</a>, reject <var>p</var>
-              with <code>"<a>SecurityError</a>"</code>
+              with <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -494,7 +519,7 @@
             </li>
             <li>
               If <var>success</var> is <code>false</code> then reject
-              <var>p</var> with <code>"<a>SecurityError</a>"</code>
+              <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -778,6 +803,7 @@
         Dependencies
       </h2>
       <p>
+        <dfn data-cite="!HTML#triggered-by-user-activation">triggered by user activation</dfn>,
         <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
         <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>
         <dfn data-cite="!HTML#document">Document</dfn>
@@ -786,7 +812,11 @@
         <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>
         <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
         <dfn data-cite="!HTML#global-object">global object</dfn>,
+        <dfn data-cite="!HTML#dedicatedworkerglobalscope">DedicatedWorkerGlobalScope</dfn>,
+        <dfn data-cite="!HTML#concept-WorkerGlobalScope-owner-set">owner set</dfn>,
         <dfn data-cite="!HTML#origin">origin</dfn>,
+        <dfn data-cite="!HTML#responsible-document">responsible document</dfn> and
+        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>
         <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn> and
         <dfn data-cite="!HTML#active-document">active document</dfn>
         are defined in [[!HTML]].
@@ -803,7 +833,7 @@
         <dfn data-cite="!WEBIDL#notsupportederror">NotSupportedError</dfn>,
         <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn>,
         <dfn data-cite="!WEBIDL#SecureContext">Secure context</dfn>,
-        <dfn data-cite="!WEBIDL#securityerror">SecurityError</dfn> and
+        <dfn data-cite="!WEBIDL#notallowederror">NotAllowedError</dfn> and
         <dfn data-cite=
         "!WEBIDL#dfn-available-only-in-secure-contexts">available only in
         secure context</dfn>
@@ -812,14 +842,10 @@
       <p>
         The terms <dfn data-cite="!PERMISSIONS#query-a-permission">query a permission</dfn>,
         <dfn data-cite="!PERMISSIONS##request-permission-to-use">request permission</dfn>,
+        <dfn data-cite="!PERMISSIONS#dom-permissionstate-denied"><code>"denied"</code></dfn>,
         <dfn data-cite="!PERMISSIONS#dom-permissionstate-granted"><code>"granted"</code></dfn> and
         <dfn data-cite="!PERMISSIONS##dom-permissionstate-prompt"><code>"prompt"</code></dfn>
         are defined in [[!PERMISSIONS]].
-      </p>
-      <p>
-        <dfn data-cite="!HTML#responsible-document">responsible document</dfn> and
-        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>
-        are defined in [[!HTML]].
       </p>
       <p>
         <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
