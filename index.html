@@ -389,11 +389,14 @@
           <a>current settings object</a>.
         </li>
         <li>
-          Let <var>context</var> be the <var>document</var>'s <a>browsing context</a>.
+          If the <a>current global object</a> is the <a>DedicatedWorkerGlobalScope</a>
+          object and its <a>owner set</a> is <a>empty</a>, throw a
+          <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
         </li>
         <li>
-          If <var>context</var> is <code>null</code>, throw a
-          <code>"<a>NotSupportedError</a>"</code> <a>DOMException</a>.
+          If the <a>current global object</a> is the <a>Window</a> object and
+          the <var>document</var>'s <a>browsing context</a> is <code>null</code>,
+          throw a  <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
         </li>
         <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If <var>document</var> is not <a>allowed to use</a> the
@@ -403,7 +406,7 @@
         <li>
           If the <a>user agent</a> <a data-lt="deny wake lock">denies the
           wake lock</a> of this <var>type</var> for <var>document</var>,
-          throw a <code>"<a>NotSupportedError</a>"</code> <a>DOMException</a>.
+          throw a <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
         </li>
         <li data-tests="wakelock-api.https.html">
           Let <var>lock</var> be a new <a>WakeLock</a> object.
@@ -492,15 +495,23 @@
           </ol>
         </li>
         <li>
-          If <code>this</code>'s <var>type</var> is
-          "<a data-lt="WakeLockType.screen">screen</a>", run the following steps:
+          If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
+          object, run the following steps:
           <ol>
             <li>
               Let <var>document</var> be the <a>responsible document</a> of the
               <a>current settings object</a>.
             </li>
-            <li data-tests="wakelock-document-hidden.https.html">
-              If <var>document</var> is <a>hidden</a>, reject <var>p</var>
+            <li>
+              If <var>document</var> is not <a>fully active</a>,
+              reject <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
+              <a>DOMException</a>, and abort these steps.
+            </li>
+            <li>
+              If <code>this</code>'s <var>type</var> is
+              "<a data-lt="WakeLockType.screen">screen</a>" and the
+              <a>Document</a> of the <a>top-level browsing context</a>
+              is <a>hidden</a>, reject <var>p</var>
               with <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
@@ -600,14 +611,40 @@
       </ul>
       </section>
 
-      <section> <h3>Handling document visibility</h3>
+      <section> <h3>Handling document loss of full activity</h3>
+        When the user agent determines that
+        a <a>responsible document</a> of the <a>current settings object</a>
+        is no longer <a>fully active</a>, it must run these steps:
+        <ol>
+          <li>
+            Let <var>record</var> be the <a>platform wake lock</a>'s
+            <a>state record</a> associated with <a>wake lock type</a>
+            <code>"screen"</code> and <code>"system"</code>.
+          </li>
+          <li>
+            <a>For each</a> <var>lock</var> in <var>record</var>.<a>[[\InstanceList]]</a>:
+            <ol>
+              <li>
+                Run <a>release a wake lock</a> on <var>lock</var>.
+              </li>
+            </ol>
+          </li>
+        </ol>
+        <div class="note">
+          Only documents presented to the user, thus with an associated
+          <a>browsing context</a> can be <a>active documents</a>, so the
+          above steps are only relevant for these.
+        </div>
+      </section>
+
+      <section> <h3>Handling document loss of visibility</h3>
         When the user agent determines that the <a>visibility state</a> of
-        the <a>responsible document</a> of the <a>current settings object</a>
+        the <a>Document</a> of the <a>top-level browsing context</a>
         changes, it must run these steps:
         <ol>
           <li>
-            Let <var>document</var> be the <a>responsible document</a> of the
-            <a>current settings object</a>.
+            Let <var>document</var> be the <a>Document</a> of the
+            <a>top-level browsing context</a>.
           </li>
           <li>
             If <var>document</var>'s <a>visibility state</a> is
@@ -629,8 +666,14 @@
         </ol>
         <div class="note">
           As some locks like <code>"system"</code> are allowed to run while
-          the <a>responsible document</a> is not visible, it is encouraged
+          the <a>Document</a> of the <a>top-level browsing context</a>
+          is not visible, it is encouraged
           that user agents show some UI indicating this.
+        </div>
+        <div class="note">
+          The <a>visibility state</a> is only exposed on the <a>Window</a>
+          object, thus the above steps are not relevant to wake locks
+          running as part of a dedicated worker.
         </div>
       </section>
 
@@ -805,20 +848,24 @@
       <p>
         <dfn data-cite="!HTML#triggered-by-user-activation">triggered by user activation</dfn>,
         <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
-        <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>
-        <dfn data-cite="!HTML#document">Document</dfn>
-        <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>
-        <dfn data-cite="!HTML#event-handlers">event handler</dfn>
-        <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>
-        <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
+        <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>,
+        <dfn data-cite="!HTML#document">Document</dfn>,
+        <dfn data-cite="!HTML#window">Window</dfn>,
+        <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>,
+        <dfn data-cite="!HTML#event-handlers">event handler</dfn>,
+        <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>,
+        <dfn data-cite="!HTML#in-parallel">in parallel</dfn>,
+        <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
         <dfn data-cite="!HTML#global-object">global object</dfn>,
+        <dfn data-cite="!HTML#current-global-object">current global object</dfn>,
         <dfn data-cite="!HTML#dedicatedworkerglobalscope">DedicatedWorkerGlobalScope</dfn>,
         <dfn data-cite="!HTML#concept-WorkerGlobalScope-owner-set">owner set</dfn>,
         <dfn data-cite="!HTML#origin">origin</dfn>,
-        <dfn data-cite="!HTML#responsible-document">responsible document</dfn> and
-        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>
-        <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn> and
-        <dfn data-cite="!HTML#active-document">active document</dfn>
+        <dfn data-cite="!HTML#responsible-document">responsible document</dfn>,
+        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
+        <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn>,
+        <dfn data-cite="!HTML#active-document">active document</dfn> and
+        <dfn data-cite="!HTML#fully-active">fully active</dfn>
         are defined in [[!HTML]].
       </p>
       <p>
