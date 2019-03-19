@@ -474,7 +474,9 @@
           <code>this</code>'s <var>type</var>.
         </li>
         <li>
-          If <var>signal</var>’s <a>aborted flag</a> is set, abort these steps.
+          If <var>signal</var>’s <a>aborted flag</a> is set, then
+          reject <var>p</var> with <code>"<a>AbortError</a>"</code>
+          <a>DOMException</a>, and abort these steps.
         </li>
         <li>
           If <var>signal</var> is not <code>null</code>, then
@@ -491,6 +493,10 @@
                   Run <a>release a wake lock</a> on <code>this</code>.
                 </li>
               </ol>
+            </li>
+            <li>
+              Reject <var>p</var> with <code>"<a>AbortError</a>"</code>
+              <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
         </li>
