@@ -159,70 +159,109 @@
     </section>
     <section> <h3>Permissions and user prompts</h3>
       <p>
-        The term <a>obtain permission</a>
-        is used for acquiring trust for a given operation.
+        The [[PERMISSIONS]] API provides a uniform way for websites to request
+        permissions from users and query which permissions they have.
       </p>
       <p>
-        The term <dfn>expressed permission</dfn> refers to an act by the user, e.g.
-        via user interface or setting or host device platform features, through which
-        the user approves the permission of a <a>browsing context</a> to access the
-        given functionality.
+        A UA may decide that an explicit user permission
+        is not needed in certain cases, like for certain <a>wake lock types</a>,
+        certain <a>origins</a> or certain <a>top-level browsing contexts</a>.
+        The reasons are unspecified and up to the UA, but could include
+        the site being launched in a standalone app window, or due to
+        pre-configured enterprise policies.
       </p>
       <p>
-        All <a>expressed permission</a>s that are preserved beyond the current
-        browsing session MUST be revocable.
+        The term <dfn>pre-arranged permission</dfn> denotes such
+        pre-granted permissions. Though an explicit premission from the
+        user is not needed for the feature to work, any such permission
+        takes presidence, meaning that if the user has earlier denied the
+        permission, for instance by <a href="#dfn-block-a-permission">blocking</a>
+        the feature, such an action should be respected.
       </p>
       <p>
-        The term <dfn id="askforgiveness">ask for forgiveness</dfn> refers to some
-        form of unobtrusive notification that informs the user of an operation
-        while it is running.
+        It is recommended that a UA shows some form of unobtrusive notification
+        that informs the user when a wake lock is active, as well as provides
+        the user with the means to <a href="#dfn-block-a-permission">block</a>
+        the ongoing operation, or simply dismiss the notification.
       </p>
       <p>
-        UAs SHOULD provide the user with the means to block the ongoing operation
-        from the current <a>origin</a>, or simply dismiss the notification,
-        and the choice should be remembered.
+        The <code>"wake-lock"</code> <a>powerful feature</a> is defined as follows:
       </p>
       <p>
-        The term <dfn>prearranged trust relationship</dfn> means that the
-        UA has already established a trust relationship for a
-        certain operation using a platform specific mechanism, so that an
-        <a>expressed permission</a> from the user is not any more needed.
+        The <a>permission descriptor type</a> is the following
+        <dfn data-lt="WakeLockPermissionDescriptor">dictionary</dfn>,
+        which augments the <a>PermissionDescriptor</a> with a
+        <dfn data-lt="WakeLockPermissionDescriptor.type">type</dfn> member,
+        allowing for more fine-grained permissions.
+      </p>
+      <pre class="idl">
+        dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
+          WakeLockType type;
+        };
+      </pre>
+      <p>
+        The <a>permission name</a> is defined as <code>"wake-lock"</code>.
       </p>
       <p>
-        The term <a>obtain permission</a> for a certain operation indicates
-        that the UA has either obtained <a>expressed permission</a>, and/or
-        <a href="#askforgiveness">asked for forgiveness</a>, and/or ensured a
-        <a>prearranged trust relationship</a> exists.
+        Within this section, <var>descriptor</var> is an instance of the
+        <a>permission descriptor type</a> of the <code>"wake-lock"</code>
+        <a>powerful feature</a>.
       </p>
       <p>
-        The
-        <a href="https://www.w3.org/TR/permissions/#dictdef-permissiondescriptor">
-        <dfn>wake lock permission name</dfn></a> is
-        <a href="https://github.com/w3c/permissions/issues/47">defined</a> as
-        <code>"wake-lock"</code>.
-      </p>
-      <p>
-        To <dfn>obtain permission</dfn>, run these steps <a>in parallel</a>:
+        To <dfn>block a permission</dfn>, run these steps:
       </p>
       <ol>
         <li>
-          If there is a <a>prearranged trust relationship</a>,
-          return <code>true</code>.
+          Let <var>descriptor</var> be the <a>permission descriptor type</a>
+          instance to be blocked.
+        </li>
+        <li>
+          Set <var>descriptor</var>'s <a>permission state</a> to <code>"denied"</code>.
+        </li>
+        <li>
+          Let <var>record</var> be the <a>platform wake lock</a>'s
+          <a>state record</a> associated with <var>descriptor</var>'s
+          <a data-lt="WakeLockPermissionDescriptor.type">type</a> member.
+        </li>
+        <li>
+          <a>For each</a> <var>lock</var> in <var>record</var>.<a>[[\InstanceList]]</a>:
+          <ol>
+            <li>
+              Run <a>release a wake lock</a> on <var>lock</var>.
+            </li>
+          </ol>
+        </li>
+      </ol>
+      <p>
+        To <dfn>obtain permission</dfn> for <a>wake lock type</a>
+        <var>type</var>, run these steps <a>in parallel</a>:
+      </p>
+      <ol>
+        <li>
+          Let <var>permissionDesc</var> be the following
+          <a>permission descriptor type</a>:
+          <pre>
+            {
+              <a data-lt="permission name">name</a>: "wake-lock",
+              type: <var>type</var>
+            }
+          </pre>
         </li>
         <li>
           Let <var>permission</var> be the result of running
-          <a>query a permission</a> for the
-          <a>wake lock permission name</a>.
-        </li>
-        <li>
-          If <var>permission</var> is <code><a>"granted"</a></code>
-          (i.e. an <a>expressed permission</a> has been granted
-          to the <a>origin</a> and <a>global object</a> using
-          the Permissions API [[!PERMISSIONS]]), return <code>true</code>.
+          <a>query a permission</a> with <var>permissionDesc</var>.
         </li>
         <li>
           If <var>permission</var> is <code><a>"denied"</a></code>,
           return <code>false</code>.
+        </li>
+        <li>
+          If there is a <a>pre-arranged permission</a>,
+          return <code>true</code>.
+        </li>
+        <li>
+          If <var>permission</var> is <code><a>"granted"</a></code>,
+          return <code>true</code>.
         </li>
         <li>
           If <var>permission</var> is <code><a>"prompt"</a></code>, run
@@ -233,8 +272,8 @@
               user activation</a>, return <code>false</code>.
             </li>
             <li>
-              Optionally, return the result of running <a>request permission</a>
-              from the user for the <a>wake lock permission name</a>.
+              Return the result of <a>requesting permission
+              to use</a> with <var>permissionDesc</var>.
             </li>
           </ol>
         </li>
@@ -243,7 +282,7 @@
         </li>
       </ol>
       <div class="note">
-        The <a>prearranged trust relationship</a> may consider things
+        The <a>pre-arranged permission</a> may consider things
         like <a>origin</a> or whether the <a>responsible document</a> is
         associated a dedicated worker or not.
       </div>
@@ -452,14 +491,10 @@
           Let <var>p</var> be a new <a>Promise</a> object.
         </li>
         <li>
-          Run the following steps <a>in parallel</a>:
-          <ol>
-            <li>
-              If <a>obtain permission</a> steps return <code>false</code>,
-              then reject <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
-              <a>DOMException</a>, and abort these steps.
-            </li>
-          </ol>
+          If <a>obtain permission</a> steps for <code>this</code>'s
+          <var>type</var> return <code>false</code>,
+          then reject <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
+          <a>DOMException</a>, and abort these steps.
         </li>
         <li>
           Let <var>options</var> be the first argument.
@@ -475,7 +510,7 @@
         </li>
         <li>
           If <var>signal</var>’s <a>aborted flag</a> is set, then
-          reject <var>p</var> with <code>"<a>AbortError</a>"</code>
+          reject <var>p</var> with an <code>"<a>AbortError</a>"</code>
           <a>DOMException</a>, and abort these steps.
         </li>
         <li>
@@ -495,7 +530,7 @@
               </ol>
             </li>
             <li>
-              Reject <var>p</var> with <code>"<a>AbortError</a>"</code>
+              Reject <var>p</var> with an <code>"<a>AbortError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -510,7 +545,7 @@
             </li>
             <li>
               If <var>document</var> is not <a>fully active</a>,
-              reject <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
+              reject <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
             <li>
@@ -518,7 +553,7 @@
               "<a data-lt="WakeLockType.screen">screen</a>" and the
               <a>Document</a> of the <a>top-level browsing context</a>
               is <a>hidden</a>, reject <var>p</var>
-              with <code>"<a>NotAllowedError</a>"</code>
+              with a <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -531,12 +566,12 @@
           run the following steps <a>in parallel</a>:
           <ol>
             <li>
-              Let <var>success</var> the the result of running
+              Let <var>success</var> be the the result of running
               <a>acquire a wake lock</a> on <code>this</code>.
             </li>
             <li>
               If <var>success</var> is <code>false</code> then reject
-              <var>p</var> with <code>"<a>NotAllowedError</a>"</code>
+              <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
               <a>DOMException</a>, and abort these steps.
             </li>
           </ol>
@@ -894,10 +929,16 @@
       </p>
       <p>
         The terms <dfn data-cite="!PERMISSIONS#query-a-permission">query a permission</dfn>,
-        <dfn data-cite="!PERMISSIONS##request-permission-to-use">request permission</dfn>,
+        <dfn data-cite="!PERMISSIONS#request-permission-to-use">requesting permission to use</dfn>,
+        <dfn data-cite="!PERMISSIONS#permission-revocation-algorithm">revocable</dfn>,
+        <dfn data-cite="!PERMISSIONS#permission-descriptor-type">permission descriptor type</dfn>,
+        <dfn data-cite="!PERMISSIONS#dom-permissiondescriptor-name">permission name</dfn>,
+        <dfn data-cite="!PERMISSIONS#permission-state">permission state</dfn>,
+        <dfn data-cite="!PERMISSIONS#powerful-feature">powerful feature</dfn>,
         <dfn data-cite="!PERMISSIONS#dom-permissionstate-denied"><code>"denied"</code></dfn>,
-        <dfn data-cite="!PERMISSIONS#dom-permissionstate-granted"><code>"granted"</code></dfn> and
-        <dfn data-cite="!PERMISSIONS##dom-permissionstate-prompt"><code>"prompt"</code></dfn>
+        <dfn data-cite="!PERMISSIONS#dom-permissionstate-granted"><code>"granted"</code></dfn>,
+        <dfn data-cite="!PERMISSIONS#dom-permissionstate-prompt"><code>"prompt"</code></dfn> and
+        <dfn data-cite="!PERMISSIONS#dictdef-permissiondescriptor">PermissionDescriptor</dfn>
         are defined in [[!PERMISSIONS]].
       </p>
       <p>
