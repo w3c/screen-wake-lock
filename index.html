@@ -163,22 +163,6 @@
         permissions from users and query which permissions they have.
       </p>
       <p>
-        A UA may decide that an explicit user permission
-        is not needed in certain cases, like for certain <a>wake lock types</a>,
-        certain <a>origins</a> or certain <a>top-level browsing contexts</a>.
-        The reasons are unspecified and up to the UA, but could include
-        the site being launched in a standalone app window, or due to
-        pre-configured enterprise policies.
-      </p>
-      <p>
-        The term <dfn>pre-arranged permission</dfn> denotes such
-        pre-granted permissions. Though an explicit premission from the
-        user is not needed for the feature to work, any such permission
-        takes presidence, meaning that if the user has earlier denied the
-        permission, for instance by <a href="#dfn-block-a-permission">blocking</a>
-        the feature, such an action should be respected.
-      </p>
-      <p>
         It is recommended that a UA shows some form of unobtrusive notification
         that informs the user when a wake lock is active, as well as provides
         the user with the means to <a href="#dfn-block-a-permission">block</a>
@@ -256,10 +240,6 @@
           return <code>false</code>.
         </li>
         <li>
-          If there is a <a>pre-arranged permission</a>,
-          return <code>true</code>.
-        </li>
-        <li>
           If <var>permission</var> is <code><a>"granted"</a></code>,
           return <code>true</code>.
         </li>
@@ -281,11 +261,6 @@
           Return <code>false</code>.
         </li>
       </ol>
-      <div class="note">
-        The <a>pre-arranged permission</a> may consider things
-        like <a>origin</a> or whether the <a>responsible document</a> is
-        associated a dedicated worker or not.
-      </div>
       <div class="note">
         In the case the steps are run from a dedicated worker, then the
         <a>global object</a> is a <a>DedicatedWorkerGlobalScope</a>,
