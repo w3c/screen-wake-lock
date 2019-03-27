@@ -10,31 +10,31 @@
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
     class='remove'></script>
     <script class='remove'>
-    /*stops tidy screwing things up*/
-    var respecConfig = {
+      /*stops tidy screwing things up*/
+      var respecConfig = {
         specStatus: "ED",
         shortName: "wake-lock",
         editors: [{
-            name: "Kenneth Rohde Christiansen",
-            company: "Intel Corporation",
-            companyURL: "https://intel.com/",
-            w3cid: 57705
+          name: "Kenneth Rohde Christiansen",
+          company: "Intel Corporation",
+          companyURL: "https://intel.com/",
+          w3cid: 57705
         }],
         formerEditors: [{
-            name: "Ilya Bogdanovich",
-            url: "mailto:bogdanovichiy@yandex-team.ru",
-            company: "Yandex",
-            w3cid: "71741"
+          name: "Ilya Bogdanovich",
+          url: "mailto:bogdanovichiy@yandex-team.ru",
+          company: "Yandex",
+          w3cid: "71741"
         }, {
-            name: "Andrey Logvinov",
-            url: "mailto:alogvinov@yandex-team.ru",
-            company: "Yandex",
-            w3cid: "75989"
+          name: "Andrey Logvinov",
+          url: "mailto:alogvinov@yandex-team.ru",
+          company: "Yandex",
+          w3cid: "75989"
         }, {
-            name: "Marcos Caceres",
-            url: "mailto:marcos@marcosc.com",
-            company: "Mozilla",
-            w3cid: "39125"
+          name: "Marcos Caceres",
+          url: "mailto:marcos@marcosc.com",
+          company: "Mozilla",
+          w3cid: "39125"
         }],
         github: "https://github.com/w3c/wake-lock/",
         wg: "Device APIs Working Group",
@@ -44,28 +44,29 @@
         testSuiteURI: "https://w3c-test.org/wake-lock/",
         implementationReportURI: "https://www.w3.org/2009/dap/wiki/ImplementationStatus",
         otherLinks: [{
-            key: 'Quality Assurance Lead',
-            data: [{
-                value: 'Wanming Lin (Intel)',
-                href: 'https://github.com/Honry'
-            }]
-          }, {
-            key: 'Use cases',
-            data: [{
-                value: 'Use Cases and Requirements',
-                href: 'https://w3c-webmob.github.io/wake-lock-use-cases/'
-            }]
+          key: 'Quality Assurance Lead',
+          data: [{
+            value: 'Wanming Lin (Intel)',
+            href: 'https://github.com/Honry'
+          }]
         }, {
-            key: "Implementation status",
-            data: [{
-                value: "Blink",
-                href: "https://bugs.chromium.org/p/chromium/issues/detail?id=257511"
-            }]
+          key: 'Use cases',
+          data: [{
+            value: 'Use Cases and Requirements',
+            href: 'https://w3c-webmob.github.io/wake-lock-use-cases/'
+          }]
+        }, {
+          key: "Implementation status",
+          data: [{
+            value: "Blink",
+            href: "https://bugs.chromium.org/p/chromium/issues/detail?id=257511"
+          }]
         }],
-    };
+        xref: true
+      };
     </script>
   </head>
-  <body>
+  <body data-cite="HTML WEBIDL DOM FEATURE-POLICY INFRA">
     <section id='abstract'>
       <p>
         This document specifies an API that allows web applications to request
@@ -124,11 +125,12 @@
         setting or preference.
       </p>
     </section>
-    <section> <h3>Policy control</h3>
+    <section data-cite="feature-policy"> <h3>Policy control</h3>
       <p data-tests=
       "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
         The <dfn>wake lock feature</dfn> is a <a>policy-controlled feature</a>
-        with <a>feature name</a> <code>"wake-lock"</code> and <a>default
+        with <a data-cite="feature-policy#feature-name">feature name</a>
+        <code>"wake-lock"</code> and <a>default
         allowlist</a> <code>["self"]</code>.
       </p>
       <div class="note">
@@ -187,42 +189,43 @@
         The <a>permission name</a> is defined as <code>"wake-lock"</code>.
       </p>
       <p>
-        Within this section, <var>descriptor</var> is an instance of the
+        Within this section, |descriptor| is an instance of the
         <a>permission descriptor type</a> of the <code>"wake-lock"</code>
         <a>powerful feature</a>.
       </p>
       <p>
         To <dfn>block a permission</dfn>, run these steps:
       </p>
-      <ol>
+      <ol class="algorithm">
         <li>
-          Let <var>descriptor</var> be the <a>permission descriptor type</a>
+          Let |descriptor| be the <a>permission descriptor type</a>
           instance to be blocked.
         </li>
         <li>
-          Set <var>descriptor</var>'s <a>permission state</a> to <code>"denied"</code>.
+          Set |descriptor|'s <a>permission state</a> to "<a>denied</a>".
         </li>
         <li>
-          Let <var>record</var> be the <a>platform wake lock</a>'s
-          <a>state record</a> associated with <var>descriptor</var>'s
+          Let |record| be the <a>platform wake lock</a>'s
+          <a>state record</a> associated with |descriptor|'s
           <a data-lt="WakeLockPermissionDescriptor.type">type</a> member.
         </li>
         <li>
-          <a>For each</a> <var>lock</var> in <var>record</var>.<a>[[\InstanceList]]</a>:
+          <a data-cite="infra#list-iterate">for each</a> |lock|
+          in |record|.<a>[[\InstanceList]]</a>:
           <ol>
             <li>
-              Run <a>release a wake lock</a> on <var>lock</var>.
+              Run <a>release a wake lock</a> on |lock|.
             </li>
           </ol>
         </li>
       </ol>
       <p>
         To <dfn>obtain permission</dfn> for <a>wake lock type</a>
-        <var>type</var>, run these steps <a>in parallel</a>:
+        |type|, run these steps <a>in parallel</a>:
       </p>
-      <ol>
+      <ol class="algorithm">
         <li>
-          Let <var>permissionDesc</var> be the following
+          Let |permissionDesc| be the following
           <a>permission descriptor type</a>:
           <pre>
             {
@@ -232,19 +235,19 @@
           </pre>
         </li>
         <li>
-          Let <var>permission</var> be the result of running
-          <a>query a permission</a> with <var>permissionDesc</var>.
+          Let |permission| be the result of running
+          <a>query a permission</a> with |permissionDesc|.
         </li>
         <li>
-          If <var>permission</var> is <code><a>"denied"</a></code>,
+          If |permission| is "<a>denied</a>",
           return <code>false</code>.
         </li>
         <li>
-          If <var>permission</var> is <code><a>"granted"</a></code>,
+          If |permission| is "<a>granted</a>",
           return <code>true</code>.
         </li>
         <li>
-          If <var>permission</var> is <code><a>"prompt"</a></code>, run
+          If |permission| is "<a>prompt</a>", run
           the following steps:
           <ol>
             <li>
@@ -253,7 +256,7 @@
             </li>
             <li>
               Return the result of <a>requesting permission
-              to use</a> with <var>permissionDesc</var>.
+              to use</a> with |permissionDesc|.
             </li>
           </ol>
         </li>
@@ -327,10 +330,12 @@
           <tr>
             <td><dfn>[[\InstanceList]]</dfn></td>
             <td>
-              The <a>empty</a> <a>set</a>.
+              The <a data-cite="infra#list-is-empty">empty</a>
+              <a data-cite="infra#ordered-set">set</a>.
             </td>
             <td>
-              A <a>set</a> of <a>WakeLock</a> instances.
+              A <a data-cite="INFRA#ordered-set">set</a>
+              of <a>WakeLock</a> instances.
             </td>
           </tr>
           <tr>
@@ -367,84 +372,87 @@
           Promise&lt;void> request(optional WakeLockRequestOptions options);
         };
       </pre>
-      <dl data-dfn-for="WakeLock">
-        <dt>
-          <dfn>type</dfn>
-        </dt>
-        <dd>
-          <a>Wake lock type</a> associated with this <a>WakeLock</a> object.
-        </dd>
-        <dt>
-          <dfn>active</dfn>
-        </dt>
-        <dd>
-          Indicates whether wake lock of this <a data-lt=
-          "wake lock type">type</a> is currently <a data-lt=
-          "acquire wake lock">acquired</a> by the <a>user agent</a>.
-        </dd>
-        <dt>
-          <dfn>onactivechange</dfn>
-        </dt>
-        <dd data-tests="wakelock-onactivechange.https.html">
-          <a>Event handler</a> with the corresponding <a>event handler event
+      <section>
+        <h3>Constructor</h3>
+        <p>
+          To <dfn data-lt="create and initialize a wake lock object">create and
+          initialize</dfn> a <a>WakeLock</a> object of type |type|, the
+          following steps MUST be performed:
+        </p>
+        <ol class="algorithm">
+          <li>
+            Let |document| be the <a>responsible document</a> of the
+            <a>current settings object</a>.
+          </li>
+          <li>
+            If the <a>current global object</a> is the <a>DedicatedWorkerGlobalScope</a>
+            object and its <a>owner set</a> is <a data-cite="infra#list-is-empty">empty</a>,
+            throw a "<a>NotAllowedError</a>" <a>DOMException</a>.
+          </li>
+          <li>
+            If the <a>current global object</a> is the <a>Window</a> object and
+            the |document|'s <a>browsing context</a> is <code>null</code>,
+            throw a "<a>NotAllowedError</a>" <a>DOMException</a>.
+          </li>
+          <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+            If |document| is not <a>allowed to use</a> the
+            <a>policy-controlled feature</a> named "<code>wake-lock</code>",
+            throw a "<a>NotAllowedError</a>" <a>DOMException</a>.
+          </li>
+          <li>
+            If the <a>user agent</a> <a data-lt="deny wake lock">denies the
+            wake lock</a> of this |type| for |document|,
+            throw a "<a>NotAllowedError</a>" <a>DOMException</a>.
+          </li>
+          <li data-tests="wakelock-api.https.html">
+            Let |lock| be a new <a>WakeLock</a> object.
+          </li>
+          <li data-tests="wakelock-type.https.html">
+            Set |lock|'s type to |type|.
+          </li>
+          <li>
+            Let |record| be the <a>platform wake lock</a>'s
+            <a>state record</a> associated with |type|.
+          </li>
+          <li>
+            Add |lock| to |record|.<a>[[\InstanceList]]</a>.
+          </li>
+          <li data-tests="wakelock-onactivechange.https.html">
+            If the wake lock of type |type| is currently <a data-lt=
+            "acquire wake lock">acquired</a>, set |lock|'s
+            <a href="#dom-wakelock-active">active</a>
+            to <code>true</code>, otherwise to <code>false</code>.
+          </li>
+          <li>
+            Return |lock|.
+          </li>
+        </ol>
+      </section>
+      <section data-dfn-for="WakeLock">
+        <h3><dfn>type</dfn> attribute</h3>
+        <p>
+          When getting, the <a>type</a> attribute returns this <a>WakeLock</a>'s
+          <a>wake lock type</a>.
+        </p>
+      </section>
+      <section data-dfn-for="WakeLock">
+        <h3><dfn>active</dfn> attribute</h3>
+        <p>
+          The <a>active</a> attribute represents whether a
+          wake lock of <a>WakeLock</a>'s <a data-lt="wake lock type">type</a> is currently
+          <a data-lt="acquire wake lock">acquired</a> by the <a>user agent</a>.
+        </p>
+      </section>
+      <section data-dfn-for="WakeLock">
+        <h3><dfn>onactivechange</dfn> attribute</h3>
+        <p data-tests="wakelock-onactivechange.https.html">
+          A <a>WakeLock</a>'s <a>onactivechange</a> attribute is an <a>EventHandler</a>
+          with the corresponding <a>event handler event
           type</a> of <code>activechange</code>. Fired when current wake lock
           status indicated by the <a href="#dom-wakelock-active">active</a>
           attribute changes.
-        </dd>
-      </dl>
-      <p>
-        To <dfn data-lt="create and initialize a wake lock object">create and
-        initialize</dfn> a <a>WakeLock</a> object of type <var>type</var>, the
-        following steps MUST be performed:
-      </p>
-      <ol>
-        <li>
-          Let <var>document</var> be the <a>responsible document</a> of the
-          <a>current settings object</a>.
-        </li>
-        <li>
-          If the <a>current global object</a> is the <a>DedicatedWorkerGlobalScope</a>
-          object and its <a>owner set</a> is <a>empty</a>, throw a
-          <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
-        </li>
-        <li>
-          If the <a>current global object</a> is the <a>Window</a> object and
-          the <var>document</var>'s <a>browsing context</a> is <code>null</code>,
-          throw a  <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
-        </li>
-        <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-          If <var>document</var> is not <a>allowed to use</a> the
-          <a>policy-controlled feature</a> named "<code>wake-lock</code>",
-          throw a <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
-        </li>
-        <li>
-          If the <a>user agent</a> <a data-lt="deny wake lock">denies the
-          wake lock</a> of this <var>type</var> for <var>document</var>,
-          throw a <code>"<a>NotAllowedError</a>"</code> <a>DOMException</a>.
-        </li>
-        <li data-tests="wakelock-api.https.html">
-          Let <var>lock</var> be a new <a>WakeLock</a> object.
-        </li>
-        <li data-tests="wakelock-type.https.html">
-          Set <var>lock</var>'s type to <var>type</var>.
-        </li>
-        <li>
-          Let <var>record</var> be the <a>platform wake lock</a>'s
-          <a>state record</a> associated with <var>type</var>.
-        </li>
-        <li>
-          Add <var>lock</var> to <var>record</var>.<a>[[\InstanceList]]</a>.
-        </li>
-        <li data-tests="wakelock-onactivechange.https.html">
-          If the wake lock of type <var>type</var> is currently <a data-lt=
-          "acquire wake lock">acquired</a>, set <var>lock</var>'s
-          <a href="#dom-wakelock-active">active</a>
-          to <code>true</code>, otherwise to <code>false</code>.
-        </li>
-        <li>
-          Return <var>lock</var>.
-        </li>
-      </ol>
+        </p>
+      </section>
       <section> <h3>The <dfn>WakeLockRequestOptions</dfn> dictionary</h3>
         <pre class="idl">
           dictionary WakeLockRequestOptions {
@@ -456,105 +464,107 @@
           any wake lock request.
         </p>
       </section>
-
-      <p data-tests="wakelock-api.https.html">
-        The <dfn>request()</dfn> method, when invoked, MUST run the
-        following algorithm:
-      </p>
-      <ol>
-        <li>
-          Let <var>p</var> be a new <a>Promise</a> object.
-        </li>
-        <li>
-          If <a>obtain permission</a> steps for <code>this</code>'s
-          <var>type</var> return <code>false</code>,
-          then reject <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
-          <a>DOMException</a>, and abort these steps.
-        </li>
-        <li>
-          Let <var>options</var> be the first argument.
-        </li>
-        <li>
-          Let <var>signal</var> be the <var>options</var>’ dictionary member
-          of the same name if present, or <code>null</code> otherwise.
-        </li>
-        <li>
-          Let <var>record</var> be the <a>platform wake lock</a>'s
-          <a>state record</a> associated with
-          <code>this</code>'s <var>type</var>.
-        </li>
-        <li>
-          If <var>signal</var>’s <a>aborted flag</a> is set, then
-          reject <var>p</var> with an <code>"<a>AbortError</a>"</code>
-          <a>DOMException</a>, and abort these steps.
-        </li>
-        <li>
-          If <var>signal</var> is not <code>null</code>, then
-          <a>add the following abort steps</a> to <var>signal</var>:
-          <ol>
-            <li>
-              Decrease <var>record</var>.<a>[[\RequestCounter]]</a> by one.
-            </li>
-            <li>
-              If <var>record</var>.<a>[[\RequestCounter]]</a> is 0, then
-              run the following steps <a>in parallel</a>:
-              <ol>
-                <li>
-                  Run <a>release a wake lock</a> on <code>this</code>.
-                </li>
-              </ol>
-            </li>
-            <li>
-              Reject <var>p</var> with an <code>"<a>AbortError</a>"</code>
-              <a>DOMException</a>, and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
-          object, run the following steps:
-          <ol>
-            <li>
-              Let <var>document</var> be the <a>responsible document</a> of the
-              <a>current settings object</a>.
-            </li>
-            <li>
-              If <var>document</var> is not <a>fully active</a>,
-              reject <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
-              <a>DOMException</a>, and abort these steps.
-            </li>
-            <li>
-              If <code>this</code>'s <var>type</var> is
-              "<a data-lt="WakeLockType.screen">screen</a>" and the
-              <a>Document</a> of the <a>top-level browsing context</a>
-              is <a>hidden</a>, reject <var>p</var>
-              with a <code>"<a>NotAllowedError</a>"</code>
-              <a>DOMException</a>, and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          Increase <var>record</var>.<a>[[\RequestCounter]]</a> by one.
-        </li>
-        <li>
-          If <var>record</var>.<a>[[\RequestCounter]]</a> is 1,
-          run the following steps <a>in parallel</a>:
-          <ol>
-            <li>
-              Let <var>success</var> be the the result of running
-              <a>acquire a wake lock</a> on <code>this</code>.
-            </li>
-            <li>
-              If <var>success</var> is <code>false</code> then reject
-              <var>p</var> with a <code>"<a>NotAllowedError</a>"</code>
-              <a>DOMException</a>, and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          Fulfill <var>p</var>.
-        </li>
-      </ol>
+      <section>
+        <h3><dfn>request()</dfn> method</h3>
+        <p data-tests="wakelock-api.https.html">
+          The <a>request()</a> method, when invoked, MUST run the
+           following steps:
+        </p>
+        <ol class="algorithm">
+          <li>
+            Let |promise| be a new <a>Promise</a> object.
+          </li>
+          <li>
+            If <a>obtain permission</a> steps for <code>this</code>'s
+            |type| return <code>false</code>,
+            then reject |promise| with a "<a>NotAllowedError</a>"
+            <a>DOMException</a>, and abort these steps.
+          </li>
+          <li>
+            Let |options| be the first argument.
+          </li>
+          <li>
+            Let |signal| be the |options|’ dictionary member
+            of the same name if present, or <code>null</code> otherwise.
+          </li>
+          <li>
+            Let |record| be the <a>platform wake lock</a>'s
+            <a>state record</a> associated with
+            <code>this</code>'s |type|.
+          </li>
+          <li>
+            If |signal|’s <a>aborted flag</a> is set, then
+            reject |promise| with an "<a>AbortError</a>"
+            <a>DOMException</a>, and abort these steps.
+          </li>
+          <li>
+            If |signal| is not <code>null</code>, then
+            <a>add the following abort steps</a> to |signal|:
+            <ol>
+              <li>
+                Decrease |record|.<a>[[\RequestCounter]]</a> by one.
+              </li>
+              <li>
+                If |record|.<a>[[\RequestCounter]]</a> is 0, then
+                run the following steps <a>in parallel</a>:
+                <ol>
+                  <li>
+                    Run <a>release a wake lock</a> on <code>this</code>.
+                  </li>
+                </ol>
+              </li>
+              <li>
+                Reject |promise| with an "<a>AbortError</a>"
+                <a>DOMException</a>, and abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
+            object, run the following steps:
+            <ol>
+              <li>
+                Let |document| be the <a>responsible document</a> of the
+                <a>current settings object</a>.
+              </li>
+              <li>
+                If |document| is not <a>fully active</a>,
+                reject |promise| with a <code>"<a>NotAllowedError</a>"</code>
+                <a>DOMException</a>, and abort these steps.
+              </li>
+              <li>
+                If <code>this</code>'s |type| is
+                "<a data-lt="WakeLockType.screen">screen</a>" and the
+                <a>Document</a> of the <a>top-level browsing context</a>
+                is <a>hidden</a>, reject |promise|
+                with a <code>"<a>NotAllowedError</a>"</code>
+                <a>DOMException</a>, and abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Increase |record|.<a>[[\RequestCounter]]</a> by one.
+          </li>
+          <li>
+            If |record|.<a>[[\RequestCounter]]</a> is 1,
+            run the following steps <a>in parallel</a>:
+            <ol>
+              <li>
+                Let |success| be the the result of running
+                <a>acquire a wake lock</a> on <code>this</code>.
+              </li>
+              <li>
+                If |success| is <code>false</code> then reject
+                |promise| with a <code>"<a>NotAllowedError</a>"</code>
+                <a>DOMException</a>, and abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Fulfill |promise|.
+          </li>
+        </ol>
+      </section>
       <div class="note">
         The additional visibility requirement for screen wake lock is to
         prevent keeping the screen on when the page is not visible, such as
@@ -631,17 +641,18 @@
         When the user agent determines that
         a <a>responsible document</a> of the <a>current settings object</a>
         is no longer <a>fully active</a>, it must run these steps:
-        <ol>
+        <ol class="algorithm">
           <li>
-            Let <var>record</var> be the <a>platform wake lock</a>'s
+            Let |record| be the <a>platform wake lock</a>'s
             <a>state record</a> associated with <a>wake lock type</a>
             <code>"screen"</code> and <code>"system"</code>.
           </li>
           <li>
-            <a>For each</a> <var>lock</var> in <var>record</var>.<a>[[\InstanceList]]</a>:
+            <a data-cite="infra#list-iterate">for each</a> |lock|
+            in |record|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>
-                Run <a>release a wake lock</a> on <var>lock</var>.
+                Run <a>release a wake lock</a> on |lock|.
               </li>
             </ol>
           </li>
@@ -657,25 +668,26 @@
         When the user agent determines that the <a>visibility state</a> of
         the <a>Document</a> of the <a>top-level browsing context</a>
         changes, it must run these steps:
-        <ol>
+        <ol class="algorithm">
           <li>
-            Let <var>document</var> be the <a>Document</a> of the
+            Let |document| be the <a>Document</a> of the
             <a>top-level browsing context</a>.
           </li>
           <li>
-            If <var>document</var>'s <a>visibility state</a> is
+            If |document|'s <a>visibility state</a> is
             <code>"visible"</code>, abort these steps.
           </li>
           <li>
-            Let <var>screenRecord</var> be the <a>platform wake lock</a>'s
+            Let |screenRecord| be the <a>platform wake lock</a>'s
             <a>state record</a> associated with <a>wake lock type</a>
             <code>"screen"</code>.
           </li>
           <li>
-            <a>For each</a> <var>lock</var> in <var>screenRecord</var>.<a>[[\InstanceList]]</a>:
+            <a data-cite="infra#list-iterate">for each</a> |lock|
+            in |screenRecord|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>
-                Run <a>release a wake lock</a> on <var>lock</var>.
+                Run <a>release a wake lock</a> on |lock|.
               </li>
             </ol>
           </li>
@@ -695,57 +707,57 @@
 
       <section> <h3>Acquire wake lock algorithm</h3>
         To <dfn>acquire a wake lock</dfn> for a given <a>WakeLock</a> object
-        <var>lock</var>, run these steps <a>in parallel</a>:
-        <ol>
+        |lock|, run these steps <a>in parallel</a>:
+        <ol class="algorithm">
           <li>
-            Let <var>type</var> be <var>lock</var>'s <a href="#dom-wakelock-type">type</a>.
+            Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
           </li>
           <li>
-            If the wake lock for type <var>type</var> is not <a data-lt=
+            If the wake lock for type |type| is not <a data-lt=
             "applicable wake lock">applicable</a>, return <code>false</code>.
           </li>
           <li>
             Ask the underlying operation system to
             <a data-lt="acquire wake lock">acquire the wake lock</a> of
-            type <var>type</var> and let <var>success</var> be <code>true</code>
+            type |type| and let |success| be <code>true</code>
             if the operation succeeded, or else <code>false</code>.
           </li>
           <li data-tests="wakelock-onactivechange.https.html">
-            If <var>success</var> is different from <var>lock</var>'s
+            If |success| is different from |lock|'s
             <a href="#dom-wakelock-active">active</a>, set
-            <var>lock</var>'s <a href="#dom-wakelock-active">active</a>
-            to <var>success</var>
+            |lock|'s <a href="#dom-wakelock-active">active</a>
+            to |success|
             and <a data-lt="fire an event">fire an event</a> named
-            <code>"activechange"</code> at <var>lock</var>.
+            <code>"activechange"</code> at |lock|.
           </li>
           <li>
-            Return <var>success</var>.
+            Return |success|.
           </li>
         </ol>
       </section>
 
       <section> <h3>Release wake lock algorithm</h3>
         To <dfn>release a wake lock</dfn> for a given <a>WakeLock</a> object
-        <var>lock</var>, run these steps <a>in parallel</a>:
-        <ol>
+        |lock|, run these steps <a>in parallel</a>:
+        <ol class="algorithm">
           <li>
-            Let <var>type</var> be <var>lock</var>'s <a href="#dom-wakelock-type">type</a>.
+            Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
           </li>
           <li>
             Ask the underlying operation system to
             <a data-lt="release wake lock">release the wake lock</a> of
-            type <var>type</var> and let <var>success</var> be <code>true</code>
+            type |type| and let |success| be <code>true</code>
             if the operation succeeded, or else <code>false</code>.
           </li>
           <li data-tests="wakelock-onactivechange.https.html">
-            If <var>success</var> is different from <var>lock</var>'s
-            <a href="#dom-wakelock-active">active</a>, set <var>lock</var>'s
-            <a href="#dom-wakelock-active">active</a> to the negated <var>success</var>
+            If |success| is different from |lock|'s
+            <a href="#dom-wakelock-active">active</a>, set |lock|'s
+            <a href="#dom-wakelock-active">active</a> to the negated |success|
             and <a data-lt="fire an event">fire an event</a> named
-            <code>"activechange"</code> at <var>lock</var>.
+            <code>"activechange"</code> at |lock|.
           </li>
           <li>
-            If <var>lock</var>'s type is <code>"screen"</code> run the following:
+            If |lock|'s type is <code>"screen"</code> run the following:
             <ol>
               <li>
                 The <a>user agent</a> MUST reset the platform-specific inactivity
@@ -754,7 +766,7 @@
             </ol>
           </li>
           <li>
-            Return <var>success</var>.
+            Return |success|.
           </li>
         </ol>
         <div class="note">
@@ -862,83 +874,49 @@
         Dependencies
       </h2>
       <p>
-        <dfn data-cite="!HTML#triggered-by-user-activation">triggered by user activation</dfn>,
-        <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
-        <dfn data-cite="!HTML#allowed-to-use">allowed to use</dfn>,
-        <dfn data-cite="!HTML#document">Document</dfn>,
-        <dfn data-cite="!HTML#window">Window</dfn>,
-        <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>,
-        <dfn data-cite="!HTML#event-handlers">event handler</dfn>,
-        <dfn data-cite="!HTML#event-handler-event-type">event handler event type</dfn>,
-        <dfn data-cite="!HTML#in-parallel">in parallel</dfn>,
-        <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
-        <dfn data-cite="!HTML#global-object">global object</dfn>,
-        <dfn data-cite="!HTML#current-global-object">current global object</dfn>,
-        <dfn data-cite="!HTML#dedicatedworkerglobalscope">DedicatedWorkerGlobalScope</dfn>,
-        <dfn data-cite="!HTML#concept-WorkerGlobalScope-owner-set">owner set</dfn>,
-        <dfn data-cite="!HTML#origin">origin</dfn>,
-        <dfn data-cite="!HTML#responsible-document">responsible document</dfn>,
-        <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
-        <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn>,
-        <dfn data-cite="!HTML#active-document">active document</dfn> and
-        <dfn data-cite="!HTML#fully-active">fully active</dfn>
-        are defined in [[!HTML]].
+        <dfn data-cite="HTML#document"><code>Document</code></dfn>,
+        <dfn data-cite="HTML#window">Window</dfn>,
+        <dfn data-cite="HTML#dedicatedworkerglobalscope">DedicatedWorkerGlobalScope</dfn>,
+        <dfn data-cite="HTML#active-document">active document</dfn>,
+        <dfn data-cite="HTML#global-object">global object</dfn>,
+        <dfn data-cite="HTML#browsing-context">browsing context</dfn>,
+        <dfn data-cite="HTML/webappapis.html#eventhandler"><code>EventHandler</code></dfn>
+        are defined in [[HTML]].
       </p>
       <p>
-        <dfn data-cite="!DOM#concept-event-fire">fire an event</dfn>,
-        <dfn data-cite="!DOM#abortsignal">AbortSignal</dfn>,
-        <dfn data-cite="!DOM#abortsignal-aborted-flag">aborted flag</dfn>, and
-        <dfn data-cite="!DOM#abortsignal-add">add the following abort steps</dfn>
-        are defined in [[!DOM]].
+        <dfn data-cite="DOM#abortsignal-add">add the following abort steps</dfn>
+        is defined in [[DOM]].
       </p>
       <p>
-        <code><dfn data-cite="!WEBIDL#aborterror">AbortError</dfn></code>,
-        <code><dfn data-cite="!WEBIDL#notsupportederror">NotSupportedError</dfn></code>,
-        <code><dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn></code>,
-        <dfn data-cite="!WEBIDL#SecureContext">Secure context</dfn>,
-        <code><dfn data-cite="!WEBIDL#notallowederror">NotAllowedError</dfn></code> and
-        <dfn data-cite=
-        "!WEBIDL#dfn-available-only-in-secure-contexts">available only in
-        secure context</dfn>
-        are defined in [[!WEBIDL]].
+        <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
+        <dfn data-cite="WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
+        <dfn data-cite="WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
+        <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>
+        are defined in [[WEBIDL]].
       </p>
       <p>
-        The terms <dfn data-cite="!PERMISSIONS#query-a-permission">query a permission</dfn>,
-        <dfn data-cite="!PERMISSIONS#request-permission-to-use">requesting permission to use</dfn>,
-        <dfn data-cite="!PERMISSIONS#permission-revocation-algorithm">revocable</dfn>,
-        <dfn data-cite="!PERMISSIONS#permission-descriptor-type">permission descriptor type</dfn>,
-        <dfn data-cite="!PERMISSIONS#dom-permissiondescriptor-name">permission name</dfn>,
-        <dfn data-cite="!PERMISSIONS#permission-state">permission state</dfn>,
-        <dfn data-cite="!PERMISSIONS#powerful-feature">powerful feature</dfn>,
-        <dfn data-cite="!PERMISSIONS#dom-permissionstate-denied"><code>"denied"</code></dfn>,
-        <dfn data-cite="!PERMISSIONS#dom-permissionstate-granted"><code>"granted"</code></dfn>,
-        <dfn data-cite="!PERMISSIONS#dom-permissionstate-prompt"><code>"prompt"</code></dfn> and
-        <dfn data-cite="!PERMISSIONS#dictdef-permissiondescriptor">PermissionDescriptor</dfn>
-        are defined in [[!PERMISSIONS]].
+        The terms <dfn data-cite="PERMISSIONS#query-a-permission">query a permission</dfn>,
+        <dfn data-cite="PERMISSIONS#request-permission-to-use">requesting permission to use</dfn>,
+        <dfn data-cite="PERMISSIONS#permission-revocation-algorithm">revocable</dfn>,
+        <dfn data-cite="PERMISSIONS#permission-descriptor-type">permission descriptor type</dfn>,
+        <dfn data-cite="PERMISSIONS#dom-permissiondescriptor-name">permission name</dfn>,
+        <dfn data-cite="PERMISSIONS#permission-state">permission state</dfn>,
+        <dfn data-cite="PERMISSIONS#powerful-feature">powerful feature</dfn>,
+        <dfn data-cite="PERMISSIONS#dom-permissionstate-denied"><code>denied</code></dfn>,
+        <dfn data-cite="PERMISSIONS#dom-permissionstate-granted"><code>granted</code></dfn>,
+        <dfn data-cite="PERMISSIONS#dom-permissionstate-prompt"><code>prompt</code></dfn> and
+        <dfn data-cite="PERMISSIONS#dictdef-permissiondescriptor">PermissionDescriptor</dfn>
+        are defined in [[PERMISSIONS]].
       </p>
       <p>
-        <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
-        <dfn data-cite="!INFRA#ordered-set">set</dfn>,
-        <dfn data-cite="!INFRA#map-exists">exists</dfn> and
-        <dfn data-cite="!INFRA#list-is-empty">empty</dfn>
-        are defined in [[!INFRA]].
+        <dfn data-cite="ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn> and
+        <dfn data-cite="ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slots</dfn>
+        are defined in [[ECMASCRIPT]].
       </p>
       <p>
-        <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn> and
-        <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slots</dfn>
-        are defined in [[!ECMASCRIPT]].
-      </p>
-      <p>
-        Document's <dfn data-cite="!PAGE-VISIBILITY#dom-document-hidden">hidden</dfn> attribute, and
-        <dfn data-cite="!PAGE-VISIBILITY#dfn-visibility-states">visibility state</dfn>
-        are defined in [[!PAGE-VISIBILITY]].
-      </p>
-      <p>
-        <dfn data-cite="!FEATURE-POLICY#policy-controlled-feature">policy-controlled feature</dfn>,
-        <dfn data-cite="!FEATURE-POLICY#feature-name">feature name</dfn>,
-        <dfn data-cite="!FEATURE-POLICY#feature-policy">feature policy</dfn> and
-        <dfn data-cite="!FEATURE-POLICY#default-allowlist">default allowlist</dfn>
-        are defined in [[!FEATURE-POLICY]].
+        Document's <dfn data-cite="PAGE-VISIBILITY#dom-document-hidden">hidden</dfn> attribute, and
+        <dfn data-cite="PAGE-VISIBILITY#dfn-visibility-states">visibility state</dfn>
+        are defined in [[PAGE-VISIBILITY]].
       </p>
     </section>
     <section class="informative">
@@ -959,7 +937,7 @@
         The <a>user agent</a> MUST implement the APIs defined in this
         specification in a manner that conforms to the <a href=
         "https://heycam.github.io/webidl/#ecmascript-binding">ECMAScript
-        Bindings</a> defined in [[!WEBIDL]].
+        Bindings</a> defined in [[WEBIDL]].
       </p>
     </section>
     <section id="idl-index" class="appendix"></section>
