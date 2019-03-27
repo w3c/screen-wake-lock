@@ -475,7 +475,10 @@
             Let |promise| be a new <a>Promise</a> object.
           </li>
           <li>
-            If <a>obtain permission</a> steps for <code>this</code>'s
+            Let |lock| be the <a>context object</a>.
+          </li>
+          <li>
+            If <a>obtain permission</a> steps for |lock|'s
             |type| return <code>false</code>,
             then reject |promise| with a "<a>NotAllowedError</a>"
             <a>DOMException</a>, and abort these steps.
@@ -490,7 +493,7 @@
           <li>
             Let |record| be the <a>platform wake lock</a>'s
             <a>state record</a> associated with
-            <code>this</code>'s |type|.
+            |lock|'s |type|.
           </li>
           <li>
             If |signal|’s <a>aborted flag</a> is set, then
@@ -509,7 +512,7 @@
                 run the following steps <a>in parallel</a>:
                 <ol>
                   <li>
-                    Run <a>release a wake lock</a> on <code>this</code>.
+                    Run <a>release a wake lock</a> on |lock|.
                   </li>
                 </ol>
               </li>
@@ -529,15 +532,15 @@
               </li>
               <li>
                 If |document| is not <a>fully active</a>,
-                reject |promise| with a <code>"<a>NotAllowedError</a>"</code>
+                reject |promise| with a "<a>NotAllowedError</a>"
                 <a>DOMException</a>, and abort these steps.
               </li>
               <li>
-                If <code>this</code>'s |type| is
+                If |lock|'s |type| is
                 "<a data-lt="WakeLockType.screen">screen</a>" and the
                 <a>Document</a> of the <a>top-level browsing context</a>
                 is <a>hidden</a>, reject |promise|
-                with a <code>"<a>NotAllowedError</a>"</code>
+                with a "<a>NotAllowedError</a>"
                 <a>DOMException</a>, and abort these steps.
               </li>
             </ol>
@@ -551,17 +554,17 @@
             <ol>
               <li>
                 Let |success| be the the result of running
-                <a>acquire a wake lock</a> on <code>this</code>.
+                <a>acquire a wake lock</a> on |lock|.
               </li>
               <li>
                 If |success| is <code>false</code> then reject
-                |promise| with a <code>"<a>NotAllowedError</a>"</code>
+                |promise| with a "<a>NotAllowedError</a>"
                 <a>DOMException</a>, and abort these steps.
               </li>
             </ol>
           </li>
           <li>
-            Fulfill |promise|.
+            Resolve |promise| with <code>void</code>.
           </li>
         </ol>
       </section>
@@ -727,7 +730,7 @@
             <a href="#dom-wakelock-active">active</a>, set
             |lock|'s <a href="#dom-wakelock-active">active</a>
             to |success|
-            and <a data-lt="fire an event">fire an event</a> named
+            and <a>fire an event</a> named
             <code>"activechange"</code> at |lock|.
           </li>
           <li>
