@@ -221,7 +221,8 @@
       </ol>
       <p>
         To <dfn>obtain permission</dfn> for <a>wake lock type</a>
-        |type|, run these steps <a>in parallel</a>:
+        |type|, run these steps <a>in parallel</a>. This async algorithm
+        returns either "<a>granted</a>" or "<a>denied</a>".
       </p>
       <ol class="algorithm">
         <li>
@@ -235,24 +236,27 @@
           </pre>
         </li>
         <li>
-          Let |permission| be the result of running
+          Let |resultPromise| be the result of running
           <a>query a permission</a> with |permissionDesc|.
         </li>
         <li>
-          If |permission| is "<a>denied</a>",
-          return <code>false</code>.
+          Let |status:PermissionStatus| be the result waiting for
+          |resultPromise| to settle.
         </li>
         <li>
-          If |permission| is "<a>granted</a>",
-          return <code>true</code>.
+          If |resultPromise| rejects, return "<a>denied</a>".
         </li>
         <li>
-          If |permission| is "<a>prompt</a>", run
-          the following steps:
+          Let |state| be the value of the
+          <a data-cite="permissions#dom-permissionstatus-state">state</a>
+          attribute of |status|.
+        </li>
+        <li>
+          If |state| is "<a>prompt</a>", run the following steps:
           <ol>
             <li>
-              If the <a>obtain permission</a> steps were not <a>triggered by
-              user activation</a>, return <code>false</code>.
+              If these <a>obtain permission</a> steps were not
+              <a>triggered by user activation</a>, return "<a>denied</a>".
             </li>
             <li>
               Return the result of <a>requesting permission
@@ -261,7 +265,7 @@
           </ol>
         </li>
         <li>
-          Return <code>false</code>.
+          Otherwise, return |state|.
         </li>
       </ol>
       <div class="note">
@@ -366,6 +370,7 @@
       <pre class="idl">
         [Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock : EventTarget {
+          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
@@ -429,6 +434,34 @@
         </ol>
       </section>
       <section data-dfn-for="WakeLock">
+        <h3><dfn>requestPermission()</dfn> static method</h3>
+        <p>
+          The <a>requestPermission()</a> method, when invoked, MUST run the
+          following steps. This algorithm resolves with either
+          "<a>granted</a>" or "<a>denied</a>".
+        </p>
+        <ol class="algorithm">
+          <li>
+            Let |promise| be a new <a>Promise</a> object.
+          </li>
+          <li>
+            Let |type| be the first argument.
+          </li>
+          <li>
+            Return |promise| and run the following steps <a>in parallel</a>:
+            <ol>
+              <li>
+                Let |state| be the result of running and waiting for the
+                <a>obtain permission</a> steps with |type|.
+              </li>
+              <li>
+                Resolve |promise| with |state|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+      <section data-dfn-for="WakeLock">
         <h3><dfn>type</dfn> attribute</h3>
         <p>
           When getting, the <a>type</a> attribute returns this <a>WakeLock</a>'s
@@ -472,23 +505,10 @@
         </p>
         <ol class="algorithm">
           <li>
-            Let |promise| be a new <a>Promise</a> object.
-          </li>
-          <li>
-            Let |lock| be the <a>context object</a>.
-          </li>
-          <li>
-            If <a>obtain permission</a> steps for |lock|'s
-            |type| return <code>false</code>,
-            then reject |promise| with a "<a>NotAllowedError</a>"
-            <a>DOMException</a>, and abort these steps.
-          </li>
-          <li>
             Let |options| be the first argument.
           </li>
           <li>
-            Let |signal| be the |options|’ dictionary member
-            of the same name if present, or <code>null</code> otherwise.
+            Let |lock| be the <a>context object</a>.
           </li>
           <li>
             Let |record| be the <a>platform wake lock</a>'s
@@ -496,75 +516,96 @@
             |lock|'s |type|.
           </li>
           <li>
-            If |signal|’s <a>aborted flag</a> is set, then
-            reject |promise| with an "<a>AbortError</a>"
-            <a>DOMException</a>, and abort these steps.
+            Let |promise| be a new <a>Promise</a> object.
           </li>
           <li>
-            If |signal| is not <code>null</code>, then
-            <a>add the following abort steps</a> to |signal|:
+            Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
               <li>
-                Decrease |record|.<a>[[\RequestCounter]]</a> by one.
+                Let |state| be the result of running and waiting for the
+                <a>obtain permission</a> steps with |type|.
               </li>
               <li>
-                If |record|.<a>[[\RequestCounter]]</a> is 0, then
-                run the following steps <a>in parallel</a>:
+                If |state| is "<a>denied</a>", then reject |promise|
+                with a "<a>NotAllowedError</a>" <a>DOMException</a>,
+                and abort these steps.
+              </li>
+              <li>
+                Let |signal| be the |options|’ dictionary member
+                of the same name if present, or <code>null</code> otherwise.
+              </li>
+              <li>
+                If |signal|’s <a>aborted flag</a> is set, then
+                reject |promise| with an "<a>AbortError</a>"
+                <a>DOMException</a>, and abort these steps.
+              </li>
+              <li>
+                If |signal| is not <code>null</code>, then
+                <a>add the following abort steps</a> to |signal|:
                 <ol>
                   <li>
-                    Run <a>release a wake lock</a> on |lock|.
+                    Decrease |record|.<a>[[\RequestCounter]]</a> by one.
+                  </li>
+                  <li>
+                    If |record|.<a>[[\RequestCounter]]</a> is 0, then
+                    run the following steps <a>in parallel</a>:
+                    <ol>
+                      <li>
+                        Run <a>release a wake lock</a> on |lock|.
+                      </li>
+                    </ol>
+                  </li>
+                  <li>
+                    Reject |promise| with an "<a>AbortError</a>"
+                    <a>DOMException</a>, and abort these steps.
                   </li>
                 </ol>
               </li>
               <li>
-                Reject |promise| with an "<a>AbortError</a>"
-                <a>DOMException</a>, and abort these steps.
+                If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
+                object, run the following steps:
+                <ol>
+                  <li>
+                    Let |document| be the <a>responsible document</a> of the
+                    <a>current settings object</a>.
+                  </li>
+                  <li>
+                    If |document| is not <a>fully active</a>,
+                    reject |promise| with a "<a>NotAllowedError</a>"
+                    <a>DOMException</a>, and abort these steps.
+                  </li>
+                  <li>
+                    If |lock|'s |type| is
+                    "<a data-lt="WakeLockType.screen">screen</a>" and the
+                    <a>Document</a> of the <a>top-level browsing context</a>
+                    is <a>hidden</a>, reject |promise|
+                    with a "<a>NotAllowedError</a>"
+                    <a>DOMException</a>, and abort these steps.
+                  </li>
+                </ol>
+              </li>
+              <li>
+                Increase |record|.<a>[[\RequestCounter]]</a> by one.
+              </li>
+              <li>
+                If |record|.<a>[[\RequestCounter]]</a> is 1,
+                run the following steps:
+                <ol>
+                  <li>
+                    Let |success| be the the result of running and
+                    waiting for <a>acquire a wake lock</a> on |lock|.
+                  </li>
+                  <li>
+                    If |success| is <code>false</code> then reject
+                    |promise| with a "<a>NotAllowedError</a>"
+                    <a>DOMException</a>, and abort these steps.
+                  </li>
+                </ol>
+              </li>
+              <li>
+                Resolve |promise| with <code>void</code>.
               </li>
             </ol>
-          </li>
-          <li>
-            If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
-            object, run the following steps:
-            <ol>
-              <li>
-                Let |document| be the <a>responsible document</a> of the
-                <a>current settings object</a>.
-              </li>
-              <li>
-                If |document| is not <a>fully active</a>,
-                reject |promise| with a "<a>NotAllowedError</a>"
-                <a>DOMException</a>, and abort these steps.
-              </li>
-              <li>
-                If |lock|'s |type| is
-                "<a data-lt="WakeLockType.screen">screen</a>" and the
-                <a>Document</a> of the <a>top-level browsing context</a>
-                is <a>hidden</a>, reject |promise|
-                with a "<a>NotAllowedError</a>"
-                <a>DOMException</a>, and abort these steps.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Increase |record|.<a>[[\RequestCounter]]</a> by one.
-          </li>
-          <li>
-            If |record|.<a>[[\RequestCounter]]</a> is 1,
-            run the following steps <a>in parallel</a>:
-            <ol>
-              <li>
-                Let |success| be the the result of running
-                <a>acquire a wake lock</a> on |lock|.
-              </li>
-              <li>
-                If |success| is <code>false</code> then reject
-                |promise| with a "<a>NotAllowedError</a>"
-                <a>DOMException</a>, and abort these steps.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Resolve |promise| with <code>void</code>.
           </li>
         </ol>
       </section>
