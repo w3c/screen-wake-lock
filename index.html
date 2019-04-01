@@ -226,14 +226,14 @@
       </p>
       <ol class="algorithm">
         <li>
-          Let |permissionDesc| be the following
-          <a>permission descriptor type</a>:
-          <pre>
-            {
-              <a data-lt="permission name">name</a>: "wake-lock",
-              type: <var>type</var>
-            }
-          </pre>
+          Let |permissionDesc:PermissionDescriptor| be a newly created
+          <a>PermissionDescriptor</a>.
+        </li>
+        <li>
+          Set |permissionDesc|'s name to "<code>wake-lock</code>".
+        </li>
+        <li>
+          Set |permissionDesc|'s type to |type|.
         </li>
         <li>
           Let |resultPromise| be the result of running
@@ -442,7 +442,8 @@
         </p>
         <ol class="algorithm">
           <li>
-            Let |promise| be a new <a>Promise</a> object.
+            Let |promise:Promise| be
+            <a data-cite="promises-guide#a-new-promise">a new promise</a>.
           </li>
           <li>
             Let |type| be the first argument.
@@ -516,7 +517,8 @@
             |lock|'s |type|.
           </li>
           <li>
-            Let |promise| be a new <a>Promise</a> object.
+            Let |promise:Promise| be
+            <a data-cite="promises-guide#a-new-promise">a new promise</a>.
           </li>
           <li>
             Return |promise| and run the following steps <a>in parallel</a>:
