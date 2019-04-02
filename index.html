@@ -258,7 +258,7 @@
           <a data-lt="WakeLockPermissionDescriptor.type">type</a> member.
         </li>
         <li>
-          <a data-cite="infra#list-iterate">for each</a> |lock|
+          <a data-cite="infra#list-iterate">For each</a> |lock|
           in |record|.<a>[[\InstanceList]]</a>:
           <ol>
             <li>
@@ -418,11 +418,12 @@
       <pre class="idl">
         [Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock : EventTarget {
-          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
           Promise&lt;void> request(optional WakeLockRequestOptions options);
+          static FrozenArray&lt;WakeLock> query(optional WakeLockQueryFilter filter);
+          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
         };
       </pre>
       <section>
@@ -521,8 +522,8 @@
         <h3><dfn>active</dfn> attribute</h3>
         <p>
           The <a>active</a> attribute represents whether a
-          wake lock of <a>WakeLock</a>'s <a data-lt="wake lock type">type</a> is currently
-          <a data-lt="acquire wake lock">acquired</a> by the <a>user agent</a>.
+          wake lock is currently <a data-lt="acquire wake lock">acquired</a>
+          by the <a>WakeLock</a> instance.
         </p>
       </section>
       <section data-dfn-for="WakeLock">
@@ -582,7 +583,7 @@
               </li>
               <li>
                 Let |signal| be the |options| dictionary member
-                of the same name if present, or <code>null</code> otherwise.
+                of the same name if <a>present</a>, or <code>null</code> otherwise.
               </li>
               <li>
                 If |signal|’s <a>aborted flag</a> is set, then
@@ -668,6 +669,76 @@
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
       </div>
+      <section> <h3>The <dfn>WakeLockQueryFilter</dfn> dictionary</h3>
+        <pre class="idl">
+          dictionary WakeLockQueryFilter {
+            WakeLockType? type;
+            boolean? active;
+          };
+        </pre>
+        <p>
+          The <dfn>WakeLockQueryFilter.type</dfn> and
+          <dfn>WakeLockQueryFilter.active</dfn> properties allows filtering
+          by <a>wake lock type</a> and activity (whether the wake lock is currently
+          <a data-lt="acquire wake lock">acquired</a> by the <a>user agent</a>.).
+        </p>
+      </section>
+      <section data-dfn-for="WakeLock">
+        <h3><dfn>query()</dfn> static method</h3>
+        <p>
+          The <a>query()</a> method, when invoked, MUST run the
+          following steps.
+        </p>
+        <ol class="algorithm">
+          <li>
+            Let |filter| be the first argument.
+          </li>
+          <li>
+            Let |records| be the <a>empty</a> <a>list</a>.
+          </li>
+          <li>
+            Let |type| be the |filter| dictionary member of the same name.
+          </li>
+          <li>
+            Let |active| be the |filter| dictionary member of the same name.
+          </li>
+          <li>
+            If |type| is <a>present</a>, add the
+            <a>platform wake lock</a>'s <a>state record</a>
+            associated with <a>wake lock type</a> |type| to |records|.
+          </li>
+          <li>
+            Otherwise, add all <a>state records</a> to |records|.
+          </li>
+          <li>
+            Let |locks| be the <a>empty</a>
+            <a data-cite="infra#ordered-set">set</a>.
+          </li>
+          <li>
+            <a data-cite="infra#list-iterate">For each</a> |record|
+              in |records|:
+            <ol>
+              <li>
+                <a data-cite="infra#list-iterate">For each</a> |lock|
+                in |record|.<a>[[\InstanceList]]</a>:
+                <ol>
+                  <li>
+                    If |active| is <a>present</a>, add |lock| to
+                    |locks| if |active| is equal to |lock|'s active
+                    attribute value.
+                  </li>
+                  <li>
+                    Otherwise, add |lock| to |locks|
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            Return a new <a>FrozenArray</a> whose contents are |locks|.
+          </li>
+        </ol>
+      </section>
     </section>
     <section>
       <h2>
@@ -742,7 +813,7 @@
             <code>"screen"</code> and <code>"system"</code>.
           </li>
           <li>
-            <a data-cite="infra#list-iterate">for each</a> |lock|
+            <a data-cite="infra#list-iterate">For each</a> |lock|
             in |record|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>
@@ -777,7 +848,7 @@
             <code>"screen"</code>.
           </li>
           <li>
-            <a data-cite="infra#list-iterate">for each</a> |lock|
+            <a data-cite="infra#list-iterate">For each</a> |lock|
             in |screenRecord|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>
@@ -985,7 +1056,8 @@
         <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite="WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
         <dfn data-cite="WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
-        <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>
+        <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>,
+        <dfn data-cite="WEBIDL#idl-frozen-array"><code>FrozenArray</code></dfn>
         are defined in [[WEBIDL]].
       </p>
       <p>
