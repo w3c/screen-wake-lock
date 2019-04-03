@@ -89,27 +89,75 @@
     </section>
     <section>
       <h2>
-        Wake Locks
+        Introduction
       </h2>
       <p>
-        A <dfn>wake lock</dfn> prevents some aspect of the device or operating
-        system from entering a power-saving state.
+        Modern OSs achieve longer battery life by implementing aggressive power
+        management, meaning that shortly after the lack of user activity, a host
+        device may lower the screen brightness, turn the screen off and even let
+        the CPU go into a deep power state, allowing to sip as little power as
+        possible.
       </p>
       <p>
-        This specification defines two <dfn data-lt="wake lock type">wake lock
-        types</dfn>:
+        Though this is great for prolonged battery life, it can sometime ruin
+        good, valid use-cases such as:
+      </p>
+      <ul>
+        <li>
+          Use turn-by-turn navigation while walking and driving and not
+          interacting with the phone.
+        </li>
+        <li>
+          Allow an external device to read a boarding card with a barcode
+          on a phone.
+        </li>
+        <li>
+          Showing a presentation where each slide is shown for a prolonged
+          period.
+        </li>
+        <li>
+          Perform longer computations before the device goes into deep sleep
+          mode, such as media processing.
+        </li>
+      </ul>
+      <p>
+        More use-cases can be found in
+        <a href="https://w3c-webmob.github.io/wake-lock-use-cases/">
+        Use Cases and Requirements</a>.
+      </p>
+      <p>
+        A wake lock will generally prevent something from happening, but UAs
+        (and the underlying OS) may time limit a wake lock given the battery
+        status (wall power connected, discharging, low battery level), or
+        even disallow wake locks in the case a power saving mode is activated.
+      </p>
+      <p>
+        Any active wake lock MUST also prevent the page from entering UA induced
+        <a data-cite="page-lifecycle#lifecycle-frozen">CPU suspension</a> as
+        defined by [[PAGE-LIFECYCLE]].
+      </p>
+      <p>
+        This specification defines the following <dfn data-lt="wake lock type">
+        wake lock types</dfn>:
       </p>
       <ol>
         <li>
-          <dfn>Screen wake lock</dfn> which prevents device's screen from
-          turning off so that the user can still see the information displayed
-          on the screen.
+          A <dfn>screen wake lock</dfn> prevents the screen from
+          turning off. Only visible documents can acquire the wake lock.
         </li>
         <li>
-          <dfn>System wake lock</dfn> which prevents device's CPU from entering
-          a standby mode so that the programs can continue running.
+          A <dfn>system wake lock</dfn> prevents the GPU from
+          entering a deep power state. This may also prevent communication
+          chips such as celular or Wi-Fi from sleeping.
         </li>
       </ol>
+      <div class="note">
+        Though a <a>system wake lock</a> will usually keep the network
+        connection alive, it is most likely not required for such. Audio
+        streaming on devices usually does the same and if you need it for
+        long running upload and download tasks, such as for a podcast,
+        other more appropriate features exist, like [[BACKGROUND-FETCH]].
+      </div>
       <div class="note">
         One type of wake lock can imply the effects of another: for example,
         screen wake lock logically implies that the program which displays
