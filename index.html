@@ -422,7 +422,7 @@
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
           Promise&lt;void> request(optional WakeLockRequestOptions options);
-          static FrozenArray&lt;WakeLock> query(optional WakeLockQueryFilter filter);
+          static sequence&lt;WakeLock> query(optional WakeLockQueryFilter filter);
           [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
         };
       </pre>
@@ -735,7 +735,7 @@
             </ol>
           </li>
           <li>
-            Return a new <a>FrozenArray</a> whose contents are |locks|.
+            Return |locks|.
           </li>
         </ol>
       </section>
@@ -1056,8 +1056,7 @@
         <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite="WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
         <dfn data-cite="WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
-        <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>,
-        <dfn data-cite="WEBIDL#idl-frozen-array"><code>FrozenArray</code></dfn>
+        <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>
         are defined in [[WEBIDL]].
       </p>
       <p>
