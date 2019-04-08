@@ -418,14 +418,35 @@
       <pre class="idl">
         [Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock : EventTarget {
+          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
-          Promise&lt;void> request(optional WakeLockRequestOptions options);
+          Promise&lt;void> request();
+          void abort();
           static sequence&lt;WakeLock> query(optional WakeLockQueryFilter filter);
-          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
         };
       </pre>
+      <section>
+        <h3>Internal slots</h3>
+        <table class="simple">
+          <thead>
+            <tr>
+            <th>Internal slot</th>
+            <th>Description (<em>non-normative</em>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><dfn>[[\requestPromise]]</dfn></td>
+              <td>
+                The pending <a>Promise</a> created during <a>request()</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </section>
       <section>
         <h3>Constructor</h3>
         <p>
@@ -536,17 +557,6 @@
           attribute changes.
         </p>
       </section>
-      <section> <h3>The <dfn>WakeLockRequestOptions</dfn> dictionary</h3>
-        <pre class="idl">
-          dictionary WakeLockRequestOptions {
-            AbortSignal? signal;
-          };
-        </pre>
-        <p>
-          The <dfn>WakeLockRequestOptions.signal</dfn> property allows to abort
-          any wake lock request.
-        </p>
-      </section>
       <section>
         <h3><dfn>request()</dfn> method</h3>
         <p data-tests="wakelock-api.https.html">
@@ -554,9 +564,6 @@
            following steps:
         </p>
         <ol class="algorithm">
-          <li>
-            Let |options| be the first argument.
-          </li>
           <li>
             Let |lock| be the <a>context object</a>.
           </li>
@@ -570,6 +577,9 @@
             <a data-cite="promises-guide#a-new-promise">a new promise</a>.
           </li>
           <li>
+            Set |lock|.<a>[[\requestPromise]]</a> to promise.
+          </li>
+          <li>
             Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
               <li>
@@ -580,37 +590,6 @@
                 If |state| is "<a>denied</a>", then reject |promise|
                 with a "<a>NotAllowedError</a>" <a>DOMException</a>,
                 and abort these steps.
-              </li>
-              <li>
-                Let |signal| be the |options| dictionary member
-                of the same name if <a>present</a>, or <code>null</code> otherwise.
-              </li>
-              <li>
-                If |signal|’s <a>aborted flag</a> is set, then
-                reject |promise| with an "<a>AbortError</a>"
-                <a>DOMException</a>, and abort these steps.
-              </li>
-              <li>
-                If |signal| is not <code>null</code>, then
-                <a>add the following abort steps</a> to |signal|:
-                <ol>
-                  <li>
-                    Decrease |record|.<a>[[\RequestCounter]]</a> by one.
-                  </li>
-                  <li>
-                    If |record|.<a>[[\RequestCounter]]</a> is 0, then
-                    run the following steps <a>in parallel</a>:
-                    <ol>
-                      <li>
-                        Run <a>release a wake lock</a> on |lock|.
-                      </li>
-                    </ol>
-                  </li>
-                  <li>
-                    Reject |promise| with an "<a>AbortError</a>"
-                    <a>DOMException</a>, and abort these steps.
-                  </li>
-                </ol>
               </li>
               <li>
                 If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
@@ -669,6 +648,35 @@
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
       </div>
+      <section>
+        <h3><dfn>abort()</dfn> method</h3>
+        <p>
+          The <a>abort()</a> method, when invoked, MUST run the
+           following steps:
+        </p>
+        <ol class="algorithm">
+          <li>
+            Let |lock| be the <a>context object</a>.
+          </li>
+          <li>
+            Let |record| be the <a>platform wake lock</a>'s
+            <a>state record</a> associated with
+            |lock|'s |type|.
+          </li>
+          <li>
+            Decrease |record|.<a>[[\RequestCounter]]</a> by one.
+          </li>
+          <li>
+            If |record|.<a>[[\RequestCounter]]</a> is 0, then
+            run the following steps <a>in parallel</a>:
+            <ol>
+              <li>
+                Run <a>release a wake lock</a> on |lock|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
       <section> <h3>The <dfn>WakeLockQueryFilter</dfn> dictionary</h3>
         <pre class="idl">
           dictionary WakeLockQueryFilter {
@@ -908,6 +916,12 @@
           <li>
             Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
           </li>
+          <li data-link-for="WakeLock">
+            If the promise |lock|.<a>[[\requestPromise]]</a> is pending,
+            reject it with an
+            "<a>AbortError</a>" <a>DOMException</a> and abort any remaining
+            steps in the associated running <a>request()</a> algorithm.
+          </li>
           <li>
             Ask the underlying operation system to
             <a data-lt="release wake lock">release the wake lock</a> of
@@ -981,57 +995,55 @@
       <pre class="example">
         async function tryKeepScreenAlive(minutes) {
           const lock = new WakeLock("screen");
+          lock.request();
 
-          const controller = new AbortController();
-          const signal = controller.signal;
-
-          lock.request({ signal });
-
-          setTimeout(() => controller.abort(), minutes * 60 * 1000);
+          setTimeout(() => lock.abort(), minutes * 60 * 1000);
         }
 
         tryKeepScreenAlive(10);
       </pre>
       <p>
-        This example requests a screen wake lock and listens to wake lock state
-        changes:
+        This example allows the user to request a screen wake lock
+        by clicking on a checkbox, but updates the checkbox checked
+        state in case teh wake lock state changes:
       </p>
       <pre class="example">
-        const controller = new AbortController();
-        const signal = controller.signal;
-
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
 
         const lock = new WakeLock("screen");
-        lock.onactivechange = () => {
-          checkbox.checked = lock.active;
-        };
-        lock.request({ signal });
 
-        setTimeout(() => controller.abort(), 5 * 1000);
+        lock.onactivechange = () => checkbox.checked = lock.active;
+        checkbox.onchange = async () => {
+          try {
+            checkbox.disabled = true;
+            await lock.request();
+          } catch {
+            checkbox.checked = false;
+          } finally {
+            checkbox.disabled = false;
+          }
+        };
       </pre>
       <p>
         In this example, two screen wake lock requests are created and
-        cancelled independently:
+        released independently:
       </p>
       <pre class="example">
-        const controller = new AbortController();
-        const signal = controller.signal;
-
         const lock1 = new WakeLock("screen");
         const lock2 = new WakeLock("screen");
 
-        lock1.request({ signal }));
+        lock1.request();
 
         // ...somewhere else
 
-        lock2.request({ signal }));
+        lock2.request();
 
         // ...somewhere else
 
-        controller.abort();
+        lock2.abort();
+        lock1.abort();
       </pre>
     </section>
     <section>
@@ -1057,9 +1069,9 @@
         is defined in [[DOM]].
       </p>
       <p>
-        <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite="WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
         <dfn data-cite="WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
+        <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite="WEBIDL#dfn-DOMException"><code>DOMException</code></dfn>
         are defined in [[WEBIDL]].
       </p>
