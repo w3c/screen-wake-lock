@@ -397,7 +397,7 @@
         </tbody>
       </table>
     </section>
-    <section data-dfn-for="WakeLock" data-link-for="WakeLock">
+    <section data-dfn-for="WakeLock">
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
@@ -468,7 +468,7 @@
           </li>
         </ol>
       </section>
-      <section data-dfn-for="WakeLock">
+      <section data-link-for="WakeLock">
         <h3>
           <dfn>requestPermission()</dfn> static method
         </h3>
@@ -494,7 +494,7 @@
           </li>
         </ol>
       </section>
-      <section data-dfn-for="WakeLock">
+      <section data-dfn-for="WakeLock" data-link-for="WakeLock">
         <h3>
           <dfn>type</dfn> attribute
         </h3>
@@ -503,13 +503,13 @@
           <a>wake lock type</a>.
         </p>
       </section>
-      <section data-dfn-for="WakeLock">
+      <section data-link-for="WakeLock">
         <h3>
           <dfn>active</dfn> attribute
         </h3>
         <p>
-          The <a>active</a> attribute represents whether a wake lock is
-          currently <a>acquired</a> by the {{WakeLock}} instance.
+          The {{active}} attribute represents whether a wake lock is currently
+          <a>acquired</a> by the {{WakeLock}} instance.
         </p>
       </section>
       <section data-dfn-for="WakeLock" data-link-for="WakeLock">
@@ -541,7 +541,7 @@
         <h3>
           <dfn>request()</dfn> method
         </h3>
-        <p data-tests="wakelock-api.https.html">
+        <p data-tests="wakelock-api.https.html" data-link-for="WakeLock">
           The <a>request()</a> method, when invoked, MUST run the following
           steps:
         </p>
@@ -652,7 +652,7 @@
           lock is currently <a>acquired</a> by the <a>user agent</a>.).
         </p>
       </section>
-      <section data-dfn-for="WakeLock">
+      <section data-link-for="WakeLock">
         <h3>
           <dfn>query()</dfn> static method
         </h3>
@@ -678,12 +678,10 @@
           <li>Let |locks| be the empty <a data-cite=
           "infra#ordered-set">set</a>.
           </li>
-          <li>
-            <a data-link-for="list">For each</a> |record| in |records|:
+          <li>[=list/For each=] |record| in |records|:
             <ol>
-              <li>
-                <a data-link-for="list">For each</a> |lock| in
-                |record|.<a>[[\InstanceList]]</a>:
+              <li>[=list/For each=] |lock| in
+              |record|.<a>[[\InstanceList]]</a>:
                 <ol>
                   <li>If |active| is <a>present</a>, add |lock| to |locks| if
                   |active| is equal to |lock|'s active attribute value.
@@ -988,10 +986,6 @@
         Dependencies
       </h2>
       <p>
-        <code><dfn data-cite=
-        "HTML/window-object.html#window">Window</dfn></code>, <code><dfn class=
-        "externalDFN">DedicatedWorkerGlobalScope</dfn></code>, <dfn data-cite=
-        "HTML/browsers.html#active-document">active document</dfn>,
         <dfn data-cite="HTML/webappapis.html#global-object">global
         object</dfn>, <dfn data-cite=
         "HTML/browsers.html#browsing-context">browsing context</dfn>,
@@ -1008,10 +1002,8 @@
         <dfn data-cite=
         "WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
         <dfn data-cite=
-        "WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
-        <dfn data-cite=
-        "WEBIDL#dfn-DOMException"><code>DOMException</code></dfn> are defined
-        in [[WEBIDL]].
+        "WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>, are
+        defined in [[WEBIDL]].
       </p>
       <p>
         The terms <dfn data-cite="PERMISSIONS#query-a-permission">query a
