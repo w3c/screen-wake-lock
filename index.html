@@ -2,8 +2,6 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <meta name="generator" content=
-    "HTML Tidy for HTML5 (experimental) for Mac OS X https://github.com/w3c/tidy-html5/tree/c63cc39">
     <title>
       Wake Lock API
     </title>
@@ -62,11 +60,11 @@
             href: "https://bugs.chromium.org/p/chromium/issues/detail?id=257511"
           }]
         }],
-        xref: true
+        xref: "web-platform"
       };
     </script>
   </head>
-  <body data-cite="HTML WEBIDL DOM FEATURE-POLICY INFRA">
+  <body data-cite="FEATURE-POLICY">
     <section id='abstract'>
       <p>
         This document specifies an API that allows web applications to request
@@ -133,15 +131,14 @@
         suspension</a> as defined by [[PAGE-LIFECYCLE]].
       </p>
       <p>
-        This specification defines the following <dfn data-lt=
-        "wake lock type">wake lock types</dfn>:
+        This specification defines the following <dfn>wake lock types</dfn>:
       </p>
       <ol>
         <li>A <dfn>screen wake lock</dfn> prevents the screen from turning off.
         Only visible documents can acquire the wake lock.
         </li>
         <li>A <dfn>system wake lock</dfn> prevents the CPU from entering a deep
-        power state. This may also prevent communication chips such as celular
+        power state. This may also prevent communication chips such as cellular
         or Wi-Fi from sleeping.
         </li>
       </ol>
@@ -161,10 +158,10 @@
         types of wake locks as independent.
       </div>
       <p>
-        A <a>user agent</a> can <dfn>deny wake lock</dfn> of a particular
-        <a data-lt="wake lock type">type</a> for a particular <a>Document</a>
-        by any implementation-specific reason, for example, a user or platform
-        setting or preference.
+        A <a>user agent</a> can <dfn data-lt="deny wake lock">deny a wake
+        lock</dfn> of a particular <a>wake lock type</a> for a particular
+        {{Document}} by any implementation-specific reason, for example, a user
+        or platform setting or preference.
       </p>
     </section>
     <section data-cite="feature-policy">
@@ -222,12 +219,11 @@
         The <code>"wake-lock"</code> <a>powerful feature</a> is defined as
         follows:
       </p>
-      <p>
-        The <a>permission descriptor type</a> is the following <dfn data-lt=
-        "WakeLockPermissionDescriptor">dictionary</dfn>, which augments the
-        <a>PermissionDescriptor</a> with a <dfn data-lt=
-        "WakeLockPermissionDescriptor.type">type</dfn> member, allowing for
-        more fine-grained permissions.
+      <p data-dfn-for="WakeLockPermissionDescriptor">
+        The <a>permission descriptor type</a> is represented by the
+        <dfn>WakeLockPermissionDescriptor</dfn> <a>dictionary</a>, which
+        augments the {{PermissionDescriptor}} with a <dfn>type</dfn> member,
+        allowing for more fine-grained permissions.
       </p>
       <pre class="idl">
         dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
@@ -249,7 +245,7 @@
         <li>Let |descriptor| be the <a>permission descriptor type</a> instance
         to be blocked.
         </li>
-        <li>Set |descriptor|'s <a>permission state</a> to "<a>denied</a>".
+        <li>Set |descriptor|'s <a>permission state</a> to {{"denied"}}.
         </li>
         <li>Let |record| be the <a>platform wake lock</a>'s <a>state record</a>
         associated with |descriptor|'s <a data-lt=
@@ -267,11 +263,11 @@
       <p>
         To <dfn>obtain permission</dfn> for <a>wake lock type</a> |type|, run
         these steps <a>in parallel</a>. This async algorithm returns either
-        "<a>granted</a>" or "<a>denied</a>".
+        {{"granted"}} or {{"denied"}}.
       </p>
       <ol class="algorithm">
         <li>Let |permissionDesc:PermissionDescriptor| be a newly created
-        <a>PermissionDescriptor</a>.
+        {{PermissionDescriptor}}.
         </li>
         <li>Set |permissionDesc|'s name to "<code>wake-lock</code>".
         </li>
@@ -283,7 +279,7 @@
         <li>Let |status:PermissionStatus| be the result of waiting for
         |resultPromise| to settle.
         </li>
-        <li>If |resultPromise| rejects, return "<a>denied</a>".
+        <li>If |resultPromise| rejects, return {{"denied"}}.
         </li>
         <li>Let |state| be the value of the <a data-cite=
         "permissions#dom-permissionstatus-state">state</a> attribute of
@@ -292,7 +288,7 @@
         <li>If |state| is "<a>prompt</a>", run the following steps:
           <ol>
             <li>If these <a>obtain permission</a> steps were not <a>triggered
-            by user activation</a>, return "<a>denied</a>".
+            by user activation</a>, return {{"denied"}}.
             </li>
             <li>Return the result of <a>requesting permission to use</a> with
             |permissionDesc|.
@@ -304,12 +300,12 @@
       </ol>
       <div class="note">
         In the case the steps are run from a dedicated worker, then the
-        <a>global object</a> is a <a>DedicatedWorkerGlobalScope</a>, which
-        means that the <a>obtain permission</a> steps can never be <a>triggered
-        by user activation</a>, meaning that in order to use wake locks from a
+        <a>global object</a> is a {{DedicatedWorkerGlobalScope}}, which means
+        that the <a>obtain permission</a> steps can never be <a>triggered by
+        user activation</a>, meaning that in order to use wake locks from a
         dedicated worker, prior permission needs to granted from the
         <a>browsing context</a> who created it, e.g. the <a>browsing
-        context</a> that is exists in the <a>DedicatedWorkerGlobalScope</a>'s
+        context</a> that is exists in the {{DedicatedWorkerGlobalScope}}'s
         <a>owner set</a>.
       </div>
     </section>
@@ -378,11 +374,10 @@
               <dfn>[[\InstanceList]]</dfn>
             </td>
             <td>
-              The <a data-cite="infra#list-is-empty">empty</a> <a data-cite=
-              "infra#ordered-set">set</a>.
+              The empty <a data-cite="infra#ordered-set">set</a>.
             </td>
             <td>
-              A <a data-cite="INFRA#ordered-set">set</a> of <a>WakeLock</a>
+              A <a data-cite="INFRA#ordered-set">set</a> of {{WakeLock}}
               instances.
             </td>
           </tr>
@@ -407,8 +402,8 @@
         The <dfn>WakeLock</dfn> interface
       </h2>
       <p>
-        The <a>WakeLock</a> interface allows the page to request wake locks of
-        a particular type, to determine the current wake lock state and to
+        The {{WakeLock}} interface allows the page to request wake locks of a
+        particular type, to determine the current wake lock state and to
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
@@ -456,33 +451,33 @@
         </h3>
         <p>
           To <dfn data-lt="create and initialize a wake lock object">create and
-          initialize</dfn> a <a>WakeLock</a> object of type |type|, the
-          following steps MUST be performed:
+          initialize</dfn> a {{WakeLock}} object of type |type|, the following
+          steps MUST be performed:
         </p>
         <ol class="algorithm">
           <li>Let |document| be the <a>responsible document</a> of the
           <a>current settings object</a>.
           </li>
           <li>If the <a>current global object</a> is the
-          <a>DedicatedWorkerGlobalScope</a> object and its <a>owner set</a> is
-          <a data-cite="infra#list-is-empty">empty</a>, throw a
-          "<a>NotAllowedError</a>" <a>DOMException</a>.
+          {{DedicatedWorkerGlobalScope}} object and its <a>owner set</a>
+          <a data-link-for="list">is empty</a>, throw a {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
-          <li>If the <a>current global object</a> is the <a>Window</a> object
-          and the |document|'s <a>browsing context</a> is <code>null</code>,
-          throw a "<a>NotAllowedError</a>" <a>DOMException</a>.
+          <li>If the <a>current global object</a> is the {{Window}} object and
+          the |document|'s <a>browsing context</a> is <code>null</code>, throw
+          a {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not <a>allowed to use</a> the <a>policy-controlled
           feature</a> named "<code>wake-lock</code>", throw a
-          "<a>NotAllowedError</a>" <a>DOMException</a>.
+          {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
           wake lock</a> of this |type| for |document|, throw a
-          "<a>NotAllowedError</a>" <a>DOMException</a>.
+          {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-api.https.html">Let |lock| be a new
-          <a>WakeLock</a> object.
+          {{WakeLock}} object.
           </li>
           <li data-tests="wakelock-type.https.html">Set |lock|'s type to
           |type|.
@@ -493,8 +488,7 @@
           <li>Add |lock| to |record|.<a>[[\InstanceList]]</a>.
           </li>
           <li data-tests="wakelock-onactivechange.https.html">If the wake lock
-          of type |type| is currently <a data-lt=
-          "acquire wake lock">acquired</a>, set |lock|'s <a href=
+          of type |type| is currently <a>acquired</a>, set |lock|'s <a href=
           "#dom-wakelock-active">active</a> to <code>true</code>, otherwise to
           <code>false</code>.
           </li>
@@ -508,8 +502,8 @@
         </h3>
         <p>
           The <a>requestPermission()</a> method, when invoked, MUST run the
-          following steps. This algorithm resolves with either "<a>granted</a>"
-          or "<a>denied</a>".
+          following steps. This algorithm resolves with either {{"granted"}} or
+          {{"denied"}}.
         </p>
         <ol class="algorithm">
           <li>Let |promise:Promise| be <a data-cite=
@@ -533,8 +527,8 @@
           <dfn>type</dfn> attribute
         </h3>
         <p>
-          When getting, the <a>type</a> attribute returns this
-          <a>WakeLock</a>'s <a>wake lock type</a>.
+          When getting, the <a>type</a> attribute returns this {{WakeLock}}'s
+          <a>wake lock type</a>.
         </p>
       </section>
       <section data-dfn-for="WakeLock">
@@ -543,20 +537,18 @@
         </h3>
         <p>
           The <a>active</a> attribute represents whether a wake lock is
-          currently <a data-lt="acquire wake lock">acquired</a> by the
-          <a>WakeLock</a> instance.
+          currently <a>acquired</a> by the {{WakeLock}} instance.
         </p>
       </section>
-      <section data-dfn-for="WakeLock">
+      <section data-dfn-for="WakeLock" data-link-for="WakeLock">
         <h3>
           <dfn>onactivechange</dfn> attribute
         </h3>
         <p data-tests="wakelock-onactivechange.https.html">
-          A <a>WakeLock</a>'s <a>onactivechange</a> attribute is an
-          <a>EventHandler</a> with the corresponding <a>event handler event
+          A {{WakeLock}}'s <a>onactivechange</a> attribute is an
+          {{EventHandler}} with the corresponding <a>event handler event
           type</a> of <code>activechange</code>. Fired when current wake lock
-          status indicated by the <a href="#dom-wakelock-active">active</a>
-          attribute changes.
+          status indicated by the <a>active</a> attribute changes.
         </p>
       </section>
       <section>
@@ -596,26 +588,48 @@
               <li>Let |state| be the result of running and waiting for the <a>
                 obtain permission</a> steps with |type|.
               </li>
-              <li>If |state| is "<a>denied</a>", then reject |promise| with a
-              "<a>NotAllowedError</a>" <a>DOMException</a>, and run <a>abort
-              the request steps</a>.
+              <li>If |state| is {{"denied"}}, then reject |promise| with a
+              {{"NotAllowedError"}} {{DOMException}}, and abort these steps.
+              </li>
+              <li>Let |signal| be the |options| dictionary member of the same
+              name if <a>present</a>, or <code>null</code> otherwise.
+              </li>
+              <li>If |signal|’s <a>aborted flag</a> is set, then reject
+              |promise| with an "<a>AbortError</a>" {{DOMException}},
+              and run <a>abort the request steps</a>.
+              </li>
+              <li>If |signal| is not <code>null</code>, then
+              [=AbortSignal/add=] the following algorithm to |signal|:
+                <ol>
+                  <li>Decrease |record|.<a>[[\RequestCounter]]</a> by one.
+                  </li>
+                  <li>If |record|.<a>[[\RequestCounter]]</a> is 0, then run the
+                  following steps <a>in parallel</a>:
+                    <ol>
+                      <li>Run <a>release a wake lock</a> on |lock|.
+                      </li>
+                    </ol>
+                  </li>
+                  <li>Reject |promise| with an {{ "AbortError" }}
+                  {{DOMException}}, and run <a>abort the request steps</a>.
+                  </li>
+                </ol>
               </li>
               <li>If the <a>current global object</a> is not a
-              <a>DedicatedWorkerGlobalScope</a> object, run the following
-              steps:
+              {{DedicatedWorkerGlobalScope}} object, run the following steps:
                 <ol>
                   <li>Let |document| be the <a>responsible document</a> of the
                   <a>current settings object</a>.
                   </li>
                   <li>If |document| is not <a>fully active</a>, reject
-                  |promise| with a "<a>NotAllowedError</a>"
-                  <a>DOMException</a>, and run <a>abort the request steps</a>.
+                  |promise| with a {{"NotAllowedError"}} {{DOMException}},
+                  and run <a>abort the request steps</a>.
                   </li>
-                  <li>If |lock|'s |type| is "<a data-lt=
-                  "WakeLockType.screen">screen</a>" and the <a>Document</a> of
-                  the <a>top-level browsing context</a> is <a>hidden</a>,
-                  reject |promise| with a "<a>NotAllowedError</a>"
-                  <a>DOMException</a>, and run <a>abort the request steps</a>.
+                  <li data-link-for="">If |lock|'s |type| is {{
+                  WakeLockType["screen"] }} and the {{Document} of the
+                  <a>top-level browsing context</a> is <a>hidden</a>, reject
+                  |promise| with a {{"NotAllowedError"}} {{DOMException}},
+                  and run <a>abort the request steps</a>.
                   </li>
                 </ol>
               </li>
@@ -628,8 +642,8 @@
                   for <a>acquire a wake lock</a> on |lock|.
                   </li>
                   <li>If |success| is <code>false</code> then reject |promise|
-                  with a "<a>NotAllowedError</a>" <a>DOMException</a>, and run
-                  <a>abort the request steps</a> with |lock|.
+                  with a {{"NotAllowedError"}} {{DOMException}}, and run
+                  <a>abort the request steps</a>.
                   </li>
                 </ol>
               </li>
@@ -673,7 +687,8 @@
           </li>
         </ol>
       </section>
-      <section>
+      <section data-link-for="WakeLockQueryFilter" data-dfn-for=
+      "WakeLockQueryFilter">
         <h3>
           The <dfn>WakeLockQueryFilter</dfn> dictionary
         </h3>
@@ -684,11 +699,9 @@
           };
         </pre>
         <p>
-          The <dfn>WakeLockQueryFilter.type</dfn> and
-          <dfn>WakeLockQueryFilter.active</dfn> properties allows filtering by
-          <a>wake lock type</a> and activity (whether the wake lock is
-          currently <a data-lt="acquire wake lock">acquired</a> by the <a>user
-          agent</a>.).
+          The <dfn>type</dfn> member and <dfn>active</dfn> member allows
+          filtering by <a>wake lock type</a> and activity (whether the wake
+          lock is currently <a>acquired</a> by the <a>user agent</a>.).
         </p>
       </section>
       <section data-dfn-for="WakeLock">
@@ -702,7 +715,7 @@
         <ol class="algorithm">
           <li>Let |filter| be the first argument.
           </li>
-          <li>Let |records| be the <a>empty</a> <a>list</a>.
+          <li>Let |records| be the empty <a>list</a>.
           </li>
           <li>Let |type| be the |filter| dictionary member of the same name.
           </li>
@@ -714,15 +727,14 @@
           </li>
           <li>Otherwise, add all <a>state records</a> to |records|.
           </li>
-          <li>Let |locks| be the <a>empty</a> <a data-cite="infra#ordered-set">
-            set</a>.
+          <li>Let |locks| be the empty <a data-cite=
+          "infra#ordered-set">set</a>.
           </li>
           <li>
-            <a data-cite="infra#list-iterate">For each</a> |record| in
-            |records|:
+            <a data-link-for="list">For each</a> |record| in |records|:
             <ol>
               <li>
-                <a data-cite="infra#list-iterate">For each</a> |lock| in
+                <a data-link-for="list">For each</a> |lock| in
                 |record|.<a>[[\InstanceList]]</a>:
                 <ol>
                   <li>If |active| is <a>present</a>, add |lock| to |locks| if
@@ -750,9 +762,10 @@
         mentioned.
       </p>
       <p>
-        The <a>user agent</a> <dfn data-lt="acquire wake lock">acquires the
-        wake lock</dfn> by requesting the underlying operating system to apply
-        the lock. The lock is considered acquired only when the request to the
+        The <a>user agent</a> <dfn data-lt=
+        "acquire wake lock|acquire the wake lock|acquired">acquires the wake
+        lock</dfn> by requesting the underlying operating system to apply the
+        lock. The lock is considered acquired only when the request to the
         operating system succeeds.
       </p>
       <p>
@@ -763,17 +776,16 @@
         succeeds.
       </p>
       <p>
-        The wake lock is <dfn data-lt="applicable wake lock">applicable</dfn>
-        if the state of the operating system permits application of the lock
-        (e.g. there is sufficient battery charge).
+        The wake lock is <dfn data-lt=
+        "applicable wake lock|applicability">applicable</dfn> if the state of
+        the operating system permits application of the lock (e.g. there is
+        sufficient battery charge).
       </p>
       <p data-tests="wakelock-applicability-manual.https.html">
-        The <a>screen wake lock</a> MUST NOT be <a data-lt=
-        "applicable wake lock">applicable</a> after the screen is manually
-        swiched off by the user until it is switched on again. Manually
-        switching off the screen MUST NOT affect the <a data-lt=
-        "applicable wake lock">applicability</a> of the <a>system wake
-        lock</a>.
+        The <a>screen wake lock</a> MUST NOT be <a>applicable</a> after the
+        screen is manually switched off by the user until it is switched on
+        again. Manually switching off the screen MUST NOT affect the
+        <a>applicability</a> of the <a>system wake lock</a>.
       </p>
       <div class="note">
         Whether the wake lock is applicable is a transient condition, e.g. when
@@ -802,13 +814,16 @@
       <section>
         <h3>
           Handling document loss of full activity
-        </h3>When the user agent determines that a <a>responsible document</a>
-        of the <a>current settings object</a> is no longer <a>fully active</a>,
-        it must run these steps:
+        </h3>
+        <p>
+          When the user agent determines that a <a>responsible document</a> of
+          the <a>current settings object</a> is no longer <a>fully active</a>,
+          it must run these steps:
+        </p>
         <ol class="algorithm">
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with <a>wake lock type</a>
-          <code>"screen"</code> and <code>"system"</code>.
+          <li data-link-for="WakeLockType">Let |record| be the <a>platform wake
+          lock</a>'s <a>state record</a> associated with <a>wake lock type</a>
+          {{"screen"}} and {{"system"}}.
           </li>
           <li>
             <a data-cite="infra#list-iterate">For each</a> |lock| in
@@ -828,19 +843,22 @@
       <section>
         <h3>
           Handling document loss of visibility
-        </h3>When the user agent determines that the <a>visibility state</a> of
-        the <a>Document</a> of the <a>top-level browsing context</a> changes,
-        it must run these steps:
+        </h3>
+        <p>
+          When the user agent determines that the <a>visibility state</a> of
+          the {{Document}} of the <a>top-level browsing context</a> changes, it
+          must run these steps:
+        </p>
         <ol class="algorithm">
-          <li>Let |document| be the <a>Document</a> of the <a>top-level
-          browsing context</a>.
+          <li>Let |document| be the {{Document}} of the <a>top-level browsing
+          context</a>.
           </li>
           <li>If |document|'s <a>visibility state</a> is
           <code>"visible"</code>, abort these steps.
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with <a>wake lock type</a>
-          <code>"screen"</code>.
+          record</a> associated with <a>wake lock type</a> {{
+          WakeLockType["screen"] }}.
           </li>
           <li>
             <a data-cite="infra#list-iterate">For each</a> |lock| in
@@ -852,37 +870,36 @@
           </li>
         </ol>
         <div class="note">
-          As some locks like <code>"system"</code> are allowed to run while the
-          <a>Document</a> of the <a>top-level browsing context</a> is not
-          visible, it is encouraged that user agents show some UI indicating
-          this.
+          As some locks like {{ WakeLockType["system"] }} are allowed to run
+          while the {{Document}} of the <a>top-level browsing context</a> is
+          not visible, it is encouraged that user agents show some UI
+          indicating this.
         </div>
         <div class="note">
-          The <a>visibility state</a> is only exposed on the <a>Window</a>
-          object, thus the above steps are not relevant to wake locks running
-          as part of a dedicated worker.
+          The <a>visibility state</a> is only exposed on the {{Window}} object,
+          thus the above steps are not relevant to wake locks running as part
+          of a dedicated worker.
         </div>
       </section>
       <section>
         <h3>
           Acquire wake lock algorithm
-        </h3>To <dfn>acquire a wake lock</dfn> for a given <a>WakeLock</a>
-        object |lock|, run these steps <a>in parallel</a>:
-        <ol class="algorithm">
-          <li>Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
+        </h3>To <dfn>acquire a wake lock</dfn> for a given {{WakeLock}} object
+        |lock|, run these steps <a>in parallel</a>:
+        <ol class="algorithm" data-link-for="WakeLock">
+          <li>Let |type| be |lock|'s <a>type</a>.
           </li>
-          <li>If the wake lock for type |type| is not <a data-lt=
-          "applicable wake lock">applicable</a>, return <code>false</code>.
-          </li>
-          <li>Ask the underlying operation system to <a data-lt=
-          "acquire wake lock">acquire the wake lock</a> of type |type| and let
-          |success| be <code>true</code> if the operation succeeded, or else
+          <li>If the wake lock for type |type| is not <a>applicable</a>, return
           <code>false</code>.
           </li>
+          <li>Ask the underlying operation system to <a>acquire the wake
+          lock</a> of type |type| and let |success| be <code>true</code> if the
+          operation succeeded, or else <code>false</code>.
+          </li>
           <li data-tests="wakelock-onactivechange.https.html">If |success| is
-          different from |lock|'s <a href="#dom-wakelock-active">active</a>,
-          set |lock|'s <a href="#dom-wakelock-active">active</a> to |success|
-          and <a>fire an event</a> named <code>"activechange"</code> at |lock|.
+          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
+          |success| and <a>fire an event</a> named <code>"activechange"</code>
+          at |lock|.
           </li>
           <li>Return |success|.
           </li>
@@ -891,26 +908,27 @@
       <section>
         <h3>
           Release wake lock algorithm
-        </h3>To <dfn>release a wake lock</dfn> for a given <a>WakeLock</a>
-        object |lock|, run these steps <a>in parallel</a>:
-        <ol class="algorithm">
-          <li>Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
+        </h3>
+        <p>
+          To <dfn>release a wake lock</dfn> for a given {{WakeLock}} object
+          |lock|, run these steps <a>in parallel</a>:
+        </p>
+        <ol class="algorithm" data-link-for="WakeLock">
+          <li>Let |type| be |lock|'s <a>type</a>.
           </li>
-          <li data-link-for="WakeLock">If the promise
-          |lock|.<a>[[\requestPromise]]</a> not <code>undefined</code> and is
-          pending, reject it with an "<a>AbortError</a>" <a>DOMException</a>
-          and <a>abort the request steps</a> for the associated running
-          <a>request()</a> algorithm.
+          <li>If the promise
+            |lock|.<a>[[\requestPromise]]</a> not <code>undefined</code> and is
+            pending, reject it with an "<a>AbortError</a>" <a>DOMException</a>
+            and <a>abort the request steps</a> for the associated running
+            <a>request()</a> algorithm.
           </li>
-          <li>Ask the underlying operation system to <a data-lt=
-          "release wake lock">release the wake lock</a> of type |type| and let
-          |success| be <code>true</code> if the operation succeeded, or else
-          <code>false</code>.
+          <li>Ask the underlying operation system to release the wake lock of
+          type |type| and let |success| be <code>true</code> if the operation
+          succeeded, or else <code>false</code>.
           </li>
           <li data-tests="wakelock-onactivechange.https.html">If |success| is
-          different from |lock|'s <a href="#dom-wakelock-active">active</a>,
-          set |lock|'s <a href="#dom-wakelock-active">active</a> to the negated
-          |success| and <a data-lt="fire an event">fire an event</a> named
+          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
+          the negated |success| and <a>fire an event</a> named
           <code>"activechange"</code> at |lock|.
           </li>
           <li>If |lock|'s type is <code>"screen"</code> run the following:
@@ -948,10 +966,10 @@
       </p>
       <p data-tests="wakelock-state-is-global.https.html">
         The ability to observe the global state of a wake lock can create a
-        communication channel between two otherwise isolated <a data-lt=
-        "document">documents</a>. One document can request wake lock which
-        changes the global wake lock state, and another document can observe
-        this change by subscribing to events in <a>WakeLock</a>.
+        communication channel between two otherwise isolated {{Document}}
+        objects. One document can request wake lock which changes the global
+        wake lock state, and another document can observe this change by
+        subscribing to events in {{WakeLock}}.
       </p>
       <p>
         When the <a>user agent</a> does not <a>acquire wake lock</a> even
@@ -967,7 +985,7 @@
       <p>
         This example acquires a screen wake lock and releases it after a while:
       </p>
-      <pre class="example">
+      <pre class="example js">
         async function tryKeepScreenAlive(minutes) {
           const lock = new WakeLock("screen");
           lock.request();
@@ -982,7 +1000,7 @@
         on a checkbox, but updates the checkbox checked state in case the wake
         lock state changes:
       </p>
-      <pre class="example">
+      <pre class="example js">
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
@@ -1010,7 +1028,7 @@
         In this example, two screen wake lock requests are created and released
         independently:
       </p>
-      <pre class="example">
+      <pre class="example js">
         const lock1 = new WakeLock("screen");
         const lock2 = new WakeLock("screen");
 
@@ -1031,16 +1049,14 @@
         Dependencies
       </h2>
       <p>
-        <code><dfn data-cite="HTML/dom.html#document">Document</dfn></code>,
         <code><dfn data-cite=
-        "HTML/window-object.html#window">Window</dfn></code>,
+        "HTML/window-object.html#window">Window</dfn></code>, <code><dfn class=
+        "externalDFN">DedicatedWorkerGlobalScope</dfn></code>, <dfn data-cite=
+        "HTML/browsers.html#active-document">active document</dfn>,
+        <dfn data-cite="HTML/webappapis.html#global-object">global
+        object</dfn>, <dfn data-cite=
+        "HTML/browsers.html#browsing-context">browsing context</dfn>,
         <code><dfn data-cite=
-        "HTML/workers.html#dedicatedworkerglobalscope">DedicatedWorkerGlobalScope</dfn></code>,
-        <dfn data-cite="HTML/browsers.html#active-document">active
-        document</dfn>, <dfn data-cite=
-        "HTML/webappapis.html#global-object">global object</dfn>,
-        <dfn data-cite="HTML/browsers.html#browsing-context">browsing
-        context</dfn>, <code><dfn data-cite=
         "HTML/webappapis.html#eventhandler">EventHandler</dfn></code> are
         defined in [[HTML]].
       </p>
@@ -1050,10 +1066,11 @@
       </p>
       <p>
         <dfn data-cite=
+        "WEBIDL#aborterror"><code>AbortError</code></dfn>,
+        <dfn data-cite=
         "WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
         <dfn data-cite=
         "WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>,
-        <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite=
         "WEBIDL#dfn-DOMException"><code>DOMException</code></dfn> are defined
         in [[WEBIDL]].
