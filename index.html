@@ -64,7 +64,7 @@
       };
     </script>
   </head>
-  <body data-cite="FEATURE-POLICY">
+  <body data-cite="FEATURE-POLICY PERMISSIONS">
     <section id='abstract'>
       <p>
         This document specifies an API that allows web applications to request
@@ -186,18 +186,18 @@
           <code>allow="wake-lock"</code> attribute to the frame container
           element:
         </p>
-        <pre class="example html">
+        <pre class="example html" title="Enabling wake-lock on remote content">
           &lt;iframe src="https://third-party.com" allow="wake-lock"/&gt;&lt;/iframe&gt;
         </pre>
         <p>
           Alternatively, the wake lock feature can be disabled completely by
           specifying the feature policy in a HTTP response header:
         </p>
-        <pre class="example">
+        <pre class="example http" title="Feature Policy over HTTP">
           Feature-Policy: {"wake-lock": []}
         </pre>
         <p>
-          See [[FEATURE-POLICY]] for more details.
+          See [[[FEATURE-POLICY]]] for more details.
         </p>
       </div>
     </section>
@@ -231,7 +231,7 @@
         };
       </pre>
       <p>
-        The <a>permission name</a> is defined as <code>"wake-lock"</code>.
+        The {{PermissionDescriptor.name}} is <code>"wake-lock"</code>.
       </p>
       <p>
         Within this section, |descriptor| is an instance of the <a>permission
@@ -276,16 +276,17 @@
         <li>Let |resultPromise| be the result of running <a>query a
         permission</a> with |permissionDesc|.
         </li>
-        <li>Let |status:PermissionStatus| be the result of waiting for
-        |resultPromise| to settle.
+        <li>Await |resultPromise| to settle.
         </li>
         <li>If |resultPromise| rejects, return {{"denied"}}.
         </li>
-        <li>Let |state| be the value of the <a data-cite=
-        "permissions#dom-permissionstatus-state">state</a> attribute of
-        |status|.
+        <li>Otherwise, let |status:PermissionStatus| be the result of
+        |resultPromise|.
         </li>
-        <li>If |state| is "<a>prompt</a>", run the following steps:
+        <li>Let |state| be the value of |status|.<code><a data-cite=
+        "permissions#dom-permissionstatus-state">state</a></code>.
+        </li>
+        <li>If |state| is {{"prompt"}}, run the following steps:
           <ol>
             <li>If these <a>obtain permission</a> steps were not <a>triggered
             by user activation</a>, return {{"denied"}}.
@@ -351,7 +352,8 @@
       </p>
       <p>
         Each <a>platform wake lock</a> (one per <a>wake lock type</a>) has an
-        associated <dfn>state record</dfn> with the following <a>internal
+        associated <dfn>state record</dfn> with the following <a data-cite=
+        "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
         slots</a>:
       </p>
       <table class="simple">
@@ -432,7 +434,7 @@
           </li>
           <li>If the <a>current global object</a> is the
           {{DedicatedWorkerGlobalScope}} object and its <a>owner set</a>
-          <a data-link-for="list">is empty</a>, throw a {{"NotAllowedError"}}
+          <a data-xref-for="list">is empty</a>, throw a {{"NotAllowedError"}}
           {{DOMException}}.
           </li>
           <li>If the <a>current global object</a> is the {{Window}} object and
@@ -922,10 +924,7 @@
       <h2>
         Examples
       </h2>
-      <p>
-        This example acquires a screen wake lock and releases it after a while:
-      </p>
-      <pre class="example js">
+      <pre class="example js" title="Acquire and releases a screen wake lock">
         async function tryKeepScreenAlive(minutes) {
           const lock = new WakeLock("screen");
 
@@ -939,31 +938,23 @@
 
         tryKeepScreenAlive(10);
       </pre>
-      <p>
-        This example requests a screen wake lock and listens to wake lock state
-        changes:
-      </p>
-      <pre class="example js">
-        const controller = new AbortController();
-        const signal = controller.signal;
-
+      <pre class="example js" title="Listening for wake lock state changes">
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
+
+        // We abort the wake lock after 5 seconds
+        const controller = new AbortController();
+        const signal = controller.signal;
+        setTimeout(() =&gt; controller.abort(), 5000);
 
         const lock = new WakeLock("screen");
         lock.onactivechange = () =&gt; {
           checkbox.checked = lock.active;
         };
         lock.request({ signal });
-
-        setTimeout(() =&gt; controller.abort(), 5 * 1000);
       </pre>
-      <p>
-        In this example, two screen wake lock requests are created and
-        cancelled independently:
-      </p>
-      <pre class="example js">
+      <pre class="example js" title="Aborting multiple independent wake locks">
         const controller = new AbortController();
         const signal = controller.signal;
 
@@ -986,57 +977,22 @@
         Dependencies
       </h2>
       <p>
-        <dfn data-cite="HTML/webappapis.html#global-object">global
-        object</dfn>, <dfn data-cite=
-        "HTML/browsers.html#browsing-context">browsing context</dfn>,
-        <code><dfn data-cite=
-        "HTML/webappapis.html#eventhandler">EventHandler</dfn></code> are
-        defined in [[HTML]].
-      </p>
-      <p>
-        <dfn data-cite="DOM#abortsignal-add">add the following abort
-        steps</dfn> is defined in [[DOM]].
+        <dfn data-cite="HTML/webappapis.html#global-object">global object</dfn>
+        and <dfn data-cite="HTML/browsers.html#browsing-context">browsing
+        context</dfn> are defined in [[HTML]].
       </p>
       <p>
         <dfn data-cite="WEBIDL#aborterror"><code>AbortError</code></dfn>,
         <dfn data-cite=
-        "WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
+        "WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>, and
         <dfn data-cite=
-        "WEBIDL#notallowederror"><code>NotAllowedError</code></dfn>, are
-        defined in [[WEBIDL]].
+        "WEBIDL#notallowederror"><code>NotAllowedError</code></dfn> are defined
+        in [[WEBIDL]].
       </p>
       <p>
-        The terms <dfn data-cite="PERMISSIONS#query-a-permission">query a
-        permission</dfn>, <dfn data-cite=
-        "PERMISSIONS#request-permission-to-use">requesting permission to
-        use</dfn>, <dfn data-cite=
-        "PERMISSIONS#permission-revocation-algorithm">revocable</dfn>,
-        <dfn data-cite="PERMISSIONS#permission-descriptor-type">permission
-        descriptor type</dfn>, <dfn data-cite=
-        "PERMISSIONS#dom-permissiondescriptor-name">permission name</dfn>,
-        <dfn data-cite="PERMISSIONS#permission-state">permission state</dfn>,
-        <dfn data-cite="PERMISSIONS#powerful-feature">powerful feature</dfn>,
-        <dfn data-cite=
-        "PERMISSIONS#dom-permissionstate-denied"><code>denied</code></dfn>,
-        <dfn data-cite=
-        "PERMISSIONS#dom-permissionstate-granted"><code>granted</code></dfn>,
-        <dfn data-cite=
-        "PERMISSIONS#dom-permissionstate-prompt"><code>prompt</code></dfn> and
-        <dfn data-cite=
-        "PERMISSIONS#dictdef-permissiondescriptor">PermissionDescriptor</dfn>
-        are defined in [[PERMISSIONS]].
-      </p>
-      <p>
-        <dfn data-cite=
-        "ECMASCRIPT#sec-promise-objects"><code>Promise</code></dfn> and
-        <dfn data-cite=
-        "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
-        slots</dfn> are defined in [[ECMASCRIPT]].
-      </p>
-      <p>
-        Document's <dfn data-cite=
-        "PAGE-VISIBILITY#dom-document-hidden">hidden</dfn> attribute, and
-        <dfn data-cite="PAGE-VISIBILITY#dfn-visibility-states">visibility
+        Document's <code><dfn data-cite=
+        "PAGE-VISIBILITY#dom-document-hidden">hidden</dfn></code> attribute,
+        and <dfn data-cite="PAGE-VISIBILITY#dfn-visibility-states">visibility
         state</dfn> are defined in [[PAGE-VISIBILITY]].
       </p>
     </section>
