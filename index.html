@@ -559,6 +559,19 @@
       </section>
       <section>
         <h3><dfn>request()</dfn> method</h3>
+        <p>
+          To <dfn>abort the request steps</dfn> for a running instance of
+          <a>request()</a>, run these additional steps:
+        </p>
+        <ol class="algorithm">
+          <li>
+            Set |lock|.<a>[[\requestPromise]]</a>
+            to <code>undefined</code>.
+          </li>
+          <li>
+            Abort the associated <a>request()</a> algorithm.
+          </li>
+        </ol>
         <p data-tests="wakelock-api.https.html">
           The <a>request()</a> method, when invoked, MUST run the
            following steps:
@@ -571,6 +584,10 @@
             Let |record| be the <a>platform wake lock</a>'s
             <a>state record</a> associated with
             |lock|'s |type|.
+          </li>
+          <li>
+            If the promise |lock|.<a>[[\requestPromise]]</a> is
+            not <code>undefined</code>, return it.
           </li>
           <li>
             Let |promise:Promise| be
@@ -589,7 +606,7 @@
               <li>
                 If |state| is "<a>denied</a>", then reject |promise|
                 with a "<a>NotAllowedError</a>" <a>DOMException</a>,
-                and abort these steps.
+                and run <a>abort the request steps</a>.
               </li>
               <li>
                 If the <a>current global object</a> is not a <a>DedicatedWorkerGlobalScope</a>
@@ -602,7 +619,7 @@
                   <li>
                     If |document| is not <a>fully active</a>,
                     reject |promise| with a "<a>NotAllowedError</a>"
-                    <a>DOMException</a>, and abort these steps.
+                    <a>DOMException</a>, and run <a>abort the request steps</a>.
                   </li>
                   <li>
                     If |lock|'s |type| is
@@ -610,7 +627,7 @@
                     <a>Document</a> of the <a>top-level browsing context</a>
                     is <a>hidden</a>, reject |promise|
                     with a "<a>NotAllowedError</a>"
-                    <a>DOMException</a>, and abort these steps.
+                    <a>DOMException</a>, and run <a>abort the request steps</a>.
                   </li>
                 </ol>
               </li>
@@ -628,7 +645,8 @@
                   <li>
                     If |success| is <code>false</code> then reject
                     |promise| with a "<a>NotAllowedError</a>"
-                    <a>DOMException</a>, and abort these steps.
+                    <a>DOMException</a>, and run <a>abort the request
+                      steps</a> with |lock|.
                   </li>
                 </ol>
               </li>
@@ -917,10 +935,10 @@
             Let |type| be |lock|'s <a href="#dom-wakelock-type">type</a>.
           </li>
           <li data-link-for="WakeLock">
-            If the promise |lock|.<a>[[\requestPromise]]</a> is pending,
-            reject it with an
-            "<a>AbortError</a>" <a>DOMException</a> and abort any remaining
-            steps in the associated running <a>request()</a> algorithm.
+            If the promise |lock|.<a>[[\requestPromise]]</a> not <code>undefined</code>
+            and is pending, reject it with an "<a>AbortError</a>" <a>DOMException</a>
+            and <a>abort the request steps</a> for the associated running
+            <a>request()</a> algorithm.
           </li>
           <li>
             Ask the underlying operation system to
@@ -1005,7 +1023,7 @@
       <p>
         This example allows the user to request a screen wake lock
         by clicking on a checkbox, but updates the checkbox checked
-        state in case teh wake lock state changes:
+        state in case the wake lock state changes:
       </p>
       <pre class="example">
         const checkbox = document.createElement("input");
@@ -1015,16 +1033,21 @@
         const lock = new WakeLock("screen");
 
         lock.onactivechange = () => checkbox.checked = lock.active;
-        checkbox.onchange = async () => {
-          try {
-            checkbox.disabled = true;
+
+        try {
+          checkbox.disabled = true;
+          if (checkbox.checked) {
             await lock.request();
-          } catch {
-            checkbox.checked = false;
-          } finally {
-            checkbox.disabled = false;
+          } else {
+            lock.abort();
           }
-        };
+        } catch {
+          // On failure, reset the checkbox to reflect the
+          // current state. `onactivechanged` will not have fired.
+          checkbox.checked = lock.active;
+        } finally {
+          checkbox.disabled = false;
+        }
       </pre>
       <p>
         In this example, two screen wake lock requests are created and
