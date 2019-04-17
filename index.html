@@ -580,12 +580,9 @@
           </li>
           <li>Let |lock:WakeLock| be the <a>context object</a>.
           </li>
-          <li>Let |promise:Promise| be <a data-cite=
-            "promises-guide#a-new-promise">a new promise</a>.
-          </li>
-          <li>If |lock|.{{[[requestPromise]]}} is not `undefined`,
-            reject |promise| with a "{{InvalidStateError}}" {{DOMException}},
-            and run <a>abort the request steps</a>.
+          <li>Let |promise:Promise| be |lock|.{{[[requestPromise]]}}
+            if not `undefined`, or <a data-cite=
+            "promises-guide#a-new-promise">a new promise</a> otherwise.
           </li>
           <li>If |options|.|signal:AbortSignal|’s <a>aborted flag</a> is set, then
           reject |promise| with an "{{AbortError}}" {{DOMException}},
@@ -596,6 +593,9 @@
               <li>Run <a>release a wake lock</a> on |lock|.
               </li>
             </ol>
+          </li>
+          <li>If |lock|.{{[[requestPromise]]}} is not `undefined`,
+            return |promise|.
           </li>
           <li>Set |lock|.{{[[requestPromise]]}} to promise.
           </li>
@@ -1013,6 +1013,25 @@
         system.request({ signal });
 
         controller.abort();
+      </pre>
+      <p>
+        In this example, all active screen wake locks are being aborted.
+      </p>
+      <p>
+        If the wake lock is active or pending activation,
+        <a data-link-for="WakeLock">request()</a> returns the same {{Promise}},
+        allowing us to abort any active wake lock by using the fact that
+        a |signal:AbortSignal| with |signal|.{{aborted}}  set to `true`,
+        immediately aborts the request.
+      </p>
+      <pre class="example js">
+        const controller = new AbortController();
+        controller.abort();
+
+        const locks = WakeLock.query({ type: "screen", active: true });
+        for (const lock of locks) {
+          lock.request({ signal: controller.signal });
+        }
       </pre>
     </section>
     <section>
