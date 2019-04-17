@@ -404,8 +404,7 @@
           readonly attribute WakeLockType type;
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
-          Promise&lt;void&gt; request();
-          void abort();
+          Promise&lt;void&gt; request(optional WakeLockRequestOptions options);
           static sequence&lt;WakeLock&gt; query(optional WakeLockQueryFilter filter);
         };
       </pre>
@@ -541,6 +540,17 @@
           indicated by the <a>active</a> attribute changes.
         </p>
       </section>
+      <section data-dfn-for="WakeLockRequestOptions"> <h3>The <dfn>WakeLockRequestOptions</dfn> dictionary</h3>
+        <pre class="idl">
+          dictionary WakeLockRequestOptions {
+            AbortSignal? signal = null;
+          };
+        </pre>
+        <p>
+          The <dfn>signal</dfn> member is used to abort
+          the wake lock request.
+        </p>
+      </section>
       <section>
         <h3>
           <dfn>request()</dfn> method
@@ -561,23 +571,33 @@
           steps:
         </p>
         <ol class="algorithm">
+          <li>Let |options:WakeLockRequestOptions| be the first argument.
+          </li>
           <li>Let |lock| be the <a>context object</a>.
           </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |lock|'s |type|.
-          </li>
-          <li>If the promise |lock|.{{[[requestPromise]]}} is not `undefined`,
-          return it.
-          </li>
           <li>Let |promise:Promise| be <a data-cite=
-          "promises-guide#a-new-promise">a new promise</a>.
+            "promises-guide#a-new-promise">a new promise</a>.
+          </li>
+          <li>If |lock|.{{[[requestPromise]]}} is not `undefined`,
+            reject |promise| with a "{{InvalidStateError}}" {{DOMException}},
+            and run <a>abort the request steps</a>.
+          </li>
+          <li>If |options|.|signal:AbortSignal|’s <a>aborted flag</a> is set, then
+          reject |promise| with an "{{AbortError}}" {{DOMException}},
+          and run <a>abort the request steps</a>.
+          </li>
+          <li>If |options|.|signal| is not `null`, then [=AbortSignal/add=] to |options|.|signal|:
+            <ol>
+              <li>Run <a>release a wake lock</a> on |lock|.
+              </li>
+            </ol>
           </li>
           <li>Set |lock|.{{[[requestPromise]]}} to promise.
           </li>
           <li>Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
               <li>Let |state| be the result of running and waiting for the <a>
-                obtain permission</a> steps with |type|.
+              obtain permission</a> steps with |type|.
               </li>
               <li>If |state| is {{"denied"}}, then reject |promise| with a
               "{{NotAllowedError}}" {{DOMException}}, and run <a>abort the
@@ -601,19 +621,12 @@
                   </li>
                 </ol>
               </li>
-              <li>Increase |record|.<a>[[\RequestCounter]]</a> by one.
+              <li>Let |success:boolean| be the result of awaiting
+                <a>acquire a wake lock</a> on |lock|.
               </li>
-              <li>If |record|.<a>[[\RequestCounter]]</a> is 1, run the
-              following steps:
-                <ol>
-                  <li>Let |success| be the the result of running and waiting
-                  for <a>acquire a wake lock</a> on |lock|.
-                  </li>
-                  <li>If |success| is `false` then reject |promise| with a
-                  "{{NotAllowedError}}" {{DOMException}}, and run <a>abort the
-                  request steps</a>.
-                  </li>
-                </ol>
+              <li>If |success| is `false` then reject |promise| with a
+              "{{NotAllowedError}}" {{DOMException}}, and run
+              <a>abort the request steps</a>.
               </li>
               <li>Resolve |promise| with `void`.
               </li>
@@ -630,31 +643,6 @@
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
       </div>
-      <section>
-        <h3>
-          <dfn>abort()</dfn> method
-        </h3>
-        <p data-link-for="WakeLock">
-          The <a>abort()</a> method, when invoked, MUST run the following
-          steps:
-        </p>
-        <ol class="algorithm">
-          <li>Let |lock| be the <a>context object</a>.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |lock|'s |type|.
-          </li>
-          <li>Decrease |record|.<a>[[\RequestCounter]]</a> by one.
-          </li>
-          <li>If |record|.<a>[[\RequestCounter]]</a> is 0, then run the
-          following steps <a>in parallel</a>:
-            <ol>
-              <li>Run <a>release a wake lock</a> on |lock|.
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </section>
       <section data-link-for="WakeLockQueryFilter" data-dfn-for=
       "WakeLockQueryFilter">
         <h3>
@@ -851,18 +839,26 @@
         <ol class="algorithm" data-link-for="WakeLock">
           <li>Let |type| be |lock|'s <a>type</a>.
           </li>
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+          record</a> associated with |type|.
+          </li>
           <li>If the wake lock for type |type| is not <a>applicable</a>, return
           `false`.
           </li>
-          <li>Ask the underlying operation system to <a>acquire the wake
-          lock</a> of type |type| and let |success| be `true` if the operation
+          <li>Set |active| to `true` if the <a>platform wake lock</a> has an
+          active wake lock for |type|.
+          </li>
+          <li>Otherwise, ask the underlying operation system to <a>acquire the
+          wake lock</a> of type |type| and set |active| to `true` if the operation
           succeeded, or else `false`.
           </li>
-          <li data-tests="wakelock-onactivechange.https.html">If |success| is
-          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
-          |success| and <a>fire an event</a> named `"activechange"` at |lock|.
+          <li>Increment |record|.<a>[[\RequestCounter]]</a> by one.
           </li>
-          <li>Return |success|.
+          <li data-tests="wakelock-onactivechange.https.html">If |active| is
+          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
+          |active| and <a>fire an event</a> named `"activechange"` at |lock|.
+          </li>
+          <li>Return |active|.
           </li>
         </ol>
       </section>
@@ -877,28 +873,39 @@
         <ol class="algorithm" data-link-for="WakeLock">
           <li>Let |type| be |lock|'s <a>type</a>.
           </li>
+
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+          record</a> associated with |type|.
+          </li>
           <li>If the promise |lock|.{{[[requestPromise]]}} not `undefined` and
-          is pending, reject it with an "{{AbortError}}" {{DOMException}} and
-          <a>abort the request steps</a> for the associated running
-          <a>request()</a> algorithm.
+            is pending, reject it with an "{{AbortError}}" {{DOMException}} and
+            <a>abort the request steps</a> for the associated running
+            <a>request()</a> algorithm.
           </li>
-          <li>Ask the underlying operation system to release the wake lock of
-          type |type| and let |success| be `true` if the operation succeeded,
-          or else `false`.
+          <li>Decrement |record|.<a>[[\RequestCounter]]</a> by one.
           </li>
-          <li data-tests="wakelock-onactivechange.https.html">If |success| is
-          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
-          the negated |success| and <a>fire an event</a> named `"activechange"`
-          at |lock|.
-          </li>
-          <li>If |lock|'s type is `"screen"` run the following:
+          <li>If |record|.<a>[[\RequestCounter]]</a> is 0, then
+            run the following steps <a>in parallel</a>:
             <ol>
-              <li>The <a>user agent</a> MUST reset the platform-specific
-              inactivity timer after which the screen is actually turned off.
+              <li>Ask the underlying operation system to release the wake lock of
+              type |type| and let |success| be `true` if the operation succeeded,
+              or else `false`.
+              </li>
+              <li>If |success| is `true` and |lock|'s type is `"screen"` run the following:
+                <ol>
+                  <li>Reset the platform-specific
+                  inactivity timer after which the screen is actually turned off.
+                  </li>
+                </ol>
               </li>
             </ol>
           </li>
-          <li>Return |success|.
+          <li>Set |active| to `false`.
+          </li>
+          <li data-tests="wakelock-onactivechange.https.html">
+          If |active| is different from |lock|'s <a>active</a>, set |lock|'s
+          <a>active</a> to |active| and <a>fire an event</a> named
+          `"activechange"` at |lock|.
           </li>
         </ol>
         <div class="note">
@@ -942,12 +949,15 @@
       <h2>
         Examples
       </h2>
-      <pre class="example js" title="Acquire and releases a screen wake lock">
+      <pre class="example js" title="Acquires and releases a screen wake lock">
         function tryKeepScreenAlive(minutes) {
-          const lock = new WakeLock("screen");
-          lock.request();
+          const controller = new AbortController();
+          const signal = controller.signal;
 
-          setTimeout(() =&gt; lock.abort(), minutes * 60 * 1000);
+          const lock = new WakeLock("screen");
+          lock.request({ signal });
+
+          setTimeout(() =&gt; controller.abort(), minutes * 60 * 1000);
         }
 
         tryKeepScreenAlive(10);
@@ -966,12 +976,14 @@
 
         lock.onactivechange = () =&gt; checkbox.checked = lock.active;
 
+        const controller = new AbortController();
+
         try {
           checkbox.disabled = true;
           if (checkbox.checked) {
-            await lock.request();
+            await lock.request({ signal: controller.signal });
           } else {
-            lock.abort();
+            controller.abort();
           }
         } catch {
           // On failure, reset the checkbox to reflect the
@@ -982,23 +994,20 @@
         }
       </pre>
       <p>
-        In this example, two screen wake lock requests are created and released
-        independently:
+        In this example, two different wake lock requests are created and released
+        together using an {{AbortController}}:
       </p>
       <pre class="example js">
-        const lock1 = new WakeLock("screen");
-        const lock2 = new WakeLock("screen");
+        const screen = new WakeLock("screen");
+        const system = new WakeLock("system");
 
-        lock1.request();
+        const controller = new AbortController();
+        const signal = controller.signal;
 
-        // ...somewhere else
+        screen.request({ signal });
+        system.request({ signal });
 
-        lock2.request();
-
-        // ...somewhere else
-
-        lock2.abort();
-        lock1.abort();
+        controller.abort();
       </pre>
     </section>
     <section>
