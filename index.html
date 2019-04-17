@@ -291,13 +291,13 @@
       </ol>
       <div class="note">
         In the case the steps are run from a dedicated worker, then the
-        <a>global object</a> is a {{DedicatedWorkerGlobalScope}}, which means
-        that the <a>obtain permission</a> steps can never be <a>triggered by
-        user activation</a>, meaning that in order to use wake locks from a
+        <a>current global object</a> is a {{DedicatedWorkerGlobalScope}}, which
+        means that the <a>obtain permission</a> steps can never be <a>triggered
+        by user activation</a>, meaning that in order to use wake locks from a
         dedicated worker, prior permission needs to granted from the
-        <a>browsing context</a> who created it, e.g. the <a>browsing
-        context</a> that is exists in the {{DedicatedWorkerGlobalScope}}'s
-        <a>owner set</a>.
+        <a data-xref-for="">browsing context</a> who created it, e.g. the
+        <a data-xref-for="">browsing context</a> that is exists in the
+        {{DedicatedWorkerGlobalScope}}'s <a>owner set</a>.
       </div>
     </section>
     <section data-dfn-for="WakeLockType">
@@ -428,7 +428,7 @@
           {{DOMException}}.
           </li>
           <li>If the <a>current global object</a> is the {{Window}} object and
-          the |document|'s <a>browsing context</a> is `null`, throw a
+          the |document|'s [=Document/browsing context=] is `null`, throw a
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
@@ -559,7 +559,7 @@
               name if <a>present</a>, or `null` otherwise.
               </li>
               <li>If |signal|’s <a>aborted flag</a> is set, then reject
-              |promise| with an "<a>AbortError</a>" {{DOMException}}, and abort
+              |promise| with an {{"AbortError"}} {{DOMException}}, and abort
               these steps.
               </li>
               <li>If |signal| is not `null`, then [=AbortSignal/add=] the
@@ -773,8 +773,8 @@
         </ol>
         <div class="note">
           Only documents presented to the user, thus with an associated
-          <a>browsing context</a> can be <a>active documents</a>, so the above
-          steps are only relevant for these.
+          [=Document/browsing context=] can be <a>active documents</a>, so the
+          above steps are only relevant for these.
         </div>
       </section>
       <section>
@@ -965,11 +965,6 @@
         Dependencies
       </h2>
       <p>
-        <dfn data-cite="HTML/webappapis.html#global-object">global object</dfn>
-        and <dfn data-cite="HTML/browsers.html#browsing-context">browsing
-        context</dfn> are defined in [[HTML]].
-      </p>
-      <p>
         <code><dfn data-cite="WEBIDL#aborterror">AbortError</dfn></code>,
         <code><dfn data-cite=
         "WEBIDL#notsupportederror">NotSupportedError</dfn></code>, and
@@ -988,12 +983,6 @@
       <p>
         This specification defines conformance criteria for a single product: a
         <dfn>user agent</dfn> that implements the interfaces that it contains.
-      </p>
-      <p>
-        The <a>user agent</a> MUST implement the APIs defined in this
-        specification in a manner that conforms to the <a href=
-        "https://heycam.github.io/webidl/#ecmascript-binding">ECMAScript
-        Bindings</a> defined in [[WEBIDL]].
       </p>
     </section>
     <section id="idl-index" class="appendix"></section>
