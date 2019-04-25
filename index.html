@@ -944,7 +944,7 @@
         Examples
       </h2>
       <pre class="example js" title="Acquire and releases a screen wake lock">
-        async function tryKeepScreenAlive(minutes) {
+        function tryKeepScreenAlive(minutes) {
           const lock = new WakeLock("screen");
           lock.request();
 
