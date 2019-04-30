@@ -136,21 +136,21 @@
         or Wi-Fi from sleeping.
         </li>
       </ol>
-      <div class="note">
+      <aside class="note">
         Though a <a>system wake lock</a> will usually keep the network
         connection alive, it is most likely not required for such. Audio
         streaming on devices usually does the same and if you need it for long
         running upload and download tasks, such as for a podcast, other more
         appropriate features exist, like [[BACKGROUND-FETCH]].
-      </div>
-      <div class="note">
+      </aside>
+      <aside class="note">
         One type of wake lock can imply the effects of another: for example,
         screen wake lock logically implies that the program which displays
         information on the screen continues running, as if the system wake lock
         were also applied. But to avoid dependence on such implementation
         details which may not always be true, this specification treats all
         types of wake locks as independent.
-      </div>
+      </aside>
       <p>
         A <a>user agent</a> can <dfn data-lt="deny wake lock">deny a wake
         lock</dfn> of a particular <a>wake lock type</a> for a particular
@@ -168,7 +168,7 @@
         by the string `"wake-lock"`. Its <a>default allowlist</a> is
         `["self"]`.
       </p>
-      <div class="note">
+      <aside class="note">
         <p>
           The <a>default allowlist</a> of `["self"]` allows wake lock usage in
           same-origin nested frames but prevents third-party content from using
@@ -191,7 +191,7 @@
         <p>
           See [[[FEATURE-POLICY]]] for more details.
         </p>
-      </div>
+      </aside>
     </section>
     <section>
       <h3>
@@ -207,99 +207,104 @@
         the user with the means to <a href="#dfn-block-a-permission">block</a>
         the ongoing operation, or simply dismiss the notification.
       </p>
-      <p>
-        The `"wake-lock"` <a>powerful feature</a> is defined as follows:
-      </p>
-      <p data-dfn-for="WakeLockPermissionDescriptor">
-        The <a>permission descriptor type</a> is represented by the
-        <dfn>WakeLockPermissionDescriptor</dfn> <a>dictionary</a>, which
-        extends the {{PermissionDescriptor}} with a <dfn>type</dfn> member,
-        allowing for more fine-grained permissions.
-      </p>
-      <pre class="idl">
-        dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
-          WakeLockType type;
-        };
-      </pre>
-      <p>
-        The {{PermissionDescriptor.name}} is `"wake-lock"`.
-      </p>
-      <p>
-        Within this section, |descriptor:PermissionDescriptor| is an instance
-        of the {{PermissionDescriptor}} of the `"wake-lock"` <a>powerful
-        feature</a>.
-      </p>
-      <p>
-        To <dfn>block a permission</dfn>, run these steps:
-      </p>
-      <ol class="algorithm">
-        <li>Let |descriptor| be the <a>permission descriptor type</a> instance
-        to be blocked.
-        </li>
-        <li>Set |descriptor|'s <a>permission state</a> to {{"denied"}}.
-        </li>
-        <li>Let |record| be the <a>platform wake lock</a>'s <a>state record</a>
-        associated with |descriptor|'s <a data-lt=
-        "WakeLockPermissionDescriptor.type">type</a> member.
-        </li>
-        <li>[=list/For each=] |lock:WakeLock| in |record|.{{[[InstanceList]]}}:
-          <ol>
-            <li>Run <a>release a wake lock</a> on |lock|.
-            </li>
-          </ol>
-        </li>
-      </ol>
-      <p>
-        To <dfn>obtain permission</dfn> for <a>wake lock type</a> |type|, run
-        these steps <a>in parallel</a>. This async algorithm returns either
-        {{"granted"}} or {{"denied"}}.
-      </p>
-      <ol class="algorithm">
-        <li>Let |permissionDesc:WakeLockPermissionDescriptor| be a newly
-        created {{WakeLockPermissionDescriptor}}.
-        </li>
-        <li data-cite="permissions">Set |permissionDesc|'s {{name}} member to
-        "`wake-lock`".
-        </li>
-        <li>Set |permissionDesc|'s {{type}} to |type|.
-        </li>
-        <li>Let |resultPromise:Promise| be the result of running <a>query a
-        permission</a> with |permissionDesc|.
-        </li>
-        <li>Await |resultPromise| to settle.
-        </li>
-        <li>If |resultPromise| rejects, return {{"denied"}}.
-        </li>
-        <li>Otherwise, let |status:PermissionStatus| be the result of
-        |resultPromise|.
-        </li>
-        <li>Let |state:PermissionState| be the value of |status|.<code><a data-cite=
-        "permissions#dom-permissionstatus-state">state</a></code>.
-        </li>
-        <li>If |state| is {{"prompt"}}, run the following steps:
-          <ol>
-            <li>If these <a>obtain permission</a> steps were not
-              <a data-cite="html">triggered by user activation</a>, return
-              {{"denied"}}.
-            </li>
-            <li>Return the result of <a>requesting permission to use</a> with
-            |permissionDesc|.
-            </li>
-          </ol>
-        </li>
-        <li>Otherwise, return |state|.
-        </li>
-      </ol>
-      <div class="note">
-        In the case the steps are run from a dedicated worker, then the
-        <a>current global object</a> is a {{DedicatedWorkerGlobalScope}}, which
-        means that the <a>obtain permission</a> steps can never be <a>triggered
-        by user activation</a>, meaning that in order to use wake locks from a
-        dedicated worker, prior permission needs to granted from the
-        <a data-xref-for="">browsing context</a> who created it, e.g. the
-        <a data-xref-for="">browsing context</a> that is exists in the
-        {{DedicatedWorkerGlobalScope}}'s <a>owner set</a>.
-      </div>
+      <section data-dfn-for="WakeLockPermissionDescriptor">
+        <h2>
+          The <dfn>WakeLockPermissionDescriptor</dfn> dictionary
+        </h2>
+        <p>
+          The `"wake-lock"` <a>powerful feature</a> is defined as follows:
+        </p>
+        <p>
+          The <a>permission descriptor type</a> is represented by the
+          <a>WakeLockPermissionDescriptor</a> <a>dictionary</a>, which
+          extends the {{PermissionDescriptor}} with a <dfn>type</dfn> member,
+          allowing for more fine-grained permissions.
+        </p>
+        <pre class="idl">
+          dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
+            WakeLockType type;
+          };
+        </pre>
+        <p>
+          The {{PermissionDescriptor.name}} is `"wake-lock"`.
+        </p>
+      </section>
+      <section>
+        <h2>
+          Permission algorithms
+        </h2>
+        <p>
+          To <dfn>block a permission</dfn>, run these steps:
+        </p>
+        <ol class="algorithm">
+          <li>Let |descriptor:WakeLockPermissionDescriptor| be an instance of
+            {{WakeLockPermissionDescriptor}}.
+          </li>
+          <li>Set |descriptor|'s <a>permission state</a> to {{"denied"}}.
+          </li>
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state record</a>
+          associated with |descriptor|'s <a data-lt=
+          "WakeLockPermissionDescriptor.type">type</a> member.
+          </li>
+          <li>[=list/For each=] |lock:WakeLock| in |record|.{{[[InstanceList]]}}:
+            <ol>
+              <li>Run <a>release a wake lock</a> on |lock|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+        <p>
+          To <dfn>obtain permission</dfn> for <a>wake lock type</a> |type|, run
+          these steps <a>in parallel</a>. This async algorithm returns either
+          {{"granted"}} or {{"denied"}}.
+        </p>
+        <ol class="algorithm">
+          <li>Let |permissionDesc:WakeLockPermissionDescriptor| be a newly
+          created {{WakeLockPermissionDescriptor}}.
+          </li>
+          <li data-cite="permissions">Set |permissionDesc|'s {{name}} member to
+          "`wake-lock`".
+          </li>
+          <li>Set |permissionDesc|'s {{type}} to |type|.
+          </li>
+          <li>Let |resultPromise:Promise| be the result of running <a>query a
+          permission</a> with |permissionDesc|.
+          </li>
+          <li>Await |resultPromise| to settle.
+          </li>
+          <li>If |resultPromise| rejects, return {{"denied"}}.
+          </li>
+          <li>Otherwise, let |status:PermissionStatus| be the result of
+          |resultPromise|.
+          </li>
+          <li data-cite="permissions" data-xref-for="PermissionStatus">
+            Let |state:PermissionState| be the value of |status|.{{state}}.
+          </li>
+          <li>If |state| is {{"prompt"}}, run the following steps:
+            <ol>
+              <li>If these <a>obtain permission</a> steps were not
+                <a data-cite="html">triggered by user activation</a>, return
+                {{"denied"}}.
+              </li>
+              <li>Return the result of <a>requesting permission to use</a> with
+              |permissionDesc|.
+              </li>
+            </ol>
+          </li>
+          <li>Otherwise, return |state|.
+          </li>
+        </ol>
+        <aside class="note">
+          In the case the steps are run from a dedicated worker, then the
+          <a>current global object</a> is a {{DedicatedWorkerGlobalScope}}, which
+          means that the <a>obtain permission</a> steps can never be <a>triggered
+          by user activation</a>, meaning that in order to use wake locks from a
+          dedicated worker, prior permission needs to granted from the
+          <a data-xref-for="">browsing context</a> who created it, e.g. the
+          <a data-xref-for="">browsing context</a> that is exists in the
+          {{DedicatedWorkerGlobalScope}}'s <a>owner set</a>.
+          </aside>
+      </section>
     </section>
     <section data-dfn-for="WakeLockType">
       <h2>
@@ -634,7 +639,7 @@
           </li>
         </ol>
       </section>
-      <div class="note">
+      <aside class="note">
         The additional visibility requirement for screen wake lock is to
         prevent keeping the screen on when the page is not visible, such as
         when the browser is minimized. As this condition is transient and not
@@ -642,7 +647,7 @@
         automatically acquire and release the lock when visibility changes
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
-      </div>
+      </aside>
       <section data-link-for="WakeLockQueryFilter" data-dfn-for=
       "WakeLockQueryFilter">
         <h3>
@@ -739,13 +744,13 @@
         again. Manually switching off the screen MUST NOT affect the
         <a>applicability</a> of the <a>system wake lock</a>.
       </p>
-      <div class="note">
+      <aside class="note">
         Whether the wake lock is applicable is a transient condition, e.g. when
         the battery charge is low but then the battery is recharged. So like
         the visibility requirement, this is part of automatic wake lock
         management and not part of the decision process whether to allow or
         deny the wake lock.
-      </div>
+      </aside>
       <section>
         <h3>
           Auto-releasing wake locks
@@ -785,11 +790,11 @@
             </ol>
           </li>
         </ol>
-        <div class="note">
+        <aside class="note">
           Only documents presented to the user, thus with an associated
           [=Document/browsing context=] can be <a>active documents</a>, so the
           above steps are only relevant for these.
-        </div>
+        </aside>
       </section>
       <section>
         <h3>
@@ -819,17 +824,17 @@
             </ol>
           </li>
         </ol>
-        <div class="note">
+        <aside class="note">
           As some locks like {{ WakeLockType["system"] }} are allowed to run
           while the {{Document}} of the <a>top-level browsing context</a> is
           not visible, it is encouraged that user agents show some UI
           indicating this.
-        </div>
-        <div class="note">
+        </aside>
+        <aside class="note">
           The <a>visibility state</a> is only exposed on the {{Window}} object,
           thus the above steps are not relevant to wake locks running as part
           of a dedicated worker.
-        </div>
+        </aside>
       </section>
       <section>
         <h3>
@@ -908,10 +913,10 @@
           `"activechange"` at |lock|.
           </li>
         </ol>
-        <div class="note">
+        <aside class="note">
           Resetting the inactivity timer prevents the screen from going blank
           immediately after the wake lock is released.
-        </div>
+        </aside>
       </section>
     </section>
     <section>
