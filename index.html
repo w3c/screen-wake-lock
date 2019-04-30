@@ -212,7 +212,7 @@
       <p data-dfn-for="WakeLockPermissionDescriptor">
         The <a>permission descriptor type</a> is represented by the
         <dfn>WakeLockPermissionDescriptor</dfn> <a>dictionary</a>, which
-        augments the {{PermissionDescriptor}} with a <dfn>type</dfn> member,
+        extends the {{PermissionDescriptor}} with a <dfn>type</dfn> member,
         allowing for more fine-grained permissions.
       </p>
       <pre class="idl">
@@ -224,8 +224,7 @@
         The {{PermissionDescriptor.name}} is `"wake-lock"`.
       </p>
       <p>
-        Within this section, |descriptor| is an instance of the <a>permission
-        descriptor type</a> of the `"wake-lock"` <a>powerful feature</a>.
+        Within this section, |descriptor:PermissionDescriptor| is an instance of the {{PermissionDescriptor}} of the `"wake-lock"` <a>powerful feature</a>.
       </p>
       <p>
         To <dfn>block a permission</dfn>, run these steps:
@@ -240,7 +239,7 @@
         associated with |descriptor|'s <a data-lt=
         "WakeLockPermissionDescriptor.type">type</a> member.
         </li>
-        <li>[=list/For each=] |lock| in |record|.<a>[[\InstanceList]]</a>:
+        <li>[=list/For each=] |lock:WakeLock| in |record|.<a>[[\InstanceList]]</a>:
           <ol>
             <li>Run <a>release a wake lock</a> on |lock|.
             </li>
@@ -253,12 +252,12 @@
         {{"granted"}} or {{"denied"}}.
       </p>
       <ol class="algorithm">
-        <li>Let |permissionDesc:PermissionDescriptor| be a newly created
-        {{PermissionDescriptor}}.
+        <li>Let |permissionDesc:WakeLockPermissionDescriptor| be a newly created
+        {{WakeLockPermissionDescriptor}}.
         </li>
-        <li>Set |permissionDesc|'s name to "`wake-lock`".
+        <li data-cite="permissions">Set |permissionDesc|'s {{name}} to "`wake-lock`".
         </li>
-        <li>Set |permissionDesc|'s type to |type|.
+        <li>Set |permissionDesc|'s {{type}} to |type|.
         </li>
         <li>Let |resultPromise| be the result of running <a>query a
         permission</a> with |permissionDesc|.
@@ -275,7 +274,7 @@
         </li>
         <li>If |state| is {{"prompt"}}, run the following steps:
           <ol>
-            <li>If these <a>obtain permission</a> steps were not <a>triggered
+            <li>If these <a>obtain permission</a> steps were not <a data-cite="html">triggered
             by user activation</a>, return {{"denied"}}.
             </li>
             <li>Return the result of <a>requesting permission to use</a> with
@@ -363,10 +362,10 @@
               <dfn>[[\InstanceList]]</dfn>
             </td>
             <td>
-              The empty <a data-cite="infra#ordered-set">set</a>.
+              The empty <a>ordered set</a>.
             </td>
             <td>
-              A <a data-cite="INFRA#ordered-set">set</a> of {{WakeLock}}
+              A <a>ordered set</a> of {{WakeLock}}
               instances.
             </td>
           </tr>
@@ -474,7 +473,7 @@
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |type|.
           </li>
-          <li>Add |lock| to |record|.<a>[[\InstanceList]]</a>.
+          <li>Add |lock:WakeLock| to |record|.<a>[[\InstanceList]]</a>.
           </li>
           <li data-tests="wakelock-onactivechange.https.html">If the wake lock
           of type |type| is currently <a>acquired</a>, set |lock|'s <a href=
@@ -494,7 +493,7 @@
           {{"denied"}}.
         </p>
         <ol class="algorithm">
-          <li>Let |promise:Promise| be <a data-cite=
+          <li>Let |promise:Promise&tl;PermissionState>| be <a data-cite=
           "promises-guide#a-new-promise">a new promise</a>.
           </li>
           <li>Let |type| be the first argument.
@@ -698,7 +697,7 @@
           </li>
           <li>[=list/For each=] |record| in |records|:
             <ol>
-              <li>[=list/For each=] |lock| in
+              <li>[=list/For each=] |lock:WakeLock| in
               |record|.<a>[[\InstanceList]]</a>:
                 <ol>
                   <li>If |active| is <a>present</a>, add |lock| to |locks| if
@@ -789,7 +788,7 @@
           lock</a>'s <a>state record</a> associated with <a>wake lock type</a>
           {{"screen"}} and {{"system"}}.
           </li>
-          <li>[=list/For each=] |lock| in |record|.<a>[[\InstanceList]]</a>:
+          <li>[=list/For each=] |lock:WakeLock| in |record|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>Run <a>release a wake lock</a> on |lock|.
               </li>
@@ -822,7 +821,7 @@
           record</a> associated with <a>wake lock type</a> {{
           WakeLockType["screen"] }}.
           </li>
-          <li>[=list/For each=] |lock| in
+          <li>[=list/For each=] |lock:WakeLock| in
           |screenRecord|.<a>[[\InstanceList]]</a>:
             <ol>
               <li>Run <a>release a wake lock</a> on |lock|.
