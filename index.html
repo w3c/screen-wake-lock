@@ -410,7 +410,6 @@
           readonly attribute boolean active;
           attribute EventHandler onactivechange;
           Promise&lt;void&gt; request(optional WakeLockRequestOptions options);
-          static sequence&lt;WakeLock&gt; query(optional WakeLockQueryFilter filter);
         };
       </pre>
       <section>
@@ -648,65 +647,6 @@
         rather than having the page to deal with it, e.g by re-requesting the
         lock each time the page becomes visible again.
       </aside>
-      <section data-link-for="WakeLockQueryFilter" data-dfn-for=
-      "WakeLockQueryFilter">
-        <h3>
-          The <dfn>WakeLockQueryFilter</dfn> dictionary
-        </h3>
-        <pre class="idl">
-          dictionary WakeLockQueryFilter {
-            WakeLockType? type;
-            boolean? active;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> member and <dfn>active</dfn> member allows
-          filtering by <a>wake lock type</a> and activity (whether the wake
-          lock is currently <a>acquired</a> by the <a>user agent</a>.).
-        </p>
-      </section>
-      <section data-link-for="WakeLock">
-        <h3>
-          <dfn>query()</dfn> static method
-        </h3>
-        <p>
-          The <a data-lt="query">query(|filter:WakeLockQueryFilter|)</a>
-          method, when invoked, MUST run the following steps.
-        </p>
-        <ol class="algorithm">
-          <li>Let |records| be the empty <a>list</a>.
-          </li>
-          <li>Let |type:WakeLockType| be the |filter| dictionary member of the same name.
-          </li>
-          <li>Let |active| be the |filter| dictionary member of the same name.
-          </li>
-          <li>If |type| is <a>present</a>, add the <a>platform wake lock</a>'s
-          <a>state record</a> associated with <a>wake lock type</a> |type| to
-          |records|.
-          </li>
-          <li>Otherwise, add all <a>state records</a> to |records|.
-          </li>
-          <li>Let |locks| be the empty <a data-cite=
-          "infra#ordered-set">set</a>.
-          </li>
-          <li>[=list/For each=] |record| in |records|:
-            <ol>
-              <li>[=list/For each=] |lock:WakeLock| in
-              |record|.{{[[InstanceList]]}}:
-                <ol>
-                  <li>If |active| is <a>present</a>, add |lock| to |locks| if
-                  |active| is equal to |lock|'s active attribute value.
-                  </li>
-                  <li>Otherwise, add |lock| to |locks|
-                  </li>
-                </ol>
-              </li>
-            </ol>
-          </li>
-          <li>Return |locks|.
-          </li>
-        </ol>
-      </section>
     </section>
     <section>
       <h2>
