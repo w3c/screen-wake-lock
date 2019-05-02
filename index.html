@@ -237,18 +237,23 @@
           To <dfn>block a permission</dfn>, run these steps:
         </p>
         <ol class="algorithm">
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
+          </li>
           <li>Let |descriptor:WakeLockPermissionDescriptor| be an instance of
-            {{WakeLockPermissionDescriptor}}.
+          {{WakeLockPermissionDescriptor}}.
           </li>
           <li>Set |descriptor|'s <a>permission state</a> to {{"denied"}}.
           </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state record</a>
-          associated with |descriptor|'s <a data-lt=
-          "WakeLockPermissionDescriptor.type">type</a> member.
+          <li>Let |type| be |descriptor|'s <a data-lt=
+            "WakeLockPermissionDescriptor.type">type</a> member.
           </li>
-          <li>[=list/For each=] |lock:WakeLock| in |record|.{{[[InstanceList]]}}:
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state record</a>
+          associated with |document| and |type|.
+          </li>
+          <li>[=list/For each=] |lockPromise:Promise| in |record|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> on |lock|.
+              <li>Run <a>release a wake lock</a> with |lockPromise| and |type|.
               </li>
             </ol>
           </li>
@@ -348,7 +353,8 @@
       </p>
       <p>
         Each <a>platform wake lock</a> (one per <a>wake lock type</a>) has an
-        associated <dfn>state record</dfn> with the following <a data-cite=
+        associated <dfn>state record</dfn> per <a>responsible document</a>
+        with the following <a data-cite=
         "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
         slots</a>:
       </p>
@@ -369,25 +375,14 @@
         <tbody>
           <tr>
             <td>
-              <dfn>[[\InstanceList]]</dfn>
+              <dfn>[[\ActiveLocks]]</dfn>
             </td>
             <td>
-              The empty <a>ordered set</a>.
+              The empty <a>list</a>.
             </td>
             <td>
-              A <a>ordered set</a> of {{WakeLock}} instances.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <dfn>[[\RequestCounter]]</dfn>
-            </td>
-            <td>
-              0.
-            </td>
-            <td>
-              The value indicates the amount of current requests for the
-              <a>wake lock type</a>.
+              A <a>list</a> of {{Promise}}s, representing active
+              wake locks associated with the <a>responsible document</a>.
             </td>
           </tr>
         </tbody>
@@ -403,93 +398,12 @@
         receive notifications when the wake lock state is changed.
       </p>
       <pre class="idl">
-        [Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker, Window)]
-        interface WakeLock : EventTarget {
+        [SecureContext, Exposed=(DedicatedWorker, Window)]
+        interface WakeLock {
           [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
-          readonly attribute WakeLockType type;
-          readonly attribute boolean active;
-          attribute EventHandler onactivechange;
-          Promise&lt;void&gt; request(optional WakeLockRequestOptions options);
+          static Promise&lt;void&gt; request(WakeLockType type, optional WakeLockRequestOptions options);
         };
       </pre>
-      <section>
-        <h3>
-          Internal slots
-        </h3>
-        <table class="simple">
-          <thead>
-            <tr>
-              <th>
-                Internal slot
-              </th>
-              <th>
-                Description (<em>non-normative</em>)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <dfn>[[\requestPromise]]</dfn>
-              </td>
-              <td>
-                The pending promise created during <a data-link-for=
-                "WakeLock">request()</a>.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      <section>
-        <h3>
-          Constructor
-        </h3>
-        <p>
-          To <dfn data-lt="create and initialize a wake lock object">create and
-          initialize</dfn> a {{WakeLock}} object of type |type:WakeLockType|, the following
-          steps MUST be performed:
-        </p>
-        <ol class="algorithm">
-          <li>Let |document:Document| be the <a>responsible document</a> of the
-          <a>current settings object</a>.
-          </li>
-          <li>If the <a>current global object</a> is the
-          {{DedicatedWorkerGlobalScope}} object and its <a>owner set</a>
-          <a data-xref-for="list">is empty</a>, throw a "{{NotAllowedError}}"
-          {{DOMException}}.
-          </li>
-          <li>If the <a>current global object</a> is the {{Window}} object and
-          the |document|'s [=Document/browsing context=] is `null`, throw a
-          "{{NotAllowedError}}" {{DOMException}}.
-          </li>
-          <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-          If |document| is not <a>allowed to use</a> the <a>policy-controlled
-          feature</a> named "`wake-lock`", throw a "{{NotAllowedError}}"
-          {{DOMException}}.
-          </li>
-          <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
-          wake lock</a> of this |type| for |document|, throw a
-          "{{NotAllowedError}}" {{DOMException}}.
-          </li>
-          <li data-tests="wakelock-api.https.html">Let |lock:WakeLock| be a new
-          {{WakeLock}} object.
-          </li>
-          <li data-tests="wakelock-type.https.html">Set |lock|'s type to
-          |type|.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |type|.
-          </li>
-          <li>Add |lock:WakeLock| to |record|.{{[[InstanceList]]}}.
-          </li>
-          <li data-tests="wakelock-onactivechange.https.html">If the wake lock
-          of type |type| is currently <a>acquired</a>, set |lock|'s <a href=
-          "#dom-wakelock-active">active</a> to `true`, otherwise to `false`.
-          </li>
-          <li>Return |lock|.
-          </li>
-        </ol>
-      </section>
       <section data-link-for="WakeLock">
         <h3>
           <dfn>requestPermission()</dfn> static method
@@ -515,35 +429,6 @@
           </li>
         </ol>
       </section>
-      <section data-dfn-for="WakeLock" data-link-for="WakeLock">
-        <h3>
-          <dfn>type</dfn> attribute
-        </h3>
-        <p>
-          When getting, the <a>type</a> attribute returns this {{WakeLock}}'s
-          <a>wake lock type</a>.
-        </p>
-      </section>
-      <section data-link-for="WakeLock">
-        <h3>
-          <dfn>active</dfn> attribute
-        </h3>
-        <p>
-          The {{active}} attribute represents whether a wake lock is currently
-          <a>acquired</a> by the {{WakeLock}} instance.
-        </p>
-      </section>
-      <section data-dfn-for="WakeLock" data-link-for="WakeLock">
-        <h3>
-          <dfn>onactivechange</dfn> attribute
-        </h3>
-        <p data-tests="wakelock-onactivechange.https.html">
-          A {{WakeLock}}'s <a>onactivechange</a> attribute is an
-          {{EventHandler}} with the corresponding <a>event handler event
-          type</a> of `activechange`. Fired when current wake lock status
-          indicated by the <a>active</a> attribute changes.
-        </p>
-      </section>
       <section data-dfn-for="WakeLockRequestOptions"> <h3>The <dfn>WakeLockRequestOptions</dfn> dictionary</h3>
         <pre class="idl">
           dictionary WakeLockRequestOptions {
@@ -557,82 +442,106 @@
       </section>
       <section>
         <h3>
-          <dfn>request()</dfn> method
+          <dfn>request()</dfn> static method
         </h3>
-        <p>
-          To <dfn>abort the request steps</dfn> for a running instance of
-          <a data-link-for="WakeLock">request()</a>, run these additional
-          steps:
-        </p>
-        <ol class="algorithm" data-link-for="WakeLock">
-          <li>Set |lock:WakeLock|.{{[[requestPromise]]}} to `undefined`.
-          </li>
-          <li>Abort the associated <a>request()</a> algorithm.
-          </li>
-        </ol>
         <p data-tests="wakelock-api.https.html" data-link-for="WakeLock">
-          The <a>request()</a> method, when invoked, MUST run the following
-          steps:
+          The <a data-lt="request">request(|type:WakeLockType|,
+          |options:WakeLockRequestOptions|)</a> method, when invoked,
+          MUST run the following steps:
         </p>
         <ol class="algorithm">
-          <li>Let |options:WakeLockRequestOptions| be the first argument.
-          </li>
-          <li>Let |lock:WakeLock| be the <a>context object</a>.
-          </li>
           <li>Let |promise:Promise| be <a data-cite=
-            "promises-guide#a-new-promise">a new promise</a>.
+          "promises-guide#a-new-promise">a new promise</a>.
           </li>
-          <li>If |lock|.{{[[requestPromise]]}} is not `undefined`,
-            reject |promise| with a "{{InvalidStateError}}" {{DOMException}},
-            and run <a>abort the request steps</a>.
-          </li>
-          <li>If |options|.|signal:AbortSignal|’s <a>aborted flag</a> is set, then
-          reject |promise| with an "{{AbortError}}" {{DOMException}},
-          and run <a>abort the request steps</a>.
-          </li>
-          <li>If |options|.|signal| is not `null`, then [=AbortSignal/add=] to |options|.|signal|:
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
+          <ol>
+            </li>
+            <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+            If |document| is not <a>allowed to use</a> the <a>policy-controlled
+            feature</a> named "`wake-lock`", reject |promise| with a
+            "{{NotAllowedError}}" {{DOMException}} and return |promise|.
+            </li>
+            <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
+            wake lock</a> of this |type| for |document|, reject |promise|
+            with a "{{NotAllowedError}}" {{DOMException}} and return |promise|.
+            </li>
+          </ol>
+          <li>If the <a>current global object</a> is the
+          {{DedicatedWorkerGlobalScope}} object:
             <ol>
-              <li>Run <a>release a wake lock</a> on |lock|.
+              <li>If the <a>current global object</a>'s <a>owner set</a>
+              <a data-xref-for="list">is empty</a>, reject |promise| with a
+              "{{NotAllowedError}}" {{DOMException}} and return |promise|.
+              </li>
+              <li data-link-for="">If |type| is {{
+              WakeLockType["screen"] }}, reject
+              |promise| with a "{{NotAllowedError}}" {{DOMException}},
+              and return |promise|.
               </li>
             </ol>
           </li>
-          <li>Set |lock|.{{[[requestPromise]]}} to promise.
+          <li>Otherwise, if the <a>current global object</a> is the {{Window}} object:
+            <ol>
+              <li>If the |document|'s [=Document/browsing context=] is `null`, reject
+              |promise| with a "{{NotAllowedError}}" {{DOMException}} and
+              return |promise|.
+              </li>
+              <li>If |document| is not <a>fully active</a>, reject
+              |promise| with a "{{NotAllowedError}}" {{DOMException}},
+              and return |promise|.
+              </li>
+              <li data-link-for="">If |type| is {{
+              WakeLockType["screen"] }} and the {{Document}} of the
+              <a>top-level browsing context</a> is <a>hidden</a>, reject
+              |promise| with a "{{NotAllowedError}}" {{DOMException}},
+              and return |promise|.
+              </li>
+            </ol>
           </li>
           <li>Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
-              <li>Let |state:PermissionState| be the result of running and waiting for the <a>
-              obtain permission</a> steps with |lock|.|type:WakeLockType|.
+              <li data-link-for="WakeLockRequestOptions">
+              Let |signal:AbortSignal| be |options|'s {{signal}} member if
+              present, or `null`.
               </li>
-              <li>If |state| is {{"denied"}}, then reject |promise| with a
-              "{{NotAllowedError}}" {{DOMException}}, and run <a>abort the
-              request steps</a>.
+              <li>If |signal| is not `null` and |signal|’s <a>aborted flag</a>
+                is set, then reject |promise| with an "{{AbortError}}" {{DOMException}},
+                and abort these steps.
               </li>
-              <li>If the <a>current global object</a> is not a
-              {{DedicatedWorkerGlobalScope}} object, run the following steps:
+              <li>Let |state:PermissionState| be the result of awaiting <a>
+              obtain permission</a> steps with |type|:
                 <ol>
-                  <li>Let |document| be the <a>responsible document</a> of the
-                  <a>current settings object</a>.
-                  </li>
-                  <li>If |document| is not <a>fully active</a>, reject
-                  |promise| with a "{{NotAllowedError}}" {{DOMException}}, and
-                  run <a>abort the request steps</a>.
-                  </li>
-                  <li data-link-for="">If |lock|'s |type| is {{
-                  WakeLockType["screen"] }} and the {{Document}} of the
-                  <a>top-level browsing context</a> is <a>hidden</a>, reject
-                  |promise| with a "{{NotAllowedError}}" {{DOMException}}, and
-                  run <a>abort the request steps</a>.
+                  <li>If |state| is {{"denied"}}, then reject |promise| with a
+                  "{{NotAllowedError}}" {{DOMException}}, and abort these steps.
                   </li>
                 </ol>
               </li>
+              <li>If |signal| is not `null` and |signal|’s <a>aborted flag</a>
+                is set, then reject |promise| with an "{{AbortError}}" {{DOMException}},
+                and abort these steps.
+              </li>
               <li>Let |success:boolean| be the result of awaiting
-                <a>acquire a wake lock</a> on |lock|.
+                <a>acquire a wake lock</a> with |promise| and |type|:
+                <ol>
+                  <li>If |success| is `false` then reject |promise| with a
+                  "{{NotAllowedError}}" {{DOMException}}, and abort these steps.
+                  </li>
+                </ol>
               </li>
-              <li>If |success| is `false` then reject |promise| with a
-              "{{NotAllowedError}}" {{DOMException}}, and run
-              <a>abort the request steps</a>.
-              </li>
-              <li>Resolve |promise| with `void`.
+              <li>If |signal| is not `null`:
+                <ol>
+                  <li>If |signal|’s <a>aborted flag</a> is set, then reject |promise|
+                  with an "{{AbortError}}" {{DOMException}}, and abort these steps.
+                  </li>
+                  <li>
+                    [=AbortSignal/Add=] to |signal|:
+                    <ol>
+                      <li>Run <a>release a wake lock</a> with |promise| and |type|.
+                      </li>
+                    </ol>
+                  </li>
+                </ol>
               </li>
             </ol>
           </li>
@@ -718,17 +627,33 @@
           it must run these steps:
         </p>
         <ol class="algorithm">
-          <li data-link-for="WakeLockType">Let |record| be the <a>platform wake
-          lock</a>'s <a>state record</a> associated with <a>wake lock type</a>
-          {{"screen"}} and {{"system"}}.
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
           </li>
-          <li>[=list/For each=] |lock:WakeLock| in
-          |record|.{{[[InstanceList]]}}:
+          <li data-link-for="WakeLockType">Let |screenRecord| be the <a>platform wake
+          lock</a>'s <a>state record</a> associated with |document| and
+          <a>wake lock type</a> {{"screen"}}.
+          </li>
+          <li>[=list/For each=] |lockPromise:Promise| in
+          |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> on |lock|.
+              <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+                WakeLockType["screen"] }}.
               </li>
             </ol>
           </li>
+          <li data-link-for="WakeLockType">Let |systemRecord| be the <a>platform wake
+            lock</a>'s <a>state record</a> associated with |document| and
+            <a>wake lock type</a> {{"system"}}.
+            </li>
+            <li>[=list/For each=] |lockPromise:Promise| in
+            |systemRecord|.{{[[ActiveLocks]]}}:
+              <ol>
+                <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+                  WakeLockType["system"] }}.
+                </li>
+              </ol>
+            </li>
         </ol>
         <aside class="note">
           Only documents presented to the user, thus with an associated
@@ -756,10 +681,11 @@
           record</a> associated with <a>wake lock type</a> {{
           WakeLockType["screen"] }}.
           </li>
-          <li>[=list/For each=] |lock:WakeLock| in
-          |screenRecord|.{{[[InstanceList]]}}:
+          <li>[=list/For each=] |lockPromise:Promise| in
+          |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> on |lock|.
+              <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+              WakeLockType["screen"] }}.
               </li>
             </ol>
           </li>
@@ -779,14 +705,12 @@
       <section>
         <h3>
           Acquire wake lock algorithm
-        </h3>To <dfn>acquire a wake lock</dfn> for a given {{WakeLock}} object
-        |lock:WakeLock|, run these steps <a>in parallel</a>:
+        </h3>
+        <p>
+          To <dfn>acquire a wake lock</dfn> for a given |lockPromise:Promise| and
+          |type:WakeLockType|, run these steps <a>in parallel</a>:
+        </p>
         <ol class="algorithm" data-link-for="WakeLock">
-          <li>Let |type:WakeLockType| be |lock|'s <a>type</a>.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |type|.
-          </li>
           <li>If the wake lock for type |type| is not <a>applicable</a>, return
           `false`.
           </li>
@@ -797,12 +721,18 @@
           wake lock</a> of type |type| and set |active| to `true` if the operation
           succeeded, or else `false`.
           </li>
-          <li>Increment |record|.<a>[[\RequestCounter]]</a> by one.
+          <li>If |active| is `true`:           
           </li>
-          <li data-tests="wakelock-onactivechange.https.html">If |active| is
-          different from |lock|'s <a>active</a>, set |lock|'s <a>active</a> to
-          |active| and <a>fire an event</a> named `"activechange"` at |lock|.
-          </li>
+          <ol>
+            <li>Let |document:Document| be the <a>responsible document</a> of the
+            <a>current settings object</a>.
+            </li>
+            <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+            record</a> associated with |document| and |type|.
+            </li>
+            <li>Add |lockPromise| to |record|.{{[[ActiveLocks]]}}.
+            </li>
+          </ol>
           <li>Return |active|.
           </li>
         </ol>
@@ -812,31 +742,40 @@
           Release wake lock algorithm
         </h3>
         <p>
-          To <dfn>release a wake lock</dfn> for a given {{WakeLock}} object
-          |lock:WakeLock|, run these steps <a>in parallel</a>:
+          To <dfn>release a wake lock</dfn> for a given |lockPromise:Promise| and
+          |type:WakeLockType|, run these steps <a>in parallel</a>:
         </p>
         <ol class="algorithm" data-link-for="WakeLock">
-          <li>Let |type:WakeLockType| be |lock|'s <a>type</a>.
+          <li>Reject |lockPromise| with an "{{AbortError}}" {{DOMException}}.
+            <aside class="note">
+              This is a no-op if |lockPromise| has already fulfilled.
+            </aside>
           </li>
-
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
+          </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |type|.
+            record</a> associated with |document| and |type|.
           </li>
-          <li>If the promise |lock|.{{[[requestPromise]]}} not `undefined` and
-            is pending, reject it with an "{{AbortError}}" {{DOMException}} and
-            <a>abort the request steps</a> for the associated running
-            <a>request()</a> algorithm.
+          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lockPromise|,
+            abort these steps.
+            <aside class="note">
+              The |lockPromise| only exists in {{[[ActiveLocks]]}} after a
+              wake lock has been acquired, but the {{AbortSignal}}'s algorithm
+              can be run after |lockPromise| has fulfilled.
+            </aside>
           </li>
-          <li>Decrement |record|.<a>[[\RequestCounter]]</a> by one.
+          <li>Remove |lockPromise| from |record|.{{[[ActiveLocks]]}}.
           </li>
-          <li>If |record|.<a>[[\RequestCounter]]</a> is 0, then
+          <li>If the internal slot {{[[ActiveLocks]]}} of all the <a>platform wake
+            lock</a>'s <a>state record</a>s are all empty, then
             run the following steps <a>in parallel</a>:
             <ol>
               <li>Ask the underlying operation system to release the wake lock of
               type |type| and let |success:boolean| be `true` if the operation succeeded,
               or else `false`.
               </li>
-              <li>If |success| is `true` and |lock|'s type is `"screen"` run the following:
+              <li>If |success| is `true` and |type| is `"screen"` run the following:
                 <ol>
                   <li>Reset the platform-specific
                   inactivity timer after which the screen is actually turned off.
@@ -844,13 +783,6 @@
                 </ol>
               </li>
             </ol>
-          </li>
-          <li>Set |active:boolean| to `false`.
-          </li>
-          <li data-tests="wakelock-onactivechange.https.html">
-          If |active| is different from |lock|'s <a>active</a>, set |lock|'s
-          <a>active</a> to |active| and <a>fire an event</a> named
-          `"activechange"` at |lock|.
           </li>
         </ol>
         <aside class="note">
@@ -899,8 +831,7 @@
           const controller = new AbortController();
           const signal = controller.signal;
 
-          const lock = new WakeLock("screen");
-          lock.request({ signal });
+          WakeLock.request("screen", { signal });
 
           setTimeout(() =&gt; controller.abort(), minutes * 60 * 1000);
         }
@@ -917,25 +848,19 @@
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
 
-        const lock = new WakeLock("screen");
+        let controller;
 
-        lock.onactivechange = () =&gt; checkbox.checked = lock.active;
-
-        const controller = new AbortController();
-
-        try {
-          checkbox.disabled = true;
-          if (checkbox.checked) {
-            await lock.request({ signal: controller.signal });
-          } else {
-            controller.abort();
+        checkbox.onclick = () =&gt; {
+          try {
+            if (checkbox.checked) {
+              controller = new AbortController();
+              WakeLock.request("screen", { signal: controller.signal });
+            } else if (controller) {
+              controller.abort();
+            }
+          } catch {
+            checkbox.checked = false;
           }
-        } catch {
-          // On failure, reset the checkbox to reflect the
-          // current state. `onactivechanged` will not have fired.
-          checkbox.checked = lock.active;
-        } finally {
-          checkbox.disabled = false;
         }
       </pre>
       <p>
@@ -943,14 +868,11 @@
         together using an {{AbortController}}:
       </p>
       <pre class="example js">
-        const screen = new WakeLock("screen");
-        const system = new WakeLock("system");
-
         const controller = new AbortController();
         const signal = controller.signal;
 
-        screen.request({ signal });
-        system.request({ signal });
+        WakeLock.request("screen", { signal });
+        WakeLock.request("system", { signal });
 
         controller.abort();
       </pre>
