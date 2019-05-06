@@ -34,7 +34,7 @@ install:
  - npm install respec-validator
 script:
  - make check
- - npx respec-validator --gh-user=$GH_USER --gh-token=$GH_TOKEN index.html
+ - npx respec-validator --gh-user=$GH_USER --gh-token=$GH_TOKEN --check-links-using-get index.html
 env:
   global:
     - URL="http://w3c.github.io/wake-lock/W3CTRMANIFEST"
