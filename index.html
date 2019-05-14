@@ -455,18 +455,20 @@
           </li>
           <li>Let |document:Document| be the <a>responsible document</a> of the
           <a>current settings object</a>.
-          <ol>
-            </li>
-            <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-            If |document| is not <a>allowed to use</a> the <a>policy-controlled
-            feature</a> named "`wake-lock`", reject |promise| with a
-            "{{NotAllowedError}}" {{DOMException}} and return |promise|.
-            </li>
-            <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies the
-            wake lock</a> of this |type| for |document|, reject |promise|
-            with a "{{NotAllowedError}}" {{DOMException}} and return |promise|.
-            </li>
-          </ol>
+            <ol>
+              <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+              If |document| is not <a>allowed to use</a> the
+              <a>policy-controlled feature</a> named "`wake-lock`", reject
+              |promise| with a "{{NotAllowedError}}" {{DOMException}} and
+              return |promise|.
+              </li>
+              <li>If the <a>user agent</a> <a data-lt="deny wake lock">denies
+              the wake lock</a> of this |type| for |document|, reject |promise|
+              with a "{{NotAllowedError}}" {{DOMException}} and return
+              |promise|.
+              </li>
+            </ol>
+          </li>
           <li>If the <a>current global object</a> is the
           {{DedicatedWorkerGlobalScope}} object:
             <ol>
@@ -722,17 +724,17 @@
           succeeded, or else `false`.
           </li>
           <li>If |active| is `true`:           
+            <ol>
+              <li>Let |document:Document| be the <a>responsible document</a> of
+              the <a>current settings object</a>.
+              </li>
+              <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+              record</a> associated with |document| and |type|.
+              </li>
+              <li>Add |lockPromise| to |record|.{{[[ActiveLocks]]}}.
+              </li>
+            </ol>
           </li>
-          <ol>
-            <li>Let |document:Document| be the <a>responsible document</a> of the
-            <a>current settings object</a>.
-            </li>
-            <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-            record</a> associated with |document| and |type|.
-            </li>
-            <li>Add |lockPromise| to |record|.{{[[ActiveLocks]]}}.
-            </li>
-          </ol>
           <li>Return |active|.
           </li>
         </ol>
