@@ -852,11 +852,11 @@
 
         let controller;
 
-        checkbox.onclick = () =&gt; {
+        checkbox.onclick = async () =&gt; {
           try {
             if (checkbox.checked) {
               controller = new AbortController();
-              WakeLock.request("screen", { signal: controller.signal });
+              await WakeLock.request("screen", { signal: controller.signal });
             } else if (controller) {
               controller.abort();
             }
