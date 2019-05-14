@@ -498,16 +498,27 @@
               </li>
             </ol>
           </li>
-          <li>Return |promise| and run the following steps <a>in parallel</a>:
+          <li data-link-for="WakeLockRequestOptions">Let |signal:AbortSignal| be
+          |options|'s {{signal}} member if present, or `null`.
             <ol>
-              <li data-link-for="WakeLockRequestOptions">
-              Let |signal:AbortSignal| be |options|'s {{signal}} member if
-              present, or `null`.
+              <li>If |signal| is not `null` and |signal|’s <a
+              data-cite="dom">aborted flag</a> is set, then reject |promise|
+              with an "{{AbortError}}" {{DOMException}} and return |promise|.
               </li>
-              <li>If |signal| is not `null` and |signal|’s <a>aborted flag</a>
-                is set, then reject |promise| with an "{{AbortError}}" {{DOMException}},
-                and abort these steps.
+              <li>If |signal| is not `null` and |signal|'s <a
+              data-cite="dom">aborted flag</a> is not set, [=AbortSignal/add=]
+              to |signal|:
+                <ol>
+                  <li>Run <a>release a wake lock</a> with |promise| and |type|.
+                  </li>
+                </ol>
               </li>
+            </ol>
+          </li>
+          <li>Run the following steps <a>in parallel</a>, but <a>abort when</a>
+          |signal| is not `null` and |signal|'s <a data-cite="dom">aborted
+          flag</a> is set:
+            <ol>
               <li>Let |state:PermissionState| be the result of awaiting <a>
               obtain permission</a> steps with |type|:
                 <ol>
@@ -515,10 +526,6 @@
                   "{{NotAllowedError}}" {{DOMException}}, and abort these steps.
                   </li>
                 </ol>
-              </li>
-              <li>If |signal| is not `null` and |signal|’s <a>aborted flag</a>
-                is set, then reject |promise| with an "{{AbortError}}" {{DOMException}},
-                and abort these steps.
               </li>
               <li>Let |success:boolean| be the result of awaiting
                 <a>acquire a wake lock</a> with |promise| and |type|:
@@ -528,21 +535,9 @@
                   </li>
                 </ol>
               </li>
-              <li>If |signal| is not `null`:
-                <ol>
-                  <li>If |signal|’s <a>aborted flag</a> is set, then reject |promise|
-                  with an "{{AbortError}}" {{DOMException}}, and abort these steps.
-                  </li>
-                  <li>
-                    [=AbortSignal/Add=] to |signal|:
-                    <ol>
-                      <li>Run <a>release a wake lock</a> with |promise| and |type|.
-                      </li>
-                    </ol>
-                  </li>
-                </ol>
-              </li>
             </ol>
+          </li>
+          <li>Return |promise|.
           </li>
         </ol>
       </section>
