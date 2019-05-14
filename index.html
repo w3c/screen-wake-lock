@@ -431,7 +431,7 @@
       <section data-dfn-for="WakeLockRequestOptions"> <h3>The <dfn>WakeLockRequestOptions</dfn> dictionary</h3>
         <pre class="idl">
           dictionary WakeLockRequestOptions {
-            AbortSignal? signal = null;
+            AbortSignal signal;
           };
         </pre>
         <p>
@@ -498,16 +498,16 @@
               </li>
             </ol>
           </li>
-          <li data-link-for="WakeLockRequestOptions">Let |signal:AbortSignal| be
-          |options|'s {{signal}} member if present, or `null`.
+          <li data-link-for="WakeLockRequestOptions">If |options|' {{signal}}
+          member is present, then run the following steps:
             <ol>
-              <li>If |signal| is not `null` and |signal|’s <a
-              data-cite="dom">aborted flag</a> is set, then reject |promise|
-              with an "{{AbortError}}" {{DOMException}} and return |promise|.
+              <li>Let |signal:AbortSignal| be |options|'s {{signal}} member.
               </li>
-              <li>If |signal| is not `null` and |signal|'s <a
-              data-cite="dom">aborted flag</a> is not set, [=AbortSignal/add=]
-              to |signal|:
+              <li>If |signal|’s <a data-cite="dom">aborted flag</a> is set,
+              then reject |promise| with an "{{AbortError}}" {{DOMException}}
+              and return |promise|.
+              </li>
+              <li>Otherwise, [=AbortSignal/add=] to |signal|:
                 <ol>
                   <li>Run <a>release a wake lock</a> with |promise| and |type|.
                   </li>
@@ -515,15 +515,16 @@
               </li>
             </ol>
           </li>
-          <li>Run the following steps <a>in parallel</a>, but <a>abort when</a>
-          |signal| is not `null` and |signal|'s <a data-cite="dom">aborted
-          flag</a> is set:
+          <li data-link-for="WakeLockRequestOptions">Run the following steps
+          <a>in parallel</a>, but <a>abort when</a> |options|' {{signal}}
+          member is present and its <a data-cite="dom">aborted flag</a> is set:
             <ol>
               <li>Let |state:PermissionState| be the result of awaiting <a>
               obtain permission</a> steps with |type|:
                 <ol>
                   <li>If |state| is {{"denied"}}, then reject |promise| with a
-                  "{{NotAllowedError}}" {{DOMException}}, and abort these steps.
+                  "{{NotAllowedError}}" {{DOMException}}, and abort these
+                  steps.
                   </li>
                 </ol>
               </li>
@@ -531,7 +532,8 @@
                 <a>acquire a wake lock</a> with |promise| and |type|:
                 <ol>
                   <li>If |success| is `false` then reject |promise| with a
-                  "{{NotAllowedError}}" {{DOMException}}, and abort these steps.
+                  "{{NotAllowedError}}" {{DOMException}}, and abort these
+                  steps.
                   </li>
                 </ol>
               </li>
