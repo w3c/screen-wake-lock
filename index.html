@@ -493,11 +493,9 @@
               |promise| with a "{{NotAllowedError}}" {{DOMException}},
               and return |promise|.
               </li>
-              <li data-link-for="">If |type| is {{
-              WakeLockType["screen"] }} and the {{Document}} of the
-              <a>top-level browsing context</a> is <a>hidden</a>, reject
-              |promise| with a "{{NotAllowedError}}" {{DOMException}},
-              and return |promise|.
+              <li>If |type| is {{WakeLockType["screen"] }} and |document| is
+              <a>hidden</a>, reject |promise| with a "{{NotAllowedError}}"
+              {{DOMException}}, and return |promise|.
               </li>
             </ol>
           </li>
@@ -669,12 +667,12 @@
         </h3>
         <p>
           When the user agent determines that the <a>visibility state</a> of
-          the {{Document}} of the <a>top-level browsing context</a> changes, it
-          must run these steps:
+          the <a>responsible document</a> of the <a>current settings object</a>
+          changes, it must run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the {{Document}} of the <a>top-level browsing
-          context</a>.
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
           </li>
           <li>If |document|'s <a>visibility state</a> is `"visible"`, abort
           these steps.
@@ -694,9 +692,9 @@
         </ol>
         <aside class="note">
           As some locks like {{ WakeLockType["system"] }} are allowed to run
-          while the {{Document}} of the <a>top-level browsing context</a> is
-          not visible, it is encouraged that user agents show some UI
-          indicating this.
+          while the <a>responsible document</a> of the <a>current settings
+          object</a> is not visible, it is encouraged that user agents show
+          some UI indicating this.
         </aside>
         <aside class="note">
           The <a>visibility state</a> is only exposed on the {{Window}} object,
