@@ -740,6 +740,15 @@
           |type:WakeLockType|, run these steps <a>in parallel</a>:
         </p>
         <ol class="algorithm" data-link-for="WakeLock">
+          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lockPromise|,
+            abort these steps.
+            <aside class="note">
+              The |lockPromise| only exists in {{[[ActiveLocks]]}} after a wake
+              lock has been acquired, but the {{AbortSignal}}'s algorithm can
+              be run after |lockPromise| has fulfilled, or between each of the
+              parallel steps of {{request()}}'s algorithm.
+            </aside>
+          </li>
           <li>Reject |lockPromise| with an "{{AbortError}}" {{DOMException}}.
             <aside class="note">
               This is a no-op if |lockPromise| has already fulfilled.
@@ -750,14 +759,6 @@
           </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
             record</a> associated with |document| and |type|.
-          </li>
-          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lockPromise|,
-            abort these steps.
-            <aside class="note">
-              The |lockPromise| only exists in {{[[ActiveLocks]]}} after a
-              wake lock has been acquired, but the {{AbortSignal}}'s algorithm
-              can be run after |lockPromise| has fulfilled.
-            </aside>
           </li>
           <li>Remove |lockPromise| from |record|.{{[[ActiveLocks]]}}.
           </li>
