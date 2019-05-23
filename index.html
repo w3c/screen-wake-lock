@@ -538,6 +538,12 @@
                 </ol>
               </li>
             </ol>
+            <aside class="note">
+              There is no <a>if aborted</a> step because the <a>release wake
+              lock</a> algorithm that has been [=AbortSignal/added=] to
+              |options|' |signal| member has taken care of rejecting |promise|
+              with the appropriate {{DOMException}}.
+            </aside>
           </li>
           <li>Return |promise|.
           </li>
