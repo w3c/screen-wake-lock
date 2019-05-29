@@ -220,7 +220,7 @@
           the {{PermissionDescriptor}} with a <dfn>type</dfn> member, allowing
           for more fine-grained permissions.
         </p>
-        <pre class="idl">
+        <pre class="idl" data-cite="permissions">
           dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
             WakeLockType type;
           };
@@ -397,7 +397,7 @@
         The {{WakeLock}} interface allows the page to acquire and release wake
         locks of a particular type.
       </p>
-      <pre class="idl">
+      <pre class="idl" data-cite="permissions">
         [SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock {
           [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
@@ -433,7 +433,7 @@
         <h3>
           The <dfn>WakeLockRequestOptions</dfn> dictionary
         </h3>
-        <pre class="idl">
+        <pre class="idl" data-cite="DOM">
           dictionary WakeLockRequestOptions {
             AbortSignal signal;
           };
