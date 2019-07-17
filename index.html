@@ -756,6 +756,12 @@
               This is a no-op if |lockPromise| has already fulfilled.
             </aside>
           </li>
+          <li>Let |document:Document| be the <a>responsible document</a> of the
+          <a>current settings object</a>.
+          </li>
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+          record</a> associated with |document| and |type|.
+          </li>
           <li>If |record|.{{[[ActiveLocks]]}} does not contain |lockPromise|,
           abort these steps.
             <aside class="note">
@@ -764,12 +770,6 @@
               be run after |lockPromise| has fulfilled, or between each of the
               parallel steps of {{request()}}'s algorithm.
             </aside>
-          </li>
-          <li>Let |document:Document| be the <a>responsible document</a> of the
-          <a>current settings object</a>.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |type|.
           </li>
           <li>Remove |lockPromise| from |record|.{{[[ActiveLocks]]}}.
           </li>
