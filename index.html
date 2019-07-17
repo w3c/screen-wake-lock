@@ -401,7 +401,7 @@
         [SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock {
           [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
-          static Promise&lt;void&gt; request(WakeLockType type, optional WakeLockRequestOptions options);
+          static Promise&lt;void&gt; request(WakeLockType type, optional WakeLockRequestOptions options = {});
         };
       </pre>
       <section data-link-for="WakeLock">
