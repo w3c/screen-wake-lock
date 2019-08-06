@@ -641,7 +641,7 @@
           </li>
           <li data-link-for="WakeLockType">Let |screenRecord| be the
           <a>platform wake lock</a>'s <a>state record</a> associated with
-          |document| and <a>wake lock type</a> {{"screen"}}.
+          |document| and <a>wake lock type</a> {{ WakeLockType["screen"] }}.
           </li>
           <li>[=list/For each=] |lockPromise:Promise| in
           |screenRecord|.{{[[ActiveLocks]]}}:
@@ -653,7 +653,7 @@
           </li>
           <li data-link-for="WakeLockType">Let |systemRecord| be the
           <a>platform wake lock</a>'s <a>state record</a> associated with
-          |document| and <a>wake lock type</a> {{"system"}}.
+          |document| and <a>wake lock type</a> {{ WakeLockType["system"] }}.
           </li>
           <li>[=list/For each=] |lockPromise:Promise| in
           |systemRecord|.{{[[ActiveLocks]]}}:
