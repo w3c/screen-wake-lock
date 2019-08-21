@@ -524,7 +524,8 @@
           </li>
           <li data-link-for="WakeLockRequestOptions">Run the following steps
           <a>in parallel</a>, but <a>abort when</a> |options|' {{signal}}
-          member is present and its [= AbortSignal/aborted flag =] is set:
+          member is present and its [= AbortSignal/aborted flag =] is set, or
+          |type| is {{WakeLockType["screen"]}} and |document| is <a>hidden</a>:
             <ol>
               <li>Let |state:PermissionState| be the result of awaiting
               <a>obtain permission</a> steps with |type|:
