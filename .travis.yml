@@ -14,9 +14,6 @@ cache:
   - apt
 addons:
   apt:
-    sources:
-      - george-edison55-precise-backports
-      - ubuntu-toolchain-r-test
     packages:
       - libwww-perl
       - libcss-dom-perl
