@@ -811,13 +811,6 @@
         lock application if they determine that the remaining battery capacity
         is low.
       </p>
-      <p data-tests="wakelock-state-is-global.https.html">
-        The ability to observe the global state of a wake lock can create a
-        communication channel between two otherwise isolated {{Document}}
-        objects. One document can request wake lock which changes the global
-        wake lock state, and another document can observe this change by
-        subscribing to events in {{WakeLock}}.
-      </p>
       <p>
         When the <a>user agent</a> does not <a>acquire wake lock</a> even
         though a browsing context has requested it, this can be observed by the
