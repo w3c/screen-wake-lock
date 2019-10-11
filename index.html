@@ -419,7 +419,7 @@
         </p>
         <ol class="algorithm">
           <li>Let |promise:Promise&lt;PermissionState&gt;| be <a data-cite=
-          "promises-guide#a-new-promise">a new promise</a>.
+          "webidl#a-new-promise">a new promise</a>.
           </li>
           <li>Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
@@ -456,7 +456,7 @@
         </p>
         <ol class="algorithm">
           <li>Let |promise:Promise| be <a data-cite=
-          "promises-guide#a-new-promise">a new promise</a>.
+          "webidl#a-new-promise">a new promise</a>.
           </li>
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
@@ -548,7 +548,7 @@
             </ol>
             <aside class="note">
               There is no <a>if aborted</a> step because the <a>release wake
-              lock</a> algorithm that has been [=AbortSignal/added=] to
+              lock</a> algorithm that has been [=AbortSignal/add|added=] to
               |options|' |signal| member has taken care of rejecting |promise|
               with the appropriate {{DOMException}}.
             </aside>
