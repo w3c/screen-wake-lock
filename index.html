@@ -513,6 +513,12 @@
               <li>Resolve |promise| with |lock|.</li>
             </ol>
           </li>
+          <li><a>If aborted</a>, run these steps:
+            <ol>
+               <li>Reject |promise| with a {{"NotAllowedError"}}
+               {{DOMException}}.</li>
+            </ol>
+          </li>
           <li>Return |promise|.
           </li>
         </ol>
