@@ -402,36 +402,9 @@
       <pre class="idl" data-cite="permissions">
         [SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock {
-          [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission(WakeLockType type);
           static Promise&lt;void&gt; request(WakeLockType type, optional WakeLockRequestOptions options = {});
         };
       </pre>
-      <section data-link-for="WakeLock">
-        <h3>
-          <dfn>requestPermission()</dfn> static method
-        </h3>
-        <p>
-          The <a data-lt=
-          "requestPermission">requestPermission(|type:WakeLockType|)</a>
-          method, when invoked, MUST run the following steps. This algorithm
-          resolves with either {{PermissionState["granted"]}} or
-          {{PermissionState["denied"]}}.
-        </p>
-        <ol class="algorithm">
-          <li>Let |promise:Promise&lt;PermissionState&gt;| be <a data-cite=
-          "webidl#a-new-promise">a new promise</a>.
-          </li>
-          <li>Return |promise| and run the following steps <a>in parallel</a>:
-            <ol>
-              <li>Let |state:PermissionState| be the result of running and
-              waiting for the <a>obtain permission</a> steps with |type|.
-              </li>
-              <li>Resolve |promise| with |state|.
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </section>
       <section data-dfn-for="WakeLockRequestOptions">
         <h3>
           The <dfn>WakeLockRequestOptions</dfn> dictionary
