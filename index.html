@@ -251,10 +251,10 @@
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and |type|.
           </li>
-          <li>[=list/For each=] |lockPromise:Promise| in
+          <li>[=list/For each=] |lock:WakeLockSentinel| in
           |record|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lockPromise| and |type|.
+              <li>Run <a>release a wake lock</a> with |lock| and |type|.
               </li>
             </ol>
           </li>
@@ -383,49 +383,57 @@
               The empty <a>list</a>.
             </td>
             <td>
-              A <a>list</a> of {{Promise}}s, representing active wake locks
-              associated with the [=environment settings object / responsible
-              document=].
+              A <a>list</a> of <a>WakeLockSentinel</a> objects, representing
+              active wake locks associated with the [=environment settings
+              object / responsible document=].
             </td>
           </tr>
         </tbody>
       </table>
+    </section>
+    <section data-dfn-for="Navigator">
+      <h2>Extensions to the <code>Navigator</code> interface</h2>
+      <pre class="idl">
+        [SecureContext]
+        partial interface Navigator {
+          [SameObject] readonly attribute WakeLock wakeLock;
+        };
+      </pre>
+      <p>The <a>wakeLock</a> attribute's getter, when invoked, MUST return the
+      same instance of the <a>WakeLock</a> object.</p>
+    </section>
+    <section data-dfn-for="WorkerNavigator">
+      <h2>Extensions to the <code>WorkerNavigator</code> interface</h2>
+      <pre class="idl">
+        [SecureContext]
+        partial interface WorkerNavigator {
+          [SameObject] readonly attribute WakeLock wakeLock;
+        };
+      </pre>
+      <p>The <a>wakeLock</a> attribute's getter, when invoked, MUST return the
+      same instance of the <a>WakeLock</a> object.
     </section>
     <section data-dfn-for="WakeLock">
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
       <p>
-        The {{WakeLock}} interface allows the page to acquire and release wake
-        locks of a particular type.
+        The {{WakeLock}} interface allows the page to acquire wake locks of a
+        particular type.
       </p>
       <pre class="idl" data-cite="permissions">
         [SecureContext, Exposed=(DedicatedWorker, Window)]
         interface WakeLock {
-          static Promise&lt;void&gt; request(WakeLockType type, optional WakeLockRequestOptions options = {});
+          Promise&lt;WakeLockSentinel&gt; request(WakeLockType type);
         };
       </pre>
-      <section data-dfn-for="WakeLockRequestOptions">
-        <h3>
-          The <dfn>WakeLockRequestOptions</dfn> dictionary
-        </h3>
-        <pre class="idl" data-cite="DOM">
-          dictionary WakeLockRequestOptions {
-            AbortSignal signal;
-          };
-        </pre>
-        <p>
-          The <dfn>signal</dfn> member is used to abort the wake lock request.
-        </p>
-      </section>
       <section>
         <h3>
-          <dfn>request()</dfn> static method
+          The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-api.https.html" data-link-for="WakeLock">
-          The <a data-lt="request">request(|type:WakeLockType|,
-          |options:WakeLockRequestOptions|)</a> method, when invoked, MUST run
-          the following steps:
+          The <a data-lt="request">request(|type:WakeLockType|)</a> method,
+          when invoked, MUST run the following steps:
         </p>
         <ol class="algorithm">
           <li>Let |promise:Promise| be <a data-cite=
@@ -478,26 +486,7 @@
               </li>
             </ol>
           </li>
-          <li data-link-for="WakeLockRequestOptions">If |options|' {{signal}}
-          member is present, then run the following steps:
-            <ol>
-              <li>Let |signal:AbortSignal| be |options|'s {{signal}} member.
-              </li>
-              <li>If |signal|’s [= AbortSignal/aborted flag =] is set, then
-              reject |promise| with an "{{AbortError}}" {{DOMException}} and
-              return |promise|.
-              </li>
-              <li>Otherwise, [=AbortSignal/add=] to |signal|:
-                <ol>
-                  <li>Run <a>release a wake lock</a> with |promise| and |type|.
-                  </li>
-                </ol>
-              </li>
-            </ol>
-          </li>
-          <li data-link-for="WakeLockRequestOptions">Run the following steps
-          <a>in parallel</a>, but <a>abort when</a> |options|' {{signal}}
-          member is present and its [= AbortSignal/aborted flag =] is set, or
+          <li>Run the following steps <a>in parallel</a>, but <a>abort when</a>
           |type| is {{WakeLockType["screen"]}} and |document| is <a>hidden</a>:
             <ol>
               <li>Let |state:PermissionState| be the result of awaiting
@@ -509,8 +498,11 @@
                   </li>
                 </ol>
               </li>
+              <li>Let |lock:WakeLockSentinel| be a new <a>WakeLockSentinel</a>
+              object with its <a data-link-for="WakeLockSentinel">type</a>
+              attribute set to |type|.</li>
               <li>Let |success:boolean| be the result of awaiting <a>acquire a
-              wake lock</a> with |promise| and |type|:
+              wake lock</a> with |lock| and |type|:
                 <ol>
                   <li>If |success| is `false` then reject |promise| with a
                   "{{NotAllowedError}}" {{DOMException}}, and abort these
@@ -518,17 +510,98 @@
                   </li>
                 </ol>
               </li>
+              <li>Resolve |promise| with |lock|.</li>
             </ol>
-            <aside class="note">
-              There is no <a>if aborted</a> step because the <a>release wake
-              lock</a> algorithm that has been [=AbortSignal/add|added=] to
-              |options|' |signal| member has taken care of rejecting |promise|
-              with the appropriate {{DOMException}}.
-            </aside>
           </li>
           <li>Return |promise|.
           </li>
         </ol>
+      </section>
+    </section>
+    <section data-dfn-for="WakeLockSentinel" data-link-for="WakeLockSentinel">
+      <h2>The <dfn>WakeLockSentinel</dfn> interface</h2>
+      <pre class="idl">
+        [SecureContext, Exposed=(DedicatedWorker, Window)]
+        interface WakeLockSentinel : EventTarget {
+          readonly attribute WakeLockType type;
+          Promise&lt;void&gt; release();
+          attribute EventHandler onrelease;
+        };
+      </pre>
+      <p>A <a>WakeLockSentinel</a> object provides a handle to a <a>platform
+      wake lock</a>, and it holds on to it until it is either manually released
+      or until the underlying <a>platform wake lock</a> is released. Its
+      existence keeps a <a>platform wake lock</a> for a given <a>wake lock
+      type</a> active, and releasing all
+      <a>WakeLockSentinel</a> instances of a given <a>wake lock type</a> will
+      cause the underlying <a>platform wake lock</a> to be released.
+      <aside class="note">
+        See <a>auto-releasing wake locks</a>, <a>handling document loss of full
+        activity</a> and <a>handling document loss of visibility</a> for
+        circumstances under which a given wake lock may be released by the
+        <a>user agent</a>.
+      </aside>
+      <section>
+        <h3>The <dfn>type</dfn> attribute</h3>
+        <p>The <a>type</a> attribute's getter, when invoked, MUST</p>
+      </section>
+      <section>
+        <h3>The <dfn>release()</dfn> method</h3>
+        <p>The <a>release()</a> method, when invoked, MUST run the following
+        steps:</p>
+        <ol class="algorithm">
+          <li>Let |promise:Promise| be <a>a new promise</a>.</li>
+          <li>Run the following steps <a>in parallel</a>:
+            <ol>
+              <li>Run <a>release wake lock</a> with |lock:WakeLockSentinel| set
+              to this object and |type:WakeLockType| set to the value of this
+              object's <a>type</a> attribute.</li>
+              <li>Resolve |promise|.</li>
+            </ol>
+          </li>
+          <li>Return |promise|.</li>
+        </ol>
+      </section>
+      <section>
+        <h3>The <dfn>onrelease</dfn> attribute</h3>
+        <p>
+          The <a>onrelease</a> attribute is an <a>event handler</a> whose
+          corresponding <a>event handler event type</a> is
+          <code>release</code>.
+        </p>
+        <p>It is used to notify scripts that a given <a>WakeLockSentinel</a>
+        object's handle has been released, either due to the
+        <a>release()</a> method being called or because the wake lock was
+        released by the <a>user agent</a>.</p>
+        <aside class="note">
+          A <a>WakeLockSentinel</a> object's handle being released does not
+          necessarily mean the <a>platform wake lock</a> for a given <a>wake
+          lock type</a> was released. That depends on the <a>platform wake
+          lock</a>'s {{[[ActiveLocks]]}} internal slot. See <a>release a wake
+          lock</a>.
+        </aside>
+      </section>
+    </section>
+    <section data-dfn-for="WakeLockEvent" data-link-for="WakeLockEvent">
+      <h2>The <dfn>WakeLockEvent</dfn> interface</h2>
+      <pre class="idl">
+        [SecureContext, Exposed=(DedicatedWorker, Window)]
+        interface WakeLockEvent : Event {
+          constructor(DOMString type, WakeLockEventInit init);
+          readonly attribute WakeLockSentinel lock;
+        };
+
+        dictionary WakeLockEventInit : EventInit {
+          required WakeLockSentinel lock;
+        };
+      </pre>
+      <p><a>WakeLockEvent</a> objects indicate that an event has happened to a
+      given <a>WakeLockSentinel</a> object. A <a>WakeLockEvent</a> is
+      dispatched when a <a>WakeLockSentinel</a>'s wake lock is released.</p>
+      <section>
+        <h3>The <dfn>lock</dfn> attribute</h3>
+        <p>The <a>lock</a> attribute is a <a>WakeLockSentinel</a> object whose
+        wake lock has been released.</p>
       </section>
     </section>
     <section>
@@ -608,10 +681,10 @@
           <a>platform wake lock</a>'s <a>state record</a> associated with
           |document| and <a>wake lock type</a> {{ WakeLockType["screen"] }}.
           </li>
-          <li>[=list/For each=] |lockPromise:Promise| in
+          <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+              <li>Run <a>release a wake lock</a> with |lock| and {{
               WakeLockType["screen"] }}.
               </li>
             </ol>
@@ -620,10 +693,10 @@
           <a>platform wake lock</a>'s <a>state record</a> associated with
           |document| and <a>wake lock type</a> {{ WakeLockType["system"] }}.
           </li>
-          <li>[=list/For each=] |lockPromise:Promise| in
+          <li>[=list/For each=] |lock:WakeLockSentinel| in
           |systemRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+              <li>Run <a>release a wake lock</a> with |lock| and {{
               WakeLockType["system"] }}.
               </li>
             </ol>
@@ -655,10 +728,10 @@
           record</a> associated with <a>wake lock type</a> {{
           WakeLockType["screen"] }}.
           </li>
-          <li>[=list/For each=] |lockPromise:Promise| in
+          <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lockPromise| and {{
+              <li>Run <a>release a wake lock</a> with |lock| and {{
               WakeLockType["screen"] }}.
               </li>
             </ol>
@@ -681,7 +754,7 @@
           Acquire wake lock algorithm
         </h3>
         <p>
-          To <dfn>acquire a wake lock</dfn> for a given |lockPromise:Promise|
+          To <dfn>acquire a wake lock</dfn> for a given |lock:WakeLockSentinel|
           and |type:WakeLockType|, run these steps <a>in parallel</a>:
         </p>
         <ol class="algorithm" data-link-for="WakeLock">
@@ -703,7 +776,7 @@
               <li>Let |record| be the <a>platform wake lock</a>'s <a>state
               record</a> associated with |document| and |type|.
               </li>
-              <li>Add |lockPromise| to |record|.{{[[ActiveLocks]]}}.
+              <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
               </li>
             </ol>
           </li>
@@ -716,31 +789,20 @@
           Release wake lock algorithm
         </h3>
         <p>
-          To <dfn>release a wake lock</dfn> for a given |lockPromise:Promise|
+          To <dfn>release a wake lock</dfn> for a given |lock:WakeLockSentinel|
           and |type:WakeLockType|, run these steps <a>in parallel</a>:
         </p>
         <ol class="algorithm" data-link-for="WakeLock">
-          <li>Reject |lockPromise| with an "{{AbortError}}" {{DOMException}}.
-            <aside class="note">
-              This is a no-op if |lockPromise| has already fulfilled.
-            </aside>
-          </li>
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
           </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and |type|.
           </li>
-          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lockPromise|,
+          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lock|,
           abort these steps.
-            <aside class="note">
-              The |lockPromise| only exists in {{[[ActiveLocks]]}} after a wake
-              lock has been acquired, but the {{AbortSignal}}'s algorithm can
-              be run after |lockPromise| has fulfilled, or between each of the
-              parallel steps of {{request()}}'s algorithm.
-            </aside>
           </li>
-          <li>Remove |lockPromise| from |record|.{{[[ActiveLocks]]}}.
+          <li>Remove |lock| from |record|.{{[[ActiveLocks]]}}.
           </li>
           <li>If the internal slot {{[[ActiveLocks]]}} of all the <a>platform
           wake lock</a>'s <a>state record</a>s are all empty, then run the
@@ -764,6 +826,10 @@
               </li>
             </ol>
           </li>
+          <li><a>Fire an event</a> named "`release`" at |lock| using
+          <a>WakeLockEvent</a> with its <a
+          data-link-for="WakeLockEvent">lock</a> attribute initialized to
+          |sentinel|.</li>
         </ol>
       </section>
     </section>
@@ -797,12 +863,9 @@
       </h2>
       <pre class="example js" title="Acquires and releases a screen wake lock">
         function tryKeepScreenAlive(minutes) {
-          const controller = new AbortController();
-          const signal = controller.signal;
-
-          WakeLock.request("screen", { signal });
-
-          setTimeout(() =&gt; controller.abort(), minutes * 60 * 1000);
+          navigator.wakeLock.request("screen").then(lock => {
+            setTimeout(() =&gt; lock.release(), minutes * 60 * 1000);
+          });
         }
 
         tryKeepScreenAlive(10);
@@ -817,33 +880,27 @@
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
 
-        let controller;
+        navigator.wakeLock.request("screen").then(lock => {
+          checkbox.checked = true;
 
-        checkbox.onclick = async () =&gt; {
-          try {
-            if (checkbox.checked) {
-              controller = new AbortController();
-              await WakeLock.request("screen", { signal: controller.signal });
-            } else if (controller) {
-              controller.abort();
-            }
-          } catch {
+          const listener = (ev) => {
             checkbox.checked = false;
-          }
-        }
+            ev.lock.removeEventListener('release', listener);
+          };
+
+          lock.addEventListener('release', listener);
+        });
       </pre>
       <p>
         In this example, two different wake lock requests are created and
-        released together using an {{AbortController}}:
+        released independently:
       </p>
       <pre class="example js">
-        const controller = new AbortController();
-        const signal = controller.signal;
+        let lock1 = await navigator.wakeLock.request("screen");
+        let lock2 = await navigator.wakeLock.request("screen");
 
-        WakeLock.request("screen", { signal });
-        WakeLock.request("system", { signal });
-
-        controller.abort();
+        lock1.release();
+        lock2.release();
       </pre>
     </section>
     <section>
