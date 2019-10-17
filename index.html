@@ -580,28 +580,6 @@
         </aside>
       </section>
     </section>
-    <section data-dfn-for="WakeLockEvent" data-link-for="WakeLockEvent">
-      <h2>The <dfn>WakeLockEvent</dfn> interface</h2>
-      <pre class="idl">
-        [SecureContext, Exposed=(DedicatedWorker, Window)]
-        interface WakeLockEvent : Event {
-          constructor(DOMString type, WakeLockEventInit init);
-          readonly attribute WakeLockSentinel lock;
-        };
-
-        dictionary WakeLockEventInit : EventInit {
-          required WakeLockSentinel lock;
-        };
-      </pre>
-      <p><a>WakeLockEvent</a> objects indicate that an event has happened to a
-      given <a>WakeLockSentinel</a> object. A <a>WakeLockEvent</a> is
-      dispatched when a <a>WakeLockSentinel</a>'s wake lock is released.</p>
-      <section>
-        <h3>The <dfn>lock</dfn> attribute</h3>
-        <p>The <a>lock</a> attribute is a <a>WakeLockSentinel</a> object whose
-        wake lock has been released.</p>
-      </section>
-    </section>
     <section>
       <h2>
         Managing Wake Locks
@@ -824,10 +802,8 @@
               </li>
             </ol>
           </li>
-          <li><a>Fire an event</a> named "`release`" at |lock| using
-          <a>WakeLockEvent</a> with its <a
-          data-link-for="WakeLockEvent">lock</a> attribute initialized to
-          |sentinel|.</li>
+          <li><a>Queue a task</a> to <a>fire an event</a> named "`release`" at
+          |lock|.</li>
         </ol>
       </section>
     </section>
@@ -883,7 +859,7 @@
 
           const listener = (ev) => {
             checkbox.checked = false;
-            ev.lock.removeEventListener('release', listener);
+            ev.target.removeEventListener('release', listener);
           };
 
           lock.addEventListener('release', listener);
