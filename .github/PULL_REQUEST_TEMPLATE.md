@@ -6,7 +6,7 @@ The following tasks have been completed:
 
 Implementation commitment:
 
- * [ ] WebKit (https://bugs.webkit.org/show_bug.cgi?id=)
- * [ ] Chromium (https://bugs.chromium.org/p/chromium/issues/detail?id=)
- * [ ] Gecko (https://bugzilla.mozilla.org/show_bug.cgi?id=)
+ * [ ] Chromium (https://bugs.chromium.org/p/chromium/issues/detail?id=) 
+ * Gecko - Waiting on [standards position](https://github.com/mozilla/standards-positions/issues/210) before committing.
+ * WebKit - Not participating in this working group. 
  
