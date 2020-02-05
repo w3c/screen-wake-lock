@@ -615,6 +615,10 @@
           lock</a>'s {{[[ActiveLocks]]}} internal slot. See <a>release a wake
           lock</a>.
         </aside>
+        <aside class="note">
+          [[[#onrelease-example]]] contains an example of how to use the
+          {{WakeLockSentinel/onrelease}} event handler.
+        </aside>
       </section>
     </section>
     <section>
@@ -888,21 +892,14 @@
         on a checkbox, but updates the checkbox checked state in case the wake
         lock state changes:
       </p>
-      <pre class="example js">
+      <pre class="example js" id="onrelease-example">
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
 
-        navigator.wakeLock.request("screen").then(lock =&gt; {
-          checkbox.checked = true;
-
-          const listener = (ev) =&gt; {
-            checkbox.checked = false;
-            ev.target.removeEventListener('release', listener);
-          };
-
-          lock.addEventListener('release', listener);
-        });
+        const sentinel = await navigator.wakeLock.request("screen");
+        checkbox.checked = true;
+        sentinel.onrelease = () =&gt; checkbox.checked = false;
       </pre>
       <p>
         In this example, two different wake lock requests are created and
