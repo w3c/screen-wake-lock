@@ -291,8 +291,11 @@
           <li>If |state| is {{PermissionState["prompt"]}}, run the following
           steps:
             <ol>
-              <li>If these <a>obtain permission</a> steps were not <a>triggered
-              by user activation</a>, return {{PermissionState["denied"]}}.
+              <li>If the <a>current global object</a> is not a {{Window}},
+              return {{PermissionState["denied"]}}.
+              </li>
+              <li>If the <a>current global object</a> does not have [=transient
+              activation=], return {{PermissionState["denied"]}}.
               </li>
               <li>Return the result of <a>requesting permission to use</a> with
               |permissionDesc|.
@@ -304,13 +307,12 @@
         </ol>
         <aside class="note">
           In the case the steps are run from a dedicated worker, then the
-          <a>current global object</a> is a {{DedicatedWorkerGlobalScope}},
-          which means that the <a>obtain permission</a> steps can never be
-          <a>triggered by user activation</a>, meaning that in order to use
-          wake locks from a dedicated worker, prior permission needs to granted
-          from the <a>browsing context</a> who created it, e.g. the <a>browsing
-          context</a> that is exists in the {{DedicatedWorkerGlobalScope}}'s
-          [=WorkerGlobalScope/owner set=].
+          <a>current global object</a> is a {{DedicatedWorkerGlobalScope}}, for
+          which the concept of [=transient activation=] is not defined.
+          Consequently, in order to use wake locks from a dedicated worker,
+          prior permission needs to be granted from the <a>browsing context</a>
+          who created it, e.g. the <a>browsing context</a> that is exists in
+          the {{DedicatedWorkerGlobalScope}}'s [=WorkerGlobalScope/owner set=].
         </aside>
       </section>
     </section>
