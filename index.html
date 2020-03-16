@@ -339,7 +339,8 @@
         </h3>
         <p data-tests="wakelock-api.https.html">
           The {{WakeLock/request()}} method, when invoked, MUST run the
-          following steps:
+          following steps. The method takes one argument, the {{WakeLockType}}
+          |type:WakeLockType|:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
@@ -385,8 +386,7 @@
                 </ol>
               </li>
               <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-              object with its {{WakeLockSentinel/type}} attribute set to
-              "`screen-wake-lock`".
+              object with its {{WakeLockSentinel/type}} attribute set |type|.
               </li>
               <li>Let |success:boolean| be the result of awaiting <a>acquire a
               wake lock</a> with |lock| and "`screen-wake-lock`":
@@ -415,7 +415,7 @@
       <pre class="idl">
         [SecureContext, Exposed=(Window)]
         interface WakeLockSentinel : EventTarget {
-          readonly attribute DOMString type;
+          readonly attribute WakeLockType type;
           Promise&lt;void&gt; release();
           attribute EventHandler onrelease;
         };
