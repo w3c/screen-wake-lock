@@ -16,7 +16,12 @@
           company: "Intel Corporation",
           companyURL: "https://intel.com/",
           w3cid: 57705
-        }],
+        }, {
+          name: "Marcos Càceres",
+          url: "mailto:marcos@marcosc.com",
+          company: "Mozilla",
+          w3cid: "39125"
+        },],
         formerEditors: [{
           name: "Ilya Bogdanovich",
           url: "mailto:bogdanovichiy@yandex-team.ru",
@@ -27,12 +32,7 @@
           url: "mailto:alogvinov@yandex-team.ru",
           company: "Yandex",
           w3cid: "75989"
-        }, {
-          name: "Marcos Càceres",
-          url: "mailto:marcos@marcosc.com",
-          company: "Mozilla",
-          w3cid: "39125"
-        }],
+        },],
         github: "https://github.com/w3c/wake-lock/",
         wg: "Devices and Sensors Working Group",
         wgURI: "https://www.w3.org/das/",
@@ -103,7 +103,7 @@
     </section>
     <section>
       <h2>
-        Screen Wake Lock
+        Wake Locks
       </h2>
       <p>
         This specification defines the following <dfn data-export="">wake lock
@@ -115,6 +115,13 @@
         lock.
         </li>
       </ol>
+      <p>
+        In the API, the [=wake lock types=] are represented by the
+        {{WakeLockType}} enum values.
+      </p>
+      <p class="note">
+        Other specifications might define different wake lock types.
+      </p>
     </section>
     <section>
       <h3>
@@ -308,22 +315,22 @@
       <pre class="idl">
         [SecureContext]
         partial interface Navigator {
-          [SameObject] readonly attribute ScreenWakeLock screenWakeLock;
+          [SameObject] readonly attribute WakeLock wakeLock;
         };
       </pre>
     </section>
-    <section data-dfn-for="ScreenWakeLock">
+    <section data-dfn-for="WakeLock">
       <h2>
-        The <dfn>ScreenWakeLock</dfn> interface
+        The <dfn>WakeLock</dfn> interface
       </h2>
       <p>
-        The {{ScreenWakeLock}} interface allows a document to acquire a
-        [=screen wake lock=].
+        The {{WakeLock}} interface allows a document to acquire a [=screen wake
+        lock=].
       </p>
       <pre class="idl">
         [SecureContext, Exposed=(Window)]
-        interface ScreenWakeLock {
-          Promise&lt;WakeLockSentinel&gt; request();
+        interface WakeLock {
+          Promise&lt;WakeLockSentinel&gt; request(WakeLockType type);
         };
       </pre>
       <section>
@@ -331,7 +338,7 @@
           The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-api.https.html">
-          The {{ScreenWakeLock/request()}} method, when invoked, MUST run the
+          The {{WakeLock/request()}} method, when invoked, MUST run the
           following steps:
         </p>
         <ol class="algorithm">
@@ -484,6 +491,26 @@
           {{WakeLockSentinel/onrelease}} event handler.
         </aside>
       </section>
+    </section>
+    <section data-dfn-for="WakeLockType">
+      <h2>
+        The <dfn>WakeLockType</dfn> enum
+      </h2>
+      <p>
+        For the purpose of wake lock type description, this specification
+        defines the following enumeration to represent [=wake lock types=]:
+      </p>
+      <pre class="idl">
+        enum WakeLockType { "screen" };
+      </pre>
+      <dl>
+        <dt>
+          <dfn>screen</dfn>
+        </dt>
+        <dd>
+          <a>Screen wake lock</a> type.
+        </dd>
+      </dl>
     </section>
     <section>
       <h2>
