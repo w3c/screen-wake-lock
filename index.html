@@ -3,12 +3,11 @@
   <head>
     <meta charset='utf-8'>
     <title>
-      Wake Lock API
+      Screen Wake Lock API
     </title>
     <script src='https://www.w3.org/Tools/respec/respec-w3c' async class=
     'remove'></script>
     <script class='remove'>
-      /*stops tidy screwing things up*/
       var respecConfig = {
         specStatus: "ED",
         shortName: "wake-lock",
@@ -17,7 +16,16 @@
           company: "Intel Corporation",
           companyURL: "https://intel.com/",
           w3cid: 57705
-        }],
+        }, {
+          name: "Marcos Càceres",
+          url: "https://marcosc.com",
+          company: "Mozilla",
+          w3cid: "39125"
+        }, {
+          name: "Raphael Kubo da Costa",
+          company: "Intel Corporation",
+          w3cid: "95850",
+        },],
         formerEditors: [{
           name: "Ilya Bogdanovich",
           url: "mailto:bogdanovichiy@yandex-team.ru",
@@ -28,12 +36,7 @@
           url: "mailto:alogvinov@yandex-team.ru",
           company: "Yandex",
           w3cid: "75989"
-        }, {
-          name: "Marcos Caceres",
-          url: "mailto:marcos@marcosc.com",
-          company: "Mozilla",
-          w3cid: "39125"
-        }],
+        },],
         github: "https://github.com/w3c/wake-lock/",
         wg: "Devices and Sensors Working Group",
         wgURI: "https://www.w3.org/das/",
@@ -46,12 +49,6 @@
             value: 'Wanming Lin (Intel)',
             href: 'https://github.com/Honry'
           }]
-        }, {
-          key: "Implementation status",
-          data: [{
-            value: "Chrome",
-            href: "https://chromestatus.com/features/4636879949398016"
-          }]
         }],
         xref: "web-platform"
       };
@@ -61,9 +58,9 @@
     <section id='abstract'>
       <p>
         This document specifies an API that allows web applications to request
-        a wake lock. A wake lock prevents some aspect of the device from
-        entering a power-saving state (e.g., preventing the system from turning
-        off the screen).
+        a screen wake lock. Under the right conditions, and if allowed, the
+        screen wake lock prevents the system from turning off a device's
+        screen.
       </p>
     </section>
     <section id='sotd'>
@@ -86,31 +83,14 @@
         Modern operating systems achieve longer battery life by implementing
         aggressive power management, meaning that shortly after the lack of
         user activity, a host device may lower the screen brightness, turn the
-        screen off and even let the CPU go into a deep power state, allowing to
-        sip as little power as possible.
+        screen off and even let the CPU go into a deep power state, limiting
+        power usage as much as possible.
       </p>
       <p>
         Though this is great for prolonged battery life, it can sometime hinder
-        good, valid use-cases such as:
-      </p>
-      <ul>
-        <li>Use turn-by-turn navigation while walking and driving and not
-        interacting with the phone.
-        </li>
-        <li>Allow an external device to read a boarding card with a barcode on
-        a phone.
-        </li>
-        <li>Showing a presentation where each slide is shown for a prolonged
-        period.
-        </li>
-        <li>Perform longer computations before the device goes into deep sleep
-        mode, such as media processing.
-        </li>
-      </ul>
-      <p>
-        More use-cases can be found in <a href=
-        "https://w3c-webmob.github.io/wake-lock-use-cases/">Use Cases and
-        Requirements</a>.
+        some use cases such as scanning a barcode, reading an ebook, following
+        a recipe, presenting to an audience, and so on. See also
+        [[[wake-lock-use-cases]]].
       </p>
       <p>
         A wake lock will generally prevent something from happening, but UAs
@@ -118,55 +98,38 @@
         status (wall power connected, discharging, low battery level), or even
         disallow wake locks in the case a power saving mode is activated.
       </p>
+    </section>
+    <section>
+      <h2>
+        Wake Locks
+      </h2>
       <p>
-        Any active wake lock MUST also prevent the page from entering UA
-        induced <a data-cite="page-lifecycle#frozen">CPU suspension</a> as
-        defined by [[PAGE-LIFECYCLE]].
-      </p>
-      <p>
-        This specification defines the following <dfn>wake lock types</dfn>:
+        This specification defines the following <dfn data-export="">wake lock
+        type</dfn>:
       </p>
       <ol>
-        <li>A <dfn>screen wake lock</dfn> prevents the screen from turning off.
-        Only visible documents can acquire the wake lock.
-        </li>
-        <li>A <dfn>system wake lock</dfn> prevents the CPU from entering a deep
-        power state. This may also prevent communication chips such as cellular
-        or Wi-Fi from sleeping.
+        <li>A <dfn data-export="">screen wake lock</dfn> prevents the screen
+        from turning off. Only visible documents can acquire the screen wake
+        lock.
         </li>
       </ol>
-      <aside class="note">
-        Though a <a>system wake lock</a> will usually keep the network
-        connection alive, it is most likely not required for such. Audio
-        streaming on devices usually does the same and if you need it for long
-        running upload and download tasks, such as for a podcast, other more
-        appropriate features exist, like [[BACKGROUND-FETCH]].
-      </aside>
-      <aside class="note">
-        One type of wake lock can imply the effects of another: for example,
-        screen wake lock logically implies that the program which displays
-        information on the screen continues running, as if the system wake lock
-        were also applied. But to avoid dependence on such implementation
-        details which may not always be true, this specification treats all
-        types of wake locks as independent.
-      </aside>
       <p>
-        A <a>user agent</a> can <dfn data-lt=
-        "deny wake lock|denies the wake lock">deny a wake lock</dfn> of a
-        particular <a>wake lock type</a> for a particular {{Document}} by any
-        implementation-specific reason, for example, a user or platform setting
-        or preference.
+        In the API, the [=wake lock types=] are represented by the
+        {{WakeLockType}} enum values.
+      </p>
+      <p class="note">
+        Other specifications might define different wake lock types.
       </p>
     </section>
-    <section data-cite="feature-policy">
+    <section>
       <h3>
         Policy control
       </h3>
       <p data-tests=
       "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
-        The Wake Lock API defines a <a>policy-controlled feature</a> identified
-        by the string `"wake-lock"`. Its <a>default allowlist</a> is
-        `["self"]`.
+        The Screen Wake Lock API defines a <a>policy-controlled feature</a>
+        identified by the string `"screen-wake-lock"`. Its <a>default
+        allowlist</a> is `["self"]`.
       </p>
       <aside class="note">
         <p>
@@ -176,17 +139,18 @@
         </p>
         <p>
           Third-party usage can be selectively enabled by adding
-          `allow="wake-lock"` attribute to the frame container element:
+          `allow="screen-wake-lock"` attribute to the frame container element:
         </p>
-        <pre class="example html" title="Enabling wake-lock on remote content">
-          &lt;iframe src="https://third-party.com" allow="wake-lock"/&gt;&lt;/iframe&gt;
+        <pre class="example html" title=
+        "Enabling screen wake lock on remote content">
+          &lt;iframe src="https://third-party.com" allow="screen-wake-lock"/&gt;&lt;/iframe&gt;
         </pre>
         <p>
           Alternatively, the wake lock feature can be disabled completely by
           specifying the feature policy in a HTTP response header:
         </p>
         <pre class="example http" title="Feature Policy over HTTP">
-          Feature-Policy: {"wake-lock": []}
+          Feature-Policy: {"screen-wake-lock": []}
         </pre>
         <p>
           See [[[FEATURE-POLICY]]] for more details.
@@ -202,31 +166,25 @@
         permissions from users and query which permissions they have.
       </p>
       <p>
-        It is recommended that a UA shows some form of unobtrusive notification
-        that informs the user when a wake lock is active, as well as provides
-        the user with the means to <a>block</a> the ongoing operation, or
-        simply dismiss the notification.
+        A <a>user agent</a> can <dfn data-lt=
+        "deny wake lock|denies the wake lock">deny a wake lock</dfn> of a
+        particular <a>wake lock type</a> for a particular {{Document}} by any
+        implementation-specific reason, such as platform setting or user
+        preference.
       </p>
-      <section data-dfn-for="WakeLockPermissionDescriptor">
+      <p>
+        It is RECOMMENDED that a user agent show some form of unobtrusive
+        notification that informs the user when a wake lock is active, as well
+        as provides the user with the means to <a>block</a> the ongoing
+        operation, or simply dismiss the notification.
+      </p>
+      <section>
         <h2>
-          The <dfn>WakeLockPermissionDescriptor</dfn> dictionary
+          The `"screen-wake-lock"` powerful feature
         </h2>
         <p>
-          The `"wake-lock"` <a>powerful feature</a> is defined as follows:
-        </p>
-        <p>
-          The <a>permission descriptor type</a> is represented by the
-          <a>WakeLockPermissionDescriptor</a> <a>dictionary</a>, which extends
-          the {{PermissionDescriptor}} with a <dfn>type</dfn> member, allowing
-          for more fine-grained permissions.
-        </p>
-        <pre class="idl" data-cite="permissions">
-          dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
-            required WakeLockType type;
-          };
-        </pre>
-        <p>
-          The {{PermissionDescriptor.name}} is `"wake-lock"`.
+          The `"screen-wake-lock"` <a>powerful feature</a> enables the
+          capability defined by this specification.
         </p>
       </section>
       <section>
@@ -240,47 +198,44 @@
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
           </li>
-          <li>Let |descriptor:WakeLockPermissionDescriptor| be an instance of
-          {{WakeLockPermissionDescriptor}}.
+          <li>Let |descriptor:PermissionDescriptor| be an instance of
+          {{PermissionDescriptor}}.
           </li>
           <li>Set |descriptor|'s <a>permission state</a> to
-          {{PermissionState["denied"]}}.
+          {{PermissionState/"denied"}}.
           </li>
-          <li>Let |type| be |descriptor|'s
-          {{WakeLockPermissionDescriptor/type}} member.
+          <li>Let |name| be |descriptor|'s {{PermissionDescriptor/name}}
+          member.
           </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |type|.
+          record</a> associated with |document| and |name|.
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |record|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and |type|.
+              <li>Run <a>release a wake lock</a> with |lock| and |name|.
               </li>
             </ol>
           </li>
         </ol>
         <p>
-          To <dfn>obtain permission</dfn> for <a>wake lock type</a> |type|, run
+          To <dfn>obtain permission</dfn> for <a>wake lock type</a> |name|, run
           these steps <a>in parallel</a>. This async algorithm returns either
-          {{PermissionState["granted"]}} or {{PermissionState["denied"]}}.
+          {{PermissionState/"granted"}} or {{PermissionState/"denied"}}.
         </p>
         <ol class="algorithm">
-          <li>Let |permissionDesc:WakeLockPermissionDescriptor| be a newly
-          created {{WakeLockPermissionDescriptor}}.
+          <li>Let |permissionDesc:PermissionDescriptor| be a newly created
+          {{PermissionDescriptor}}.
           </li>
           <li>Set |permissionDesc|'s {{PermissionDescriptor/name}} member to
-          "`wake-lock`".
-          </li>
-          <li>Set |permissionDesc|'s {{WakeLockPermissionDescriptor/type}} to
-          |type|.
+          "`screen-wake-lock`".
           </li>
           <li>Let |resultPromise:Promise| be the result of running <a>query a
           permission</a> with |permissionDesc|.
           </li>
           <li>Await |resultPromise| to settle.
           </li>
-          <li>If |resultPromise| rejects, return {{PermissionState["denied"]}}.
+          <li>If |resultPromise| rejects, return {{PermissionState/"denied"}}.
           </li>
           <li>Otherwise, let |status:PermissionStatus| be the result of
           |resultPromise|.
@@ -288,59 +243,16 @@
           <li>Let |state:PermissionState| be the value of
           |status|.{{PermissionStatus/state}}.
           </li>
-          <li>If |state| is {{PermissionState["prompt"]}}, run the following
-          steps:
-            <ol>
-              <li>If the <a>current global object</a> is not a {{Window}},
-              return {{PermissionState["denied"]}}.
-              </li>
-              <li>If the <a>current global object</a> does not have [=transient
-              activation=], return {{PermissionState["denied"]}}.
-              </li>
-              <li>Return the result of <a>requesting permission to use</a> with
-              |permissionDesc|.
-              </li>
-            </ol>
+          <li>If |state| is not {{PermissionState/"prompt"}}, return |state|.
           </li>
-          <li>Otherwise, return |state|.
+          <li>If the <a>current global object</a> does not have [=transient
+          activation=], return {{PermissionState/"denied"}}.
+          </li>
+          <li>Otherwise, return the result of <a>requesting permission to
+          use</a> with |permissionDesc|.
           </li>
         </ol>
-        <aside class="note">
-          In the case the steps are run from a dedicated worker, then the
-          <a>current global object</a> is a {{DedicatedWorkerGlobalScope}}, for
-          which the concept of [=transient activation=] is not defined.
-          Consequently, in order to use wake locks from a dedicated worker,
-          prior permission needs to be granted from the <a>browsing context</a>
-          who created it, e.g. the <a>browsing context</a> that is exists in
-          the {{DedicatedWorkerGlobalScope}}'s [=WorkerGlobalScope/owner set=].
-        </aside>
       </section>
-    </section>
-    <section data-dfn-for="WakeLockType">
-      <h2>
-        The <dfn>WakeLockType</dfn> enum
-      </h2>
-      <p>
-        For the purpose of wake lock type description, this specification
-        defines the following enumeration:
-      </p>
-      <pre class="idl">
-        enum WakeLockType { "screen", "system" };
-      </pre>
-      <dl>
-        <dt>
-          <dfn>screen</dfn>
-        </dt>
-        <dd>
-          <a>Screen wake lock</a> type.
-        </dd>
-        <dt>
-          <dfn>system</dfn>
-        </dt>
-        <dd>
-          <a>System wake lock</a> type.
-        </dd>
-      </dl>
     </section>
     <section>
       <h3>
@@ -404,36 +316,17 @@
           [SameObject] readonly attribute WakeLock wakeLock;
         };
       </pre>
-      <p>
-        The <a>wakeLock</a> attribute's getter, when invoked, MUST return the
-        same instance of the <a>WakeLock</a> object.
-      </p>
-    </section>
-    <section data-dfn-for="WorkerNavigator">
-      <h2>
-        Extensions to the `WorkerNavigator` interface
-      </h2>
-      <pre class="idl">
-        [SecureContext]
-        partial interface WorkerNavigator {
-          [SameObject] readonly attribute WakeLock wakeLock;
-        };
-      </pre>
-      <p>
-        The <a>wakeLock</a> attribute's getter, when invoked, MUST return the
-        same instance of the <a>WakeLock</a> object.
-      </p>
     </section>
     <section data-dfn-for="WakeLock">
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
       <p>
-        The {{WakeLock}} interface allows the page to acquire wake locks of a
-        particular type.
+        The {{WakeLock}} interface allows a document to acquire a [=screen wake
+        lock=].
       </p>
-      <pre class="idl" data-cite="permissions">
-        [SecureContext, Exposed=(DedicatedWorker, Window)]
+      <pre class="idl">
+        [SecureContext, Exposed=(Window)]
         interface WakeLock {
           Promise&lt;WakeLockSentinel&gt; request(WakeLockType type);
         };
@@ -443,76 +336,58 @@
           The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-api.https.html">
-          The <a data-lt="request">request(|type:WakeLockType|)</a> method,
-          when invoked, MUST run the following steps:
+          The {{WakeLock/request()}} method, when invoked, MUST run the
+          following steps. The method takes one argument, the {{WakeLockType}}
+          |type:WakeLockType|:
         </p>
         <ol class="algorithm">
-          <li>Let |promise:Promise| be <a>a new promise</a>.
-          </li>
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
             <ol>
               <li data-tests=
               "wakelock-disabled-by-feature-policy.https.sub.html">If
               |document| is not <a>allowed to use</a> the <a>policy-controlled
-              feature</a> named "`wake-lock`", reject |promise| with a
-              {{"NotAllowedError"}} {{DOMException}} and return |promise|.
+              feature</a> named "`screen-wake-lock`", return [=a promise
+              rejected with=] a {{"NotAllowedError"}} {{DOMException}} .
               </li>
               <li>If the <a>user agent</a> <a>denies the wake lock</a> of this
-              |type| for |document|, reject |promise| with a
-              {{"NotAllowedError"}} {{DOMException}} and return |promise|.
+              |type| for |document|, return [=a promise rejected with=]
+              {{"NotAllowedError"}} {{DOMException}}.
               </li>
             </ol>
           </li>
-          <li>If the <a>current global object</a> is the
-          {{DedicatedWorkerGlobalScope}} object:
-            <ol>
-              <li>If the <a>current global object</a>'s
-              [=WorkerGlobalScope/owner set=] [= list/is empty =], reject
-              |promise| with a {{"NotAllowedError"}} {{DOMException}} and
-              return |promise|.
-              </li>
-              <li>If |type| is {{ WakeLockType["screen"] }}, reject |promise|
-              with a {{"NotAllowedError"}} {{DOMException}}, and return
-              |promise|.
-              </li>
-            </ol>
+          <li>If the |document|'s [=Document/browsing context=] is `null`,
+          return [=a promise rejected with=] {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
-          <li>Otherwise, if the <a>current global object</a> is the {{Window}}
-          object:
-            <ol>
-              <li>If the |document|'s [=Document/browsing context=] is `null`,
-              reject |promise| with a {{"NotAllowedError"}} {{DOMException}}
-              and return |promise|.
-              </li>
-              <li>If |document| is not [=Document/fully active=], reject
-              |promise| with a {{"NotAllowedError"}} {{DOMException}}, and
-              return |promise|.
-              </li>
-              <li>If |type| is {{WakeLockType["screen"] }} and |document| is
-              <a>hidden</a>, reject |promise| with a {{"NotAllowedError"}}
-              {{DOMException}}, and return |promise|.
-              </li>
-            </ol>
+          <li>If |document| is not [=Document/fully active=], return [=a
+          promise rejected with=] with a {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
-          <li>Run the following steps <a>in parallel</a>, but <a>abort when</a>
-          |type| is {{WakeLockType["screen"]}} and |document| is <a>hidden</a>:
+          <li>If |document| is <a>hidden</a>, return [=a promise rejected
+          with=] {{"NotAllowedError"}} {{DOMException}}.
+          </li>
+          <li>Let |promise:Promise| be [=a new promise=].
+          </li>
+          <li>Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
+              <li>
+                <a>abort when</a> |document| is <a>hidden</a>,
+              </li>
               <li>Let |state:PermissionState| be the result of awaiting
-              <a>obtain permission</a> steps with |type|:
+              <a>obtain permission</a> steps with "`screen-wake-lock`":
                 <ol>
-                  <li>If |state| is {{PermissionState["denied"]}}, then reject
+                  <li>If |state| is {{PermissionState/"denied"}}, then reject
                   |promise| with a {{"NotAllowedError"}} {{DOMException}}, and
                   abort these steps.
                   </li>
                 </ol>
               </li>
               <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-              object with its {{WakeLockSentinel/type}} attribute set to
-              |type|.
+              object with its {{WakeLockSentinel/type}} attribute set |type|.
               </li>
               <li>Let |success:boolean| be the result of awaiting <a>acquire a
-              wake lock</a> with |lock| and |type|:
+              wake lock</a> with |lock| and {{WakeLockType/"screen"}}:
                 <ol>
                   <li>If |success| is `false` then reject |promise| with a
                   {{"NotAllowedError"}} {{DOMException}}, and abort these
@@ -525,14 +400,8 @@
             </ol>
           </li>
           <li>
-            <a>If aborted</a>, run these steps:
-            <ol>
-              <li>Reject |promise| with a {{"NotAllowedError"}}
-              {{DOMException}}.
-              </li>
-            </ol>
-          </li>
-          <li>Return |promise|.
+            <a>If aborted</a>, reject |promise| with a {{"NotAllowedError"}}
+            {{DOMException}}.
           </li>
         </ol>
       </section>
@@ -542,7 +411,7 @@
         The <dfn>WakeLockSentinel</dfn> interface
       </h2>
       <pre class="idl">
-        [SecureContext, Exposed=(DedicatedWorker, Window)]
+        [SecureContext, Exposed=(Window)]
         interface WakeLockSentinel : EventTarget {
           readonly attribute WakeLockType type;
           Promise&lt;void&gt; release();
@@ -621,6 +490,26 @@
         </aside>
       </section>
     </section>
+    <section data-dfn-for="WakeLockType">
+      <h2>
+        The <dfn>WakeLockType</dfn> enum
+      </h2>
+      <p>
+        For the purpose of wake lock type description, this specification
+        defines the following enumeration to represent [=wake lock types=]:
+      </p>
+      <pre class="idl">
+        enum WakeLockType { "screen" };
+      </pre>
+      <dl>
+        <dt>
+          <dfn>screen</dfn>
+        </dt>
+        <dd>
+          <a>Screen wake lock</a> type.
+        </dd>
+      </dl>
+    </section>
     <section>
       <h2>
         Managing Wake Locks
@@ -654,8 +543,7 @@
       <p data-tests="wakelock-applicability-manual.https.html">
         The <a>screen wake lock</a> MUST NOT be <a>applicable</a> after the
         screen is manually switched off by the user until it is switched on
-        again. Manually switching off the screen MUST NOT affect the
-        <a>applicability</a> of the <a>system wake lock</a>.
+        again.
       </p>
       <aside class="note">
         Whether the wake lock is applicable is a transient condition, e.g. when
@@ -695,26 +583,14 @@
           responsible document=] of the <a>current settings object</a>.
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and <a>wake lock type</a> {{
-          WakeLockType["screen"] }}.
+          record</a> associated with |document| and <a>wake lock type</a>
+          {{WakeLockType/"screen"}}.
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and {{
-              WakeLockType["screen"] }}.
-              </li>
-            </ol>
-          </li>
-          <li>Let |systemRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and <a>wake lock type</a> {{
-          WakeLockType["system"] }}.
-          </li>
-          <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |systemRecord|.{{[[ActiveLocks]]}}:
-            <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and {{
-              WakeLockType["system"] }}.
+              <li>Run <a>release a wake lock</a> with |lock| and
+              {{WakeLockType/"screen"}}.
               </li>
             </ol>
           </li>
@@ -742,28 +618,19 @@
           these steps.
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with <a>wake lock type</a> {{
-          WakeLockType["screen"] }}.
+          record</a> associated with <a>wake lock type</a> "screen-wake-lock".
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and {{
-              WakeLockType["screen"] }}.
+              <li>Run <a>release a wake lock</a> with |lock| and
+              {{WakeLockType/"screen"}}.
               </li>
             </ol>
           </li>
         </ol>
         <aside class="note">
-          As some locks like {{ WakeLockType["system"] }} are allowed to run
-          while the [=environment settings object / responsible document=] of
-          the <a>current settings object</a> is not visible, it is encouraged
-          that user agents show some UI indicating this.
-        </aside>
-        <aside class="note">
-          The <a>visibility state</a> is only exposed on the {{Window}} object,
-          thus the above steps are not relevant to wake locks running as part
-          of a dedicated worker.
+          The <a>visibility state</a> is only exposed on the {{Window}} object.
         </aside>
       </section>
       <section>
