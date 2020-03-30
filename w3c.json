@@ -3,7 +3,7 @@
   "contacts": [
     "xfq"
   ],
-  "shortName": "wake-lock",
+  "shortName": "screen-wake-lock",
   "repo-type": "rec-track",
   "policy": "open"
 }
