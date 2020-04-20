@@ -41,7 +41,7 @@
         wg: "Devices and Sensors Working Group",
         wgURI: "https://www.w3.org/das/",
         wgPatentURI: "https://www.w3.org/2004/01/pp-impl/43696/status",
-        testSuiteURI: "https://w3c-test.org/wake-lock/",
+        testSuiteURI: "https://w3c-test.org/screen-wake-lock/",
         implementationReportURI: "https://www.w3.org/wiki/DAS/Implementations",
         otherLinks: [{
           key: 'Quality Assurance Lead',
@@ -126,7 +126,11 @@
         Policy control
       </h3>
       <p data-tests=
-      "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
+      "wakelock-supported-by-feature-policy.html,
+      wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html,
+      wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html,
+      wakelock-enabled-by-feature-policy-attribute.https.sub.html,
+      wakelock-enabled-by-feature-policy.https.sub.html">
         The Screen Wake Lock API defines a <a>policy-controlled feature</a>
         identified by the string `"screen-wake-lock"`. Its <a>default
         allowlist</a> is `["self"]`.
@@ -191,7 +195,7 @@
         <h2>
           Permission algorithms
         </h2>
-        <p>
+        <p data-tests="wakelockpermissiondescriptor.https.html">
           To <dfn data-lt="block">block a permission</dfn>, run these steps:
         </p>
         <ol class="algorithm">
@@ -321,7 +325,7 @@
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
-      <p>
+      <p data-tests="wakelock-insecure-context.any.html">
         The {{WakeLock}} interface allows a document to acquire a [=screen wake
         lock=].
       </p>
@@ -335,7 +339,7 @@
         <h3>
           The <dfn>request()</dfn> method
         </h3>
-        <p data-tests="wakelock-api.https.html">
+        <p data-tests="wakelock-type.https.any.html">
           The {{WakeLock/request()}} method, when invoked, MUST run the
           following steps. The method takes one argument, the {{WakeLockType}}
           |type:WakeLockType|:
@@ -348,9 +352,11 @@
               "wakelock-disabled-by-feature-policy.https.sub.html">If
               |document| is not <a>allowed to use</a> the <a>policy-controlled
               feature</a> named "`screen-wake-lock`", return [=a promise
-              rejected with=] a {{"NotAllowedError"}} {{DOMException}} .
+              rejected with=] a {{"NotAllowedError"}} {{DOMException}}.
               </li>
-              <li>If the <a>user agent</a> <a>denies the wake lock</a> of this
+              <li data-tests=
+              "wakelock-screen-type-on-worker.https.worker.html">If the
+              <a>user agent</a> <a>denies the wake lock</a> of this
               |type| for |document|, return [=a promise rejected with=]
               {{"NotAllowedError"}} {{DOMException}}.
               </li>
@@ -360,12 +366,16 @@
           return [=a promise rejected with=] {{"NotAllowedError"}}
           {{DOMException}}.
           </li>
-          <li>If |document| is not [=Document/fully active=], return [=a
+          <li data-tests=
+          "wakelock-active-document.https.window.html">If |document|
+          is not [=Document/fully active=], return [=a
           promise rejected with=] with a {{"NotAllowedError"}}
           {{DOMException}}.
           </li>
-          <li>If |document| is <a>hidden</a>, return [=a promise rejected
-          with=] {{"NotAllowedError"}} {{DOMException}}.
+          <li data-tests=
+          "wakelock-document-hidden-manual.https.html">If |document|
+          is <a>hidden</a>, return [=a promise rejected with=]
+          {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -377,7 +387,9 @@
               <li>Let |state:PermissionState| be the result of awaiting
               <a>obtain permission</a> steps with "`screen-wake-lock`":
                 <ol>
-                  <li>If |state| is {{PermissionState/"denied"}}, then reject
+                  <li data-tests=
+                  "wakelock-request-denied.https.html">If
+                  |state| is {{PermissionState/"denied"}}, then reject
                   |promise| with a {{"NotAllowedError"}} {{DOMException}}, and
                   abort these steps.
                   </li>
@@ -442,7 +454,7 @@
         <h3>
           The <dfn>release()</dfn> method
         </h3>
-        <p>
+        <p data-tests="wakelock-onrelease.https.html">
           The {{WakeLockSentinel/release()}} method, when invoked, MUST run the
           following steps:
         </p>
@@ -464,7 +476,7 @@
         </ol>
       </section>
       <section>
-        <h3>
+        <h3 data-tests="wakelock-onrelease.https.html">
           The <dfn>onrelease</dfn> attribute
         </h3>
         <p>
@@ -515,8 +527,7 @@
       <h2>
         Managing Wake Locks
       </h2>
-      <p data-tests=
-      "wakelockrequest-is-independent.https.html, wakelock-promise.https.html">
+      <p>
         This section applies to each <a>wake lock type</a> equally and
         independently, unless a particular <a>wake lock type</a> is explicitly
         mentioned.
@@ -541,7 +552,7 @@
         the operating system permits application of the lock (e.g. there is
         sufficient battery charge).
       </p>
-      <p data-tests="wakelock-applicability-manual.https.html">
+      <p>
         The <a>screen wake lock</a> MUST NOT be <a>applicable</a> after the
         screen is manually switched off by the user until it is switched on
         again.
@@ -574,7 +585,7 @@
         <h3>
           <dfn>Handling document loss of full activity</dfn>
         </h3>
-        <p>
+        <p data-tests="wakelock-active-document.https.window.html"></p>
           When the user agent determines that a [=environment settings object /
           responsible document=] of the <a>current settings object</a> is no
           longer [=Document/fully active=], it must run these steps:
@@ -606,7 +617,7 @@
         <h3>
           <dfn>Handling document loss of visibility</dfn>
         </h3>
-        <p>
+        <p data-tests="wakelock-document-hidden-manual.https.html">
           When the user agent determines that the <a>visibility state</a> of
           the [=environment settings object / responsible document=] of the
           <a>current settings object</a> changes, it must run these steps:
