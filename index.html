@@ -52,7 +52,7 @@
       };
     </script>
   </head>
-  <body data-cite="FEATURE-POLICY PERMISSIONS">
+  <body data-cite="PERMISSIONS-POLICY PERMISSIONS">
     <section id='abstract'>
       <p>
         This document specifies an API that allows web applications to request
@@ -124,14 +124,10 @@
         Policy control
       </h3>
       <p data-tests=
-      "wakelock-supported-by-feature-policy.html,
-      wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html,
-      wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html,
-      wakelock-enabled-by-feature-policy-attribute.https.sub.html,
-      wakelock-enabled-by-feature-policy.https.sub.html">
-        The Screen Wake Lock API defines a <a>policy-controlled feature</a>
-        identified by the string `"screen-wake-lock"`. Its <a>default
-        allowlist</a> is `["self"]`.
+      "wakelock-supported-by-feature-policy.html, wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
+        The Screen Wake Lock API defines a [=policy-controlled feature=]
+        identified by the string `"screen-wake-lock"`. Its [=default
+        allowlist=] is `["self"]`.
       </p>
       <aside class="note">
         <p>
@@ -148,14 +144,14 @@
           &lt;iframe src="https://third-party.com" allow="screen-wake-lock"/&gt;&lt;/iframe&gt;
         </pre>
         <p>
-          Alternatively, the wake lock feature can be disabled completely by
-          specifying the feature policy in a HTTP response header:
+          Alternatively, the wake lock can be disabled completely by specifying
+          the permissions policy in a HTTP response header:
         </p>
         <pre class="example http" title="Feature Policy over HTTP">
-          Feature-Policy: {"screen-wake-lock": []}
+          Permissions-Policy: {"screen-wake-lock": []}
         </pre>
         <p>
-          See [[[FEATURE-POLICY]]] for more details.
+          See [[[PERMISSIONS-POLICY]]] for more details.
         </p>
       </aside>
     </section>
@@ -348,14 +344,14 @@
             <ol>
               <li data-tests=
               "wakelock-disabled-by-feature-policy.https.sub.html">If
-              |document| is not <a>allowed to use</a> the <a>policy-controlled
-              feature</a> named "`screen-wake-lock`", return [=a promise
-              rejected with=] a {{"NotAllowedError"}} {{DOMException}}.
+              |document| is not [=allowed to use=] the [=policy-controlled
+              feature=] named "`screen-wake-lock`", return [=a promise rejected
+              with=] a {{"NotAllowedError"}} {{DOMException}}.
               </li>
               <li data-tests=
-              "wakelock-screen-type-on-worker.https.worker.html">If the
-              <a>user agent</a> <a>denies the wake lock</a> of this
-              |type| for |document|, return [=a promise rejected with=]
+              "wakelock-screen-type-on-worker.https.worker.html">If the <a>user
+              agent</a> <a>denies the wake lock</a> of this |type| for
+              |document|, return [=a promise rejected with=]
               {{"NotAllowedError"}} {{DOMException}}.
               </li>
             </ol>
@@ -364,15 +360,12 @@
           return [=a promise rejected with=] {{"NotAllowedError"}}
           {{DOMException}}.
           </li>
-          <li data-tests=
-          "wakelock-active-document.https.window.html">If |document|
-          is not [=Document/fully active=], return [=a
-          promise rejected with=] with a {{"NotAllowedError"}}
-          {{DOMException}}.
+          <li data-tests="wakelock-active-document.https.window.html">If
+          |document| is not [=Document/fully active=], return [=a promise
+          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests=
-          "wakelock-document-hidden-manual.https.html">If |document|
-          is <a>hidden</a>, return [=a promise rejected with=]
+          <li data-tests="wakelock-document-hidden-manual.https.html">If
+          |document| is <a>hidden</a>, return [=a promise rejected with=]
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
@@ -385,8 +378,7 @@
               <li>Let |state:PermissionState| be the result of awaiting
               <a>obtain permission</a> steps with "`screen-wake-lock`":
                 <ol>
-                  <li data-tests=
-                  "wakelock-request-denied.https.html">If
+                  <li data-tests="wakelock-request-denied.https.html">If
                   |state| is {{PermissionState/"denied"}}, then reject
                   |promise| with a {{"NotAllowedError"}} {{DOMException}}, and
                   abort these steps.
@@ -583,11 +575,10 @@
         <h3>
           <dfn>Handling document loss of full activity</dfn>
         </h3>
-        <p data-tests="wakelock-active-document.https.window.html"></p>
-          When the user agent determines that a [=environment settings object /
-          responsible document=] of the <a>current settings object</a> is no
-          longer [=Document/fully active=], it must run these steps:
-        </p>
+        <p data-tests="wakelock-active-document.https.window.html"></p>When the
+        user agent determines that a [=environment settings object /
+        responsible document=] of the <a>current settings object</a> is no
+        longer [=Document/fully active=], it must run these steps:
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
