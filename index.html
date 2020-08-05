@@ -812,5 +812,30 @@
         to this work.
       </p>
     </section>
+    <section class="appendix informative" id="changes">
+      <h2>
+        Changes
+      </h2>
+      <p>This section documents the changes since previous publications.</p>
+      <section id="changes-20171214">
+        <h2>Changes since the 14 December 2017 CR</h2>
+        <ul>
+          <li>Convert the document to purely screen wake lock, and move system lock to a new specification.</li>
+          <li>Rewrite user-visible API.</li>
+          <li>Add an <a>if aborted</a> step to <code>WakeLock.request()</code> to deal with hidden documents.</li>
+          <li>Add an IDL Index.</li>
+          <li>Remove duplicate normative statements.</li>
+          <li>Modernize the examples.</li>
+          <li>Use internal slots instead of prose.</li>
+          <li>Add info on when the user agent may <a>release a wake lock</a>.</li>
+          <li>Handle document visibility.</li>
+          <li>Make WakeLock constructable.</li>
+          <li>Integrate optional permission prompting.</li>
+          <li>Handle loss of full activity, as well as running in workers.</li>
+          <li>Rewrite the introduction section.</li>
+          <li>Rename Feature Policy to Permissions Policy.</li>
+        </ul>
+      </section>
+    </section>
   </body>
 </html>
