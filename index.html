@@ -417,7 +417,7 @@
         [SecureContext, Exposed=(Window)]
         interface WakeLockSentinel : EventTarget {
           readonly attribute WakeLockType type;
-          Promise&lt;void&gt; release();
+          Promise&lt;undefined&gt; release();
           attribute EventHandler onrelease;
         };
       </pre>
