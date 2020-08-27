@@ -701,8 +701,6 @@
           </li>
           <li>Remove |lock| from |record|.{{[[ActiveLocks]]}}.
           </li>
-          <li>Set |lock|.{{WakeLockSentinel/released}} to `true`.
-          </li>
           <li>If the internal slot {{[[ActiveLocks]]}} of all the <a>platform
           wake lock</a>'s <a>state record</a>s are all empty, then run the
           following steps <a>in parallel</a>:
@@ -726,8 +724,14 @@
             </ol>
           </li>
           <li>
-            <a>Queue a task</a> to <a>fire an event</a> named "`release`" at
-            |lock|.
+            <a>Queue a task</a> to run the following steps:
+            <ol>
+              <li>Set |lock|.{{WakeLockSentinel/released}} to `true`.
+              </li>
+              <li>
+                <a>Fire an event</a> named "`release`" at |lock|.
+              </li>
+            </ol>
           </li>
         </ol>
       </section>
