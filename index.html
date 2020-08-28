@@ -508,8 +508,8 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>If this object's {{WakeLockSentinel/released}} attribute is
-          `true`, return <a>a promise resolved with</a> `undefined`.
+          <li>If this object's {{[[Released]]}} internal slot is `true`, return
+          <a>a promise resolved with</a> `undefined`.
           </li>
           <li>Otherwise, let |promise:Promise| be <a>a new promise</a>.
           </li>
