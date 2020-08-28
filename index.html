@@ -416,6 +416,7 @@
       <pre class="idl">
         [SecureContext, Exposed=(Window)]
         interface WakeLockSentinel : EventTarget {
+          readonly attribute boolean released;
           readonly attribute WakeLockType type;
           Promise&lt;undefined&gt; release();
           attribute EventHandler onrelease;
@@ -437,6 +438,12 @@
         <a>user agent</a>.
       </aside>
       <p>
+        The <dfn>released</dfn> attribute indicates whether the
+        {{WakeLockSentinel}} has been released. Its initial value is `false`.
+        Once a {{WakeLockSentinel}} is released, {{WakeLockSentinel/released}}
+        becomes `true`, and the value never changes again.
+      </p>
+      <p>
         The <dfn>type</dfn> attribute corresponds to the {{WakeLockSentinel}}'s
         <a>wake lock type</a>.
       </p>
@@ -449,7 +456,10 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>Let |promise:Promise| be <a>a new promise</a>.
+          <li>If this object's {{WakeLockSentinel/released}} attribute is
+          `true`, return <a>a promise resolved with</a> `undefined`.
+          </li>
+          <li>Otherwise, let |promise:Promise| be <a>a new promise</a>.
           </li>
           <li>Run the following steps <a>in parallel</a>:
             <ol>
@@ -714,8 +724,14 @@
             </ol>
           </li>
           <li>
-            <a>Queue a task</a> to <a>fire an event</a> named "`release`" at
-            |lock|.
+            <a>Queue a task</a> to run the following steps:
+            <ol>
+              <li>Set |lock|.{{WakeLockSentinel/released}} to `true`.
+              </li>
+              <li>
+                <a>Fire an event</a> named "`release`" at |lock|.
+              </li>
+            </ol>
           </li>
         </ol>
       </section>
@@ -768,8 +784,8 @@
         document.body.appendChild(checkbox);
 
         const sentinel = await navigator.wakeLock.request("screen");
-        checkbox.checked = true;
-        sentinel.onrelease = () =&gt; checkbox.checked = false;
+        checkbox.checked = !sentinel.released;
+        sentinel.onrelease = () =&gt; checkbox.checked = !sentinel.released;
       </pre>
       <p>
         In this example, two different wake lock requests are created and
