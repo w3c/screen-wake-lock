@@ -437,16 +437,68 @@
         circumstances under which a given wake lock may be released by the
         <a>user agent</a>.
       </aside>
-      <p>
-        The <dfn>released</dfn> attribute indicates whether the
-        {{WakeLockSentinel}} has been released. Its initial value is `false`.
-        Once a {{WakeLockSentinel}} is released, {{WakeLockSentinel/released}}
-        becomes `true`, and the value never changes again.
-      </p>
-      <p>
-        The <dfn>type</dfn> attribute corresponds to the {{WakeLockSentinel}}'s
-        <a>wake lock type</a>.
-      </p>
+      <section>
+        <h3>
+          Internal slots
+        </h3>
+        <p>
+          {{WakeLockSentinel}} instances are created with the following
+          <a data-cite=
+          "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
+          slots</a>:
+        </p>
+        <table class="simple">
+          <thead>
+            <tr>
+              <th>
+                Internal slot
+              </th>
+              <th>
+                Initial value
+              </th>
+              <th>
+                Description (non-normative)
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <dfn>[[\Released]]</dfn>
+              </td>
+              <td>
+                `false`
+              </td>
+              <td>
+                Whether the given {{WakeLockSentinel}} has been released.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h3>
+          The <dfn>released</dfn> attribute
+        </h3>
+        <p>
+          The {{WakeLockSentinel/released}} attribute's getter returns the
+          value of the {{[[Released]]}} internal slot.
+        </p>
+        <aside class="note">
+          Once a {{WakeLockSentinel}} is released,
+          {{WakeLockSentinel/released}} becomes `true`, and the value never
+          changes again.
+        </aside>
+      </section>
+      <section>
+        <h3>
+          The <dfn>type</dfn> attribute
+        </h3>
+        <p>
+          The {{WakeLockSentinel/type}} attribute corresponds to the
+          {{WakeLockSentinel}}'s <a>wake lock type</a>.
+        </p>
+      </section>
       <section>
         <h3>
           The <dfn>release()</dfn> method
@@ -456,8 +508,8 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>If this object's {{WakeLockSentinel/released}} attribute is
-          `true`, return <a>a promise resolved with</a> `undefined`.
+          <li>If this object's {{[[Released]]}} internal slot is `true`, return
+          <a>a promise resolved with</a> `undefined`.
           </li>
           <li>Otherwise, let |promise:Promise| be <a>a new promise</a>.
           </li>
@@ -726,7 +778,7 @@
           <li>
             <a>Queue a task</a> to run the following steps:
             <ol>
-              <li>Set |lock|.{{WakeLockSentinel/released}} to `true`.
+              <li>Set |lock|'s {{[[Released]]}} internal slot to `true`.
               </li>
               <li>
                 <a>Fire an event</a> named "`release`" at |lock|.
