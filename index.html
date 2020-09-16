@@ -395,7 +395,7 @@
                   The <a>acquire a wake lock</a> algorithm may ultimately be
                   unable to acquire a lock from the operating system, but this
                   is indistinguishable from a successful lock acquisition to
-                  avoid user fingerprinting (a failure to acquire a lock can
+                  avoid user fingerprinting (failure to acquire a lock can
                   indicate low battery levels, for example).
                 </aside>
               </li>
@@ -589,8 +589,9 @@
         The <a>user agent</a> <dfn data-lt=
         "acquire wake lock|acquire the wake lock|acquired">acquires the wake
         lock</dfn> by requesting the underlying operating system to apply the
-        lock. The lock is considered acquired only when the request to the
-        operating system succeeds.
+        lock. A possible return value of the request to the underlying
+        operating system is not checked. In other words, <a>user agents</a>
+        MUST treat wake lock acquisition as <strong>advisory-only</strong>.
       </p>
       <p>
         Conversely, the <a>user agent</a> <dfn data-lt=
