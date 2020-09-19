@@ -389,14 +389,15 @@
               object with its {{WakeLockSentinel/type}} attribute set to
               |type|.
               </li>
-              <li>Let |success:boolean| be the result of awaiting <a>acquire a
-              wake lock</a> with |lock| and {{WakeLockType/"screen"}}:
-                <ol>
-                  <li>If |success| is `false` then reject |promise| with a
-                  {{"NotAllowedError"}} {{DOMException}}, and abort these
-                  steps.
-                  </li>
-                </ol>
+              <li>Invoke <a>acquire a wake lock</a> with |lock| and
+              {{WakeLockType/"screen"}}.
+                <aside class="note">
+                  The <a>acquire a wake lock</a> algorithm may ultimately be
+                  unable to acquire a lock from the operating system, but this
+                  is indistinguishable from a successful lock acquisition to
+                  avoid user fingerprinting (failure to acquire a lock can
+                  indicate low battery levels, for example).
+                </aside>
               </li>
               <li>Resolve |promise| with |lock|.
               </li>
@@ -588,8 +589,9 @@
         The <a>user agent</a> <dfn data-lt=
         "acquire wake lock|acquire the wake lock|acquired">acquires the wake
         lock</dfn> by requesting the underlying operating system to apply the
-        lock. The lock is considered acquired only when the request to the
-        operating system succeeds.
+        lock. A possible return value of the request to the underlying
+        operating system is not checked. In other words, <a>user agents</a>
+        MUST treat wake lock acquisition as <strong>advisory-only</strong>.
       </p>
       <p>
         Conversely, the <a>user agent</a> <dfn data-lt=
@@ -710,26 +712,19 @@
           <li>If the wake lock for type |type| is not <a>applicable</a>, return
           `false`.
           </li>
-          <li>Set |active:boolean| to `true` if the <a>platform wake lock</a>
-          has an active wake lock for |type|.
+          <li>If the <a>platform wake lock</a> has an active lock for |type|,
+          abort these steps.
           </li>
-          <li>Otherwise, ask the underlying operating system to <a>acquire the
-          wake lock</a> of type |type| and set |active| to `true` if the
-          operation succeeded, or else `false`.
+          <li>Ask the underlying operating system to <a>acquire the wake
+          lock</a> of type |type|.
           </li>
-          <li>If |active| is `true`:
-            <ol>
-              <li>Let |document:Document| be the [=environment settings object
-              / responsible document=] of the <a>current settings object</a>.
-              </li>
-              <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-              record</a> associated with |document| and |type|.
-              </li>
-              <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
-              </li>
-            </ol>
+          <li>Let |document:Document| be the [=environment settings object /
+          responsible document=] of the <a>current settings object</a>.
           </li>
-          <li>Return |active|.
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+          record</a> associated with |document| and |type|.
+          </li>
+          <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
           </li>
         </ol>
       </section>
@@ -804,12 +799,6 @@
         emergency call service. Implementations should consider preventing wake
         lock application if they determine that the remaining battery capacity
         is low.
-      </p>
-      <p>
-        When the <a>user agent</a> does not <a>acquire wake lock</a> even
-        though a browsing context has requested it, this can be observed by the
-        browsing context and can possibly disclose sensitive information about
-        the state of the device such as that battery level is low.
       </p>
     </section>
     <section id="examples" class="informative">
