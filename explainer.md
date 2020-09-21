@@ -49,7 +49,7 @@ lock.addEventListener("release", doSomething);
 
 // Later, check and release the lock if necessary.
 if (lock.released === false) {
-    await lock.release();
+  await lock.release();
 }
 ```
 
