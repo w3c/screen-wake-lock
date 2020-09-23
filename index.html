@@ -788,17 +788,16 @@
         Security and privacy considerations
       </h2>
       <p>
-        Application of a wake lock causes various device components such as
-        display or CPU to operate at higher power levels than they otherwise
-        would. This can lead to undesirable and potentially dangerous effects
-        such as excessive heating and faster than normal battery charge
-        depletion. The latter is particularly relevant to mobile devices which
-        may not have a stationary power source readily available. Complete
-        battery depletion at an unexpected time can lead to inability of the
-        user to make or receive calls and use network services, including the
-        emergency call service. Implementations should consider preventing wake
-        lock application if they determine that the remaining battery capacity
-        is low.
+        Wake locks can cause various device components such as display or CPU
+        to operate at higher power levels than they otherwise would. This can
+        lead to undesirable effects such as faster than normal battery charge
+        depletion. This is particularly relevant to mobile devices, which may
+        not have a stationary power source readily available. Complete battery
+        depletion at an unexpected time can lead to inability of the user to
+        make or receive calls and use network services, including the emergency
+        call service. Implementations MAY ignore requests for screen wake lock
+        if, for example, the battery capacity is low, or the user has put their
+        device in a power-saving mode.
       </p>
     </section>
     <section id="examples" class="informative">
