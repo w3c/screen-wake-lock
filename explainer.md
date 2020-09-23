@@ -35,7 +35,14 @@ and manual controls to prevent intentional and incidental issues.
 ## Non-goals
 A previous iteration of this spec included both Screen and System wake locks,
 which prevented the CPU from entering a deep power state. The latter has been
-moved to a separate spec, and is out of scope for this explainer.
+moved to a separate spec, and is out of scope for this explainer. For more
+context, see:
+* [Anyone implementing "system"
+  lock?](https://github.com/w3c/screen-wake-lock/issues/232)
+* [Break specification into
+  levels](https://github.com/w3c/screen-wake-lock/issues/253)
+* [Convert to purely screen wake
+  lock](https://github.com/w3c/screen-wake-lock/pull/255)
 
 ## API
 Users can request a screen wake lock, and if the request succeeds it can be
@@ -66,6 +73,14 @@ try {
   // Access denied, or something went wrong.
 }
 ```
+
+**Note:** while _"screen"_ is currently the only allowed value for the call to
+`navigator.wakeLock.request()`, the argument is still required for
+extensibility. In the past, both _"screen"_ and _"system"_ were accepted; while
+System Wake Locks are [no longer part of the spec](#Non-goals), not requiring
+an argument and later developing support for other types of locks would imply
+treating an empty argument list as a request for a screen lock, which would not
+be ergonomic or intuitive.
 
 ### WakeLockSentinel
 A `WakeLockSentinel` object provides a handle to the lock that has been
