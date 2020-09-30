@@ -62,8 +62,9 @@ if (lock.released === false) {
 
 ### Requesting permission to use WakeLocks
 To use the API, one must request access via
-`navigator.wakeLock.request("screen")`. This returns a promise which, if
-allowed by the user, resolves with a `WakeLockSentinel`.
+`navigator.wakeLock.request("screen")` (_"screen"_ is optional). This
+returns a promise which, if allowed by the user, resolves with a
+`WakeLockSentinel`.
 
 ```js
 let sentinel;

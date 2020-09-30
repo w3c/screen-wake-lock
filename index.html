@@ -326,7 +326,7 @@
       <pre class="idl">
         [SecureContext, Exposed=(Window)]
         interface WakeLock {
-          Promise&lt;WakeLockSentinel&gt; request(WakeLockType type);
+          Promise&lt;WakeLockSentinel&gt; request(optional WakeLockType type = "screen");
         };
       </pre>
       <section>
