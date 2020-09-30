@@ -35,7 +35,14 @@ and manual controls to prevent intentional and incidental issues.
 ## Non-goals
 A previous iteration of this spec included both Screen and System wake locks,
 which prevented the CPU from entering a deep power state. The latter has been
-moved to a separate spec, and is out of scope for this explainer.
+moved to a separate spec, and is out of scope for this explainer. For more
+context, see:
+* [Anyone implementing "system"
+  lock?](https://github.com/w3c/screen-wake-lock/issues/232)
+* [Break specification into
+  levels](https://github.com/w3c/screen-wake-lock/issues/253)
+* [Convert to purely screen wake
+  lock](https://github.com/w3c/screen-wake-lock/pull/255)
 
 ## API
 Users can request a screen wake lock, and if the request succeeds it can be
