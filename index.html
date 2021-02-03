@@ -709,8 +709,8 @@
           and |type:WakeLockType|, run these steps <a>in parallel</a>:
         </p>
         <ol class="algorithm">
-          <li>If the wake lock for type |type| is not <a>applicable</a>, return
-          `false`.
+          <li>If the wake lock for type |type| is not <a>applicable</a>, abort
+          these steps.
           </li>
           <li>If the <a>platform wake lock</a> has an active lock for |type|,
           abort these steps.
