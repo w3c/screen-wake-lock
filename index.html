@@ -217,31 +217,6 @@
             </ol>
           </li>
         </ol>
-        <p>
-          To <dfn>obtain permission</dfn> for <a>wake lock type</a> |name|, run
-          the following steps. This algorithm returns either
-          {{PermissionState/"granted"}} or {{PermissionState/"denied"}}.
-        </p>
-        <aside class="note">
-          The following algorithm is defined in this specification because the
-          Permissions specification currently lacks integration with the
-          concept of user activation from [[HTML]]. See <a href=
-          "https://github.com/w3c/permissions/issues/194">this issue for more
-          information</a>.
-        </aside>
-        <ol class="algorithm">
-          <li>Let |state:PermissionState| be <a>permission state</a> of the
-          `"screen-wake-lock"` {{PermissionName}}.
-          </li>
-          <li>If |state| is not {{PermissionState/"prompt"}}, return |state|.
-          </li>
-          <li>If the <a>current global object</a> does not have [=transient
-          activation=], return {{PermissionState/"denied"}}.
-          </li>
-          <li>Otherwise, return the result of <a>requesting permission to
-          use</a> the `"screen-wake-lock"` {{PermissionName}}.
-          </li>
-        </ol>
       </section>
     </section>
     <section>
@@ -369,8 +344,8 @@
           </li>
           <li>Run the following steps <a>in parallel</a>:
             <ol>
-              <li>Let |state:PermissionState| be the result of invoking
-              <a>obtain permission</a> with "`screen-wake-lock`".
+              <li>Let |state:PermissionState| be the result of <a>requesting
+              permission to use</a> "`screen-wake-lock`".
               </li>
               <li data-tests="wakelock-request-denied.https.html">If |state| is
               {{PermissionState/"denied"}}, then:
