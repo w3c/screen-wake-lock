@@ -202,16 +202,15 @@
           <li>Set |descriptor|'s <a>permission state</a> to
           {{PermissionState/"denied"}}.
           </li>
-          <li>Let |name| be |descriptor|'s {{PermissionDescriptor/name}}
-          member.
-          </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |name|.
+          record</a> associated with |document| and <a>wake lock type</a>
+          {{WakeLockType/"screen"}}.
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |record|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and |name|.
+              <li>Run <a>release a wake lock</a> with |lock| and
+              {{WakeLockType/"screen"}}.
               </li>
             </ol>
           </li>
@@ -650,7 +649,7 @@
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and <a>wake lock type</a>
-          [=screen wake lock=].
+          {{WakeLockType/"screen"}}.
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
@@ -684,8 +683,8 @@
           these steps.
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with <a>wake lock type</a> [=screen wake
-          lock=].
+          record</a> associated with |document| and <a>wake lock type</a>
+          {{WakeLockType/"screen"}}.
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
