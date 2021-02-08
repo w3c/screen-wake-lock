@@ -217,25 +217,16 @@
           these steps <a>in parallel</a>. This async algorithm returns either
           {{PermissionState/"granted"}} or {{PermissionState/"denied"}}.
         </p>
+        <aside class="note">
+          The following algorithm is defined in this specification because the
+          Permissions specification currently lacks integration with the
+          concept of user activation from [[HTML]]. See <a href=
+          "https://github.com/w3c/permissions/issues/194">this issue for more
+          information</a>.
+        </aside>
         <ol class="algorithm">
-          <li>Let |permissionDesc:PermissionDescriptor| be a newly created
-          {{PermissionDescriptor}}.
-          </li>
-          <li>Set |permissionDesc|'s {{PermissionDescriptor/name}} member to
-          "`screen-wake-lock`".
-          </li>
-          <li>Let |resultPromise:Promise| be the result of running <a>query a
-          permission</a> with |permissionDesc|.
-          </li>
-          <li>Await |resultPromise| to settle.
-          </li>
-          <li>If |resultPromise| rejects, return {{PermissionState/"denied"}}.
-          </li>
-          <li>Otherwise, let |status:PermissionStatus| be the result of
-          |resultPromise|.
-          </li>
-          <li>Let |state:PermissionState| be the value of
-          |status|.{{PermissionStatus/state}}.
+          <li>Let |state:PermissionState| be <a>permission state</a> of the
+          `"screen-wake-lock"` {{PermissionName}}.
           </li>
           <li>If |state| is not {{PermissionState/"prompt"}}, return |state|.
           </li>
@@ -243,7 +234,7 @@
           activation=], return {{PermissionState/"denied"}}.
           </li>
           <li>Otherwise, return the result of <a>requesting permission to
-          use</a> with |permissionDesc|.
+          use</a> the `"screen-wake-lock"` {{PermissionName}}.
           </li>
         </ol>
       </section>
