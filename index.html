@@ -51,6 +51,7 @@
         xref: {
           profile: "web-platform",
           specs: [
+            "page-visibility",
             "permissions",
             "permissions-policy",
           ]
@@ -361,16 +362,18 @@
           |document| is not [=Document/fully active=], return [=a promise
           rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-document-hidden-manual.https.html">If
-          |document| is <a>hidden</a>, return [=a promise rejected with=]
-          {{"NotAllowedError"}} {{DOMException}}.
+          <li data-tests="wakelock-document-hidden-manual.https.html">If the
+          steps to <a>determine the visibility state</a> return `hidden`,
+          return [=a promise rejected with=] {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
           <li>Return |promise| and run the following steps <a>in parallel</a>:
             <ol>
               <li>
-                <a>Abort when</a> |document| is <a>hidden</a>.
+                <a>Abort when</a> the steps to <a>determine the visibility
+                state</a> return `hidden`.
               </li>
               <li>Let |state:PermissionState| be the result of awaiting
               <a>obtain permission</a> steps with "`screen-wake-lock`":
@@ -667,18 +670,18 @@
       <section>
         <h3>
           <dfn>Handling document loss of visibility</dfn>
-        </h3>
+        </h3><!-- Note: https://github.com/w3c/page-visibility/pull/47 formally
+             defines external hooks we can use here, but they are not part of
+             the latest TR, so we cannot reference them yet. -->
         <p data-tests="wakelock-document-hidden-manual.https.html">
-          When the user agent determines that the <a>visibility state</a> of
-          the [=environment settings object / responsible document=] of the
-          <a>current settings object</a> changes, it must run these steps:
+          When the user agent determines that the [=Document/visibility state=]
+          of the <a>Document</a> of the <a>top-level browsing context</a> has
+          become `hidden`, the user agent MUST run the following steps after
+          the <a>now hidden algorithm</a>:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
-          </li>
-          <li>If |document|'s <a>visibility state</a> is `"visible"`, abort
-          these steps.
           </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and <a>wake lock type</a>
@@ -694,7 +697,8 @@
           </li>
         </ol>
         <aside class="note">
-          The <a>visibility state</a> is only exposed on the {{Window}} object.
+          The [=Document/visibility state=] is only exposed on the {{Window}}
+          object.
         </aside>
       </section>
       <section>
@@ -837,14 +841,16 @@
       </pre>
     </section>
     <section>
+      <!-- Note: https://github.com/w3c/page-visibility/pull/47 formally
+           defines external hooks we can use here, but they are not part of
+           the latest TR, so we cannot reference them yet. Once we can, this
+           whole section can be removed. -->
       <h2>
         Dependencies
       </h2>
       <p>
-        Document's <code><dfn data-cite=
-        "PAGE-VISIBILITY#dom-document-hidden">hidden</dfn></code> attribute,
-        and <dfn data-cite="PAGE-VISIBILITY#dfn-visibility-states">visibility
-        state</dfn> are defined in [[PAGE-VISIBILITY]].
+        The following is defined in [[PAGE-VISIBILITY]]: <dfn data-cite=
+        "PAGE-VISIBILITY#dfn-now-hidden-algorithm">now hidden algorithm</dfn>.
       </p>
     </section>
     <section id="conformance">
