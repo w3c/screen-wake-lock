@@ -339,20 +339,16 @@
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
           responsible document=] of the <a>current settings object</a>.
-            <ol>
-              <li data-tests=
-              "wakelock-disabled-by-feature-policy.https.sub.html">If
-              |document| is not [=allowed to use=] the [=policy-controlled
-              feature=] named "`screen-wake-lock`", return [=a promise rejected
-              with=] a {{"NotAllowedError"}} {{DOMException}}.
-              </li>
-              <li data-tests=
-              "wakelock-screen-type-on-worker.https.worker.html">If the <a>user
-              agent</a> <a>denies the wake lock</a> of this |type| for
-              |document|, return [=a promise rejected with=]
-              {{"NotAllowedError"}} {{DOMException}}.
-              </li>
-            </ol>
+          </li>
+          <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+          If |document| is not [=allowed to use=] the [=policy-controlled
+          feature=] named "`screen-wake-lock`", return [=a promise rejected
+          with=] a {{"NotAllowedError"}} {{DOMException}}.
+          </li>
+          <li data-tests="wakelock-screen-type-on-worker.https.worker.html">If
+          the <a>user agent</a> <a>denies the wake lock</a> of this |type| for
+          |document|, return [=a promise rejected with=] a
+          {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>If the |document|'s [=Document/browsing context=] is `null`,
           return [=a promise rejected with=] {{"NotAllowedError"}}
@@ -376,12 +372,15 @@
                 state</a> return `hidden`.
               </li>
               <li>Let |state:PermissionState| be the result of awaiting
-              <a>obtain permission</a> steps with "`screen-wake-lock`":
+              <a>obtain permission</a> steps with "`screen-wake-lock`".
+              </li>
+              <li data-tests="wakelock-request-denied.https.html">If |state| is
+              {{PermissionState/"denied"}}, then:
                 <ol>
-                  <li data-tests="wakelock-request-denied.https.html">If
-                  |state| is {{PermissionState/"denied"}}, then reject
-                  |promise| with a {{"NotAllowedError"}} {{DOMException}}, and
-                  abort these steps.
+                  <li>Reject |promise| with a {{"NotAllowedError"}}
+                  {{DOMException}}.
+                  </li>
+                  <li>Abort these steps.
                   </li>
                 </ol>
               </li>
