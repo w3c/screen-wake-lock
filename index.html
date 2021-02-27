@@ -509,7 +509,7 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>If <a>this</a>' {{[[Released]]}} internal slot is `true`, return
+          <li>If <a>this</a>'s {{[[Released]]}} internal slot is `true`, return
           <a>a promise resolved with</a> `undefined`.
           </li>
           <li>Otherwise, let |promise:Promise| be <a>a new promise</a>.
@@ -518,7 +518,7 @@
             <ol>
               <li>Run <a>release a wake lock</a> with |lock:WakeLockSentinel|
               set to <a>this</a> and |type:WakeLockType| set to the value of
-              <a>this</a>' {{WakeLockSentinel/type}} attribute.
+              <a>this</a>'s {{WakeLockSentinel/type}} attribute.
               </li>
               <li>Resolve |promise|.
               </li>
