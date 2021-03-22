@@ -221,7 +221,7 @@
         </ol>
         <p>
           To <dfn>obtain permission</dfn> for <a>wake lock type</a> |name|, run
-          these steps <a>in parallel</a>. This async algorithm returns either
+          the following steps. This algorithm returns either
           {{PermissionState/"granted"}} or {{PermissionState/"denied"}}.
         </p>
         <aside class="note">
@@ -338,7 +338,8 @@
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
+          responsible document=] of <a>this</a>'s <a>relevant settings
+          object</a>.
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
@@ -363,48 +364,73 @@
           return [=a promise rejected with=] {{"NotAllowedError"}}
           {{DOMException}}.
           </li>
+          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
+          record</a> associated with |document| and |type|.
+          </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
-          <li>Return |promise| and run the following steps <a>in parallel</a>:
+          <li>Run the following steps <a>in parallel</a>:
             <ol>
-              <li>
-                <a>Abort when</a> the steps to <a>determine the visibility
-                state</a> return `hidden`.
-              </li>
-              <li>Let |state:PermissionState| be the result of awaiting
-              <a>obtain permission</a> steps with "`screen-wake-lock`".
+              <li>Let |state:PermissionState| be the result of invoking
+              <a>obtain permission</a> with "`screen-wake-lock`".
               </li>
               <li data-tests="wakelock-request-denied.https.html">If |state| is
               {{PermissionState/"denied"}}, then:
                 <ol>
-                  <li>Reject |promise| with a {{"NotAllowedError"}}
-                  {{DOMException}}.
+                  <li>
+                    <a>Queue a global task</a> on the <a>screen wake lock task
+                    source</a> given |document|'s <a>relevant global object</a>
+                    to reject |promise| with a {{"NotAllowedError"}}
+                    {{DOMException}}.
                   </li>
                   <li>Abort these steps.
                   </li>
                 </ol>
               </li>
-              <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-              object with its {{WakeLockSentinel/type}} attribute set to
-              |type|.
-              </li>
-              <li>Invoke <a>acquire a wake lock</a> with |lock| and
-              {{WakeLockType/"screen"}}.
-                <aside class="note">
-                  The <a>acquire a wake lock</a> algorithm may ultimately be
-                  unable to acquire a lock from the operating system, but this
-                  is indistinguishable from a successful lock acquisition to
-                  avoid user fingerprinting (failure to acquire a lock can
-                  indicate low battery levels, for example).
-                </aside>
-              </li>
-              <li>Resolve |promise| with |lock|.
+              <li>
+                <a>Queue a global task</a> on the <a>screen wake lock task
+                source</a> given |document|'s <a>relevant global object</a> to
+                run these steps:
+                <ol>
+                  <li>If the steps to <a>determine the visibility state</a>
+                  return `hidden`, then:
+                    <ol>
+                      <li>Reject |promise| with a {{"NotAllowedError"}}
+                      {{DOMException}}.
+                      </li>
+                      <li>Abort these steps.
+                      </li>
+                    </ol>
+                  </li>
+                  <li>If |record|.{{[[ActiveLocks]]}} [=list/is empty=], then
+                  invoke the following steps <a>in parallel</a>:
+                    <ol>
+                      <li>Invoke <a>acquire a wake lock</a> with
+                      {{WakeLockType/"screen"}}.
+                        <aside class="note">
+                          The <a>acquire a wake lock</a> algorithm may
+                          ultimately be unable to acquire a lock from the
+                          operating system, but this is indistinguishable from
+                          a successful lock acquisition to avoid user
+                          fingerprinting (failure to acquire a lock can
+                          indicate low battery levels, for example).
+                        </aside>
+                      </li>
+                    </ol>
+                  </li>
+                  <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
+                  object with its {{WakeLockSentinel/type}} attribute set to
+                  |type|.
+                  </li>
+                  <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
+                  </li>
+                  <li>Resolve |promise| with |lock|.
+                  </li>
+                </ol>
               </li>
             </ol>
           </li>
-          <li>
-            <a>If aborted</a>, reject |promise| with a {{"NotAllowedError"}}
-            {{DOMException}}.
+          <li>Return |promise|.
           </li>
         </ol>
       </section>
@@ -508,22 +534,12 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>If <a>this</a>'s {{[[Released]]}} internal slot is `true`, return
-          <a>a promise resolved with</a> `undefined`.
+          <li>If <a>this</a>'s {{[[Released]]}} is `false`, then run <a>release
+          a wake lock</a> with |lock:WakeLockSentinel| set to <a>this</a> and
+          |type:WakeLockType| set to the value of <a>this</a>'s
+          {{WakeLockSentinel/type}} attribute.
           </li>
-          <li>Otherwise, let |promise:Promise| be <a>a new promise</a>.
-          </li>
-          <li>Run the following steps <a>in parallel</a>:
-            <ol>
-              <li>Run <a>release a wake lock</a> with |lock:WakeLockSentinel|
-              set to <a>this</a> and |type:WakeLockType| set to the value of
-              <a>this</a>'s {{WakeLockSentinel/type}} attribute.
-              </li>
-              <li>Resolve |promise|.
-              </li>
-            </ol>
-          </li>
-          <li>Return |promise|.
+          <li>Return <a>a promise resolved with</a> `undefined`.
           </li>
         </ol>
       </section>
@@ -705,26 +721,15 @@
           Acquire wake lock algorithm
         </h3>
         <p>
-          To <dfn>acquire a wake lock</dfn> for a given |lock:WakeLockSentinel|
-          and |type:WakeLockType|, run these steps <a>in parallel</a>:
+          To <dfn>acquire a wake lock</dfn> for a given |type:WakeLockType|,
+          run these steps:
         </p>
         <ol class="algorithm">
           <li>If the wake lock for type |type| is not <a>applicable</a>, abort
           these steps.
           </li>
-          <li>If the <a>platform wake lock</a> has an active lock for |type|,
-          abort these steps.
-          </li>
           <li>Ask the underlying operating system to <a>acquire the wake
           lock</a> of type |type|.
-          </li>
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |type|.
-          </li>
-          <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
           </li>
         </ol>
       </section>
@@ -734,7 +739,7 @@
         </h3>
         <p>
           To <dfn>release a wake lock</dfn> for a given |lock:WakeLockSentinel|
-          and |type:WakeLockType|, run these steps <a>in parallel</a>:
+          and |type:WakeLockType|, run these steps:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be the [=environment settings object /
@@ -748,8 +753,7 @@
           </li>
           <li>Remove |lock| from |record|.{{[[ActiveLocks]]}}.
           </li>
-          <li>If the internal slot {{[[ActiveLocks]]}} of all the <a>platform
-          wake lock</a>'s <a>state record</a>s are all empty, then run the
+          <li>If |record|.{{[[ActiveLocks]]}} [=list/is empty=], then run the
           following steps <a>in parallel</a>:
             <ol>
               <li>Ask the underlying operating system to release the wake lock
@@ -770,15 +774,10 @@
               </li>
             </ol>
           </li>
+          <li>Set |lock|'s {{[[Released]]}} to `true`.
+          </li>
           <li>
-            <a>Queue a task</a> to run the following steps:
-            <ol>
-              <li>Set |lock|'s {{[[Released]]}} internal slot to `true`.
-              </li>
-              <li>
-                <a>Fire an event</a> named "`release`" at |lock|.
-              </li>
-            </ol>
+            <a>Fire an event</a> named "`release`" at |lock|.
           </li>
         </ol>
       </section>
@@ -866,8 +865,8 @@
       <p>
         We would like to offer our sincere thanks to Mounir Lamouri, Sergey
         Konstantinov, Matvey Larionov, Dominique Hazael-Massieux, Domenic
-        Denicola, Thomas Steiner, Raphael Kubo da Costa for their contributions
-        to this work.
+        Denicola, Thomas Steiner, Anne van Kesteren for their contributions to
+        this work.
       </p>
     </section>
     <section class="appendix informative" id="changes">
