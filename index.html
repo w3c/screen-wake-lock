@@ -203,8 +203,8 @@
           Wake Lock permission revocation algorithm</dfn>, run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
+          <li>Let |document:Document| be the [=current settings object=]'s
+          [=associated Document=].
           </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and <a>wake lock type</a>
@@ -213,7 +213,7 @@
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |record|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and
+              <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
               </li>
             </ol>
@@ -266,9 +266,8 @@
       </p>
       <p>
         Each <a>platform wake lock</a> (one per <a>wake lock type</a>) has an
-        associated <dfn>state record</dfn> per [=environment settings object /
-        responsible document=] with the following <a data-cite=
-        "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
+        associated <dfn>state record</dfn> per {{Document}} with the following
+        <a data-cite="ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
         slots</a>:
       </p>
       <table class="simple">
@@ -295,8 +294,7 @@
             </td>
             <td>
               A <a>list</a> of {{WakeLockSentinel}} objects, representing
-              active wake locks associated with the [=environment settings
-              object / responsible document=].
+              active wake locks associated with a {{Document}}.
             </td>
           </tr>
         </tbody>
@@ -337,9 +335,8 @@
           |type:WakeLockType|:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of <a>this</a>'s <a>relevant settings
-          object</a>.
+          <li>Let |document:Document| be [=this=]'s [=relevant settings object=]'s
+          [=associated Document=].
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
@@ -655,14 +652,10 @@
           <dfn>Handling document loss of full activity</dfn>
         </h3>
         <p data-tests="wakelock-active-document.https.window.html">
-          When the user agent determines that a [=environment settings object /
-          responsible document=] of the <a>current settings object</a> is no
-          longer [=Document/fully active=], it must run these steps:
+          When a {{Document}} |document:Document| becomes no longer
+          [=Document/fully active=], the user agent must run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
-          </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and <a>wake lock type</a>
           {{WakeLockType/"screen"}}.
@@ -670,7 +663,7 @@
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and
+              <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
               </li>
             </ol>
@@ -690,14 +683,11 @@
              the latest TR, so we cannot reference them yet. -->
         <p data-tests="wakelock-document-hidden-manual.https.html">
           When the user agent determines that the [=Document/visibility state=]
-          of the <a>Document</a> of the <a>top-level browsing context</a> has
-          become `hidden`, the user agent MUST run the following steps after
-          the <a>now hidden algorithm</a>:
+          of a {{Document}} |document:Document| of a <a>top-level browsing
+          context</a> has become `hidden`, the user agent MUST run the
+          following steps after the <a>now hidden algorithm</a>:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
-          </li>
           <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and <a>wake lock type</a>
           {{WakeLockType/"screen"}}.
@@ -705,7 +695,7 @@
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |screenRecord|.{{[[ActiveLocks]]}}:
             <ol>
-              <li>Run <a>release a wake lock</a> with |lock| and
+              <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
               </li>
             </ol>
@@ -738,13 +728,10 @@
           Release wake lock algorithm
         </h3>
         <p>
-          To <dfn>release a wake lock</dfn> for a given |lock:WakeLockSentinel|
-          and |type:WakeLockType|, run these steps:
+          To <dfn>release a wake lock</dfn> for a given |document:Document|,
+          |lock:WakeLockSentinel|, and |type:WakeLockType|, run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=environment settings object /
-          responsible document=] of the <a>current settings object</a>.
-          </li>
           <li>Let |record| be the <a>platform wake lock</a>'s <a>state
           record</a> associated with |document| and |type|.
           </li>
