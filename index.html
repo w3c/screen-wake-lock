@@ -206,12 +206,9 @@
           <li>Let |document:Document| be the [=current settings object=]'s
           [=associated Document=].
           </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and <a>wake lock type</a>
-          {{WakeLockType/"screen"}}.
+          <li>Let |lockList| be |document|.{{[[ActiveLocks]]}}["`screen`"].
           </li>
-          <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |record|.{{[[ActiveLocks]]}}:
+          <li>[=list/For each=] |lock:WakeLockSentinel| in |lockList|:
             <ol>
               <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
@@ -248,7 +245,7 @@
     </section>
     <section>
       <h3>
-        Concepts and state record
+        Concepts
       </h3>
       <p>
         The <a>task source</a> for the <a>tasks</a> mentioned in this
@@ -264,41 +261,47 @@
         (e.g. in a native wake lock framework) or by the user agent, if it has
         direct hardware control.
       </p>
-      <p>
-        Each <a>platform wake lock</a> (one per <a>wake lock type</a>) has an
-        associated <dfn>state record</dfn> per {{Document}} with the following
-        <a data-cite="ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
-        slots</a>:
-      </p>
-      <table class="simple">
-        <thead>
-          <tr>
-            <th>
-              Internal slot
-            </th>
-            <th>
-              Initial value
-            </th>
-            <th>
-              Description (<em>non-normative</em>)
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <dfn>[[\ActiveLocks]]</dfn>
-            </td>
-            <td>
-              The empty <a>list</a>.
-            </td>
-            <td>
-              A <a>list</a> of {{WakeLockSentinel}} objects, representing
-              active wake locks associated with a {{Document}}.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    </section>
+    <section data-dfn-for="Document">
+      <h2>
+        Extensions to the `Document` interface
+      </h2>
+      <section>
+        <h3>
+          Internal slots
+        </h3>
+        <table class="simple">
+          <thead>
+            <tr>
+              <th>
+                Internal slot
+              </th>
+              <th>
+                Initial value
+              </th>
+              <th>
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <dfn>[[\ActiveLocks]]</dfn>
+              </td>
+              <td>
+                An <a>ordered map</a> mapping <a>wake lock types</a> to empty
+                <a>lists</a>.
+              </td>
+              <td>
+                An <a>ordered map</a> of <a>wake lock types</a> to a
+                <a>list</a> of {{WakeLockSentinel}} objects associated with
+                this {{Document}}.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </section>
     <section data-dfn-for="Navigator">
       <h2>
@@ -335,8 +338,8 @@
           |type:WakeLockType|:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be [=this=]'s [=relevant settings object=]'s
-          [=associated Document=].
+          <li>Let |document:Document| be [=this=]'s [=relevant settings
+          object=]'s [=associated Document=].
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
@@ -360,9 +363,6 @@
           steps to <a>determine the visibility state</a> return `hidden`,
           return [=a promise rejected with=] {{"NotAllowedError"}}
           {{DOMException}}.
-          </li>
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |type|.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -399,8 +399,8 @@
                       </li>
                     </ol>
                   </li>
-                  <li>If |record|.{{[[ActiveLocks]]}} [=list/is empty=], then
-                  invoke the following steps <a>in parallel</a>:
+                  <li>If |document|.{{[[ActiveLocks]]}}["`screen`"] [=list/is
+                  empty=], then invoke the following steps <a>in parallel</a>:
                     <ol>
                       <li>Invoke <a>acquire a wake lock</a> with
                       {{WakeLockType/"screen"}}.
@@ -419,7 +419,8 @@
                   object with its {{WakeLockSentinel/type}} attribute set to
                   |type|.
                   </li>
-                  <li>Add |lock| to |record|.{{[[ActiveLocks]]}}.
+                  <li>[=List/Append=] |lock| to
+                  |document|.{{[[ActiveLocks]]}}["`screen`"].
                   </li>
                   <li>Resolve |promise| with |lock|.
                   </li>
@@ -656,12 +657,8 @@
           [=Document/fully active=], the user agent must run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and <a>wake lock type</a>
-          {{WakeLockType/"screen"}}.
-          </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |screenRecord|.{{[[ActiveLocks]]}}:
+          |document|.{{[[ActiveLocks]]}}["`screen`"]:
             <ol>
               <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
@@ -688,12 +685,8 @@
           following steps after the <a>now hidden algorithm</a>:
         </p>
         <ol class="algorithm">
-          <li>Let |screenRecord| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and <a>wake lock type</a>
-          {{WakeLockType/"screen"}}.
-          </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |screenRecord|.{{[[ActiveLocks]]}}:
+          |document|.{{[[ActiveLocks]]}}["`screen`"]:
             <ol>
               <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
@@ -732,16 +725,13 @@
           |lock:WakeLockSentinel|, and |type:WakeLockType|, run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |record| be the <a>platform wake lock</a>'s <a>state
-          record</a> associated with |document| and |type|.
+          <li>If |document|.{{[[ActiveLocks]]}}[|type|] does not contain
+          |lock|, abort these steps.
           </li>
-          <li>If |record|.{{[[ActiveLocks]]}} does not contain |lock|, abort
-          these steps.
+          <li>Remove |lock| from |document|.{{[[ActiveLocks]]}}[|type|].
           </li>
-          <li>Remove |lock| from |record|.{{[[ActiveLocks]]}}.
-          </li>
-          <li>If |record|.{{[[ActiveLocks]]}} [=list/is empty=], then run the
-          following steps <a>in parallel</a>:
+          <li>If |document|.{{[[ActiveLocks]]}}[|type|] [=list/is empty=], then
+          run the following steps <a>in parallel</a>:
             <ol>
               <li>Ask the underlying operating system to release the wake lock
               of type |type| and let |success:boolean| be `true` if the
