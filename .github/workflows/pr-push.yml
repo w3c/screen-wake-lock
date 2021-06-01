@@ -18,7 +18,7 @@ jobs:
         with:
           W3C_ECHIDNA_TOKEN: ${{ secrets.ECHIDNA_TOKEN }}
           # Replace following with appropriate value. See options.md for details.
-          W3C_WG_DECISION_URL: https://www.w3.org/2021/04/07-dap-minutes.html#r01
+          W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-device-apis/2021May/0008.html
           W3C_BUILD_OVERRIDE: |
             specStatus: WD
             shortName: screen-wake-lock
