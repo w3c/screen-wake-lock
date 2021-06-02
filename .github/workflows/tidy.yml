@@ -8,10 +8,10 @@ on:
 jobs:
   tidy:
     name: Tidy up
-    runs-on: macos-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - run: brew install tidy-html5
+      - run: sudo apt-get install tidy
       - run: tidy -config .tidyrc -o index.html index.html
       - uses: peter-evans/create-pull-request@v3
         with:
