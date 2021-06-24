@@ -655,14 +655,12 @@
       <section>
         <h3>
           <dfn>Handling document loss of visibility</dfn>
-        </h3><!-- Note: https://github.com/w3c/page-visibility/pull/47 formally
-             defines external hooks we can use here, but they are not part of
-             the latest TR, so we cannot reference them yet. -->
+        </h3>
         <p data-tests="wakelock-document-hidden-manual.https.html">
-          When the user agent determines that the [=Document/visibility state=]
-          of a {{Document}} |document:Document| of a <a>top-level browsing
-          context</a> has become `hidden`, the user agent MUST run the
-          following steps after the <a>now hidden algorithm</a>:
+          This specification defines the following <a>external now hidden
+          algorithm</a>, which is run when the user agent determines that the
+          [=Document/visibility state=] of a {{Document}} |document:Document|
+          of a <a>top-level browsing context</a> has become `hidden`:
         </p>
         <ol class="algorithm">
           <li>[=list/For each=] |lock:WakeLockSentinel| in
@@ -794,19 +792,6 @@
         lock1.release();
         lock2.release();
       </pre>
-    </section>
-    <section>
-      <!-- Note: https://github.com/w3c/page-visibility/pull/47 formally
-           defines external hooks we can use here, but they are not part of
-           the latest TR, so we cannot reference them yet. Once we can, this
-           whole section can be removed. -->
-      <h2>
-        Dependencies
-      </h2>
-      <p>
-        The following is defined in [[PAGE-VISIBILITY]]: <dfn data-cite=
-        "PAGE-VISIBILITY#dfn-now-hidden-algorithm">now hidden algorithm</dfn>.
-      </p>
     </section>
     <section id="conformance">
       <p>
