@@ -207,7 +207,8 @@
           <li>Let |document:Document| be the [=current settings object=]'s
           [=associated Document=].
           </li>
-          <li>Let |lockList| be |document|.{{[[ActiveLocks]]}}["`screen`"].
+          <li>Let |lockList| be
+          |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
           </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in |lockList|:
             <ol>
@@ -375,8 +376,9 @@
                       </li>
                     </ol>
                   </li>
-                  <li>If |document|.{{[[ActiveLocks]]}}["`screen`"] [=list/is
-                  empty=], then invoke the following steps <a>in parallel</a>:
+                  <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
+                  [=list/is empty=], then invoke the following steps <a>in
+                  parallel</a>:
                     <ol>
                       <li>Invoke <a>acquire a wake lock</a> with
                       {{WakeLockType/"screen"}}.
@@ -396,7 +398,7 @@
                   |type|.
                   </li>
                   <li>[=List/Append=] |lock| to
-                  |document|.{{[[ActiveLocks]]}}["`screen`"].
+                  |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
                   </li>
                   <li>Resolve |promise| with |lock|.
                   </li>
@@ -482,7 +484,7 @@
         </h3>
         <p data-tests="wakelock-released.https.html">
           The {{WakeLockSentinel/released}} attribute's getter returns the
-          value of the {{[[Released]]}} internal slot.
+          value of the {{WakeLockSentinel/[[Released]]}} internal slot.
         </p>
         <aside class="note">
           Once a {{WakeLockSentinel}} is released,
@@ -508,10 +510,10 @@
           following steps:
         </p>
         <ol class="algorithm">
-          <li>If <a>this</a>'s {{[[Released]]}} is `false`, then run <a>release
-          a wake lock</a> with |lock:WakeLockSentinel| set to <a>this</a> and
-          |type:WakeLockType| set to the value of <a>this</a>'s
-          {{WakeLockSentinel/type}} attribute.
+          <li>If <a>this</a>'s {{WakeLockSentinel/[[Released]]}} is `false`,
+          then run <a>release a wake lock</a> with |lock:WakeLockSentinel| set
+          to <a>this</a> and |type:WakeLockType| set to the value of
+          <a>this</a>'s {{WakeLockSentinel/type}} attribute.
           </li>
           <li>Return <a>a promise resolved with</a> `undefined`.
           </li>
@@ -536,8 +538,8 @@
           A {{WakeLockSentinel}} object's handle being released does not
           necessarily mean the <a>platform wake lock</a> for a given <a>wake
           lock type</a> was released. That depends on the <a>platform wake
-          lock</a>'s {{[[ActiveLocks]]}} internal slot. See <a>release a wake
-          lock</a>.
+          lock</a>'s {{Document/[[ActiveLocks]]}} internal slot. See <a>release
+          a wake lock</a>.
         </aside>
         <aside class="note">
           [[[#onrelease-example]]] contains an example of how to use the
@@ -638,7 +640,7 @@
         </p>
         <ol class="algorithm">
           <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |document|.{{[[ActiveLocks]]}}["`screen`"]:
+          |document|.{{Document/[[ActiveLocks]]}}["`screen`"]:
             <ol>
               <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
@@ -664,7 +666,7 @@
         </p>
         <ol class="algorithm">
           <li>[=list/For each=] |lock:WakeLockSentinel| in
-          |document|.{{[[ActiveLocks]]}}["`screen`"]:
+          |document|.{{Document/[[ActiveLocks]]}}["`screen`"]:
             <ol>
               <li>Run <a>release a wake lock</a> with |document|, |lock|, and
               {{WakeLockType/"screen"}}.
@@ -703,13 +705,14 @@
           |lock:WakeLockSentinel|, and |type:WakeLockType|, run these steps:
         </p>
         <ol class="algorithm">
-          <li>If |document|.{{[[ActiveLocks]]}}[|type|] does not contain
-          |lock|, abort these steps.
+          <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] does not
+          contain |lock|, abort these steps.
           </li>
-          <li>Remove |lock| from |document|.{{[[ActiveLocks]]}}[|type|].
+          <li>Remove |lock| from
+          |document|.{{Document/[[ActiveLocks]]}}[|type|].
           </li>
-          <li>If |document|.{{[[ActiveLocks]]}}[|type|] [=list/is empty=], then
-          run the following steps <a>in parallel</a>:
+          <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
+          empty=], then run the following steps <a>in parallel</a>:
             <ol>
               <li>Ask the underlying operating system to release the wake lock
               of type |type| and let |success:boolean| be `true` if the
@@ -729,7 +732,7 @@
               </li>
             </ol>
           </li>
-          <li>Set |lock|'s {{[[Released]]}} to `true`.
+          <li>Set |lock|'s {{WakeLockSentinel/[[Released]]}} to `true`.
           </li>
           <li>
             <a>Fire an event</a> named "`release`" at |lock|.
