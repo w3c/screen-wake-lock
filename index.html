@@ -546,6 +546,24 @@
           {{WakeLockSentinel/onrelease}} event handler.
         </aside>
       </section>
+      <section>
+        <h3>
+          Garbage collection
+        </h3>
+        <p>
+          While a {{WakeLockSentinel}} object has one or more event listeners
+          registered for "release", and the {{WakeLockSentinel}} object hasn't
+          already been released, there MUST be a strong reference from the
+          {{Window}} object that the {{WakeLockSentinel}} object's constructor
+          was invoked from to the {{WakeLockSentinel}} object itself.
+        </p>
+        <p>
+          While there is a task queued by an {{WakeLockSentinel}} object on the
+          <a>screen wake lock task source</a>, there MUST be a strong reference
+          from the {{Window}} object that the {{WakeLockSentinel}} object's
+          constructor was invoked from to that {{WakeLockSentinel}} object.
+        </p>
+      </section>
     </section>
     <section data-dfn-for="WakeLockType">
       <h2>
