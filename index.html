@@ -134,13 +134,12 @@
       <p data-tests=
       "wakelock-supported-by-feature-policy.html, wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
-        identified by the string <code><dfn class=
-        "permission">"screen-wake-lock"</dfn></code>. Its [=default allowlist=]
-        is 'self'.
+        identified by the string `"screen-wake-lock"`. Its [=default
+        allowlist=] is `["self"]`.
       </p>
       <aside class="note">
         <p>
-          The <a>default allowlist</a> of `'self'` allows wake lock usage in
+          The <a>default allowlist</a> of `["self"]` allows wake lock usage in
           same-origin nested frames but prevents third-party content from using
           wake locks.
         </p>
@@ -173,7 +172,11 @@
         permissions from users and query which permissions they have.
       </p>
       <p>
-        To <dfn>revoke the screen-wake-lock permission</dfn>:
+        A <a>user agent</a> can <dfn data-lt=
+        "deny wake lock|denies the wake lock">deny a wake lock</dfn> of a
+        particular <a>wake lock type</a> for a particular {{Document}} by any
+        implementation-specific reason, such as platform setting or user
+        preference.
       </p>
       <p>
         It is RECOMMENDED that a user agent show some form of unobtrusive
@@ -629,8 +632,8 @@
           <dfn>Auto-releasing wake locks</dfn>
         </h3>
         <p>
-          A user agent MAY <a>release a wake lock</a> at any time, for any
-          reason. For example, when:
+          A user agent may <a>release a wake lock</a> at any time. For example,
+          when:
         </p>
         <ul>
           <li>It detects abnormal operation: such as infinite loops and tasks
@@ -769,12 +772,6 @@
         Complete battery depletion at an unexpected time can lead to inability
         of the user to make or receive calls and use network services,
         including the emergency call service.
-      </p>
-      <p>
-        A <a>user agent</a> can <dfn data-lt="denies the wake lock">deny a wake
-        lock</dfn> of a particular <a>wake lock type</a> for a particular
-        {{Document}} by any implementation-specific reason, such as platform
-        setting or user preference.
       </p>
       <p>
         It is RECOMMENDED that a user agent provide some UI or indicator that
