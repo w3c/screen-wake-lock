@@ -53,7 +53,6 @@
           profile: "web-platform",
           specs: [
             "page-visibility",
-            "permissions",
             "permissions-policy",
           ]
         }
@@ -162,63 +161,6 @@
           See [[[PERMISSIONS-POLICY]]] for more details.
         </p>
       </aside>
-    </section>
-    <section>
-      <h3>
-        Permissions and user prompts
-      </h3>
-      <p>
-        The [[PERMISSIONS]] API provides a uniform way for websites to request
-        permissions from users and query which permissions they have.
-      </p>
-      <p>
-        A <a>user agent</a> can <dfn data-lt=
-        "deny wake lock|denies the wake lock">deny a wake lock</dfn> of a
-        particular <a>wake lock type</a> for a particular {{Document}} by any
-        implementation-specific reason, such as platform setting or user
-        preference.
-      </p>
-      <p>
-        It is RECOMMENDED that a user agent show some form of unobtrusive
-        notification that informs the user when a wake lock is active, as well
-        as provides the user with the means to [=screen wake lock permission
-        revocation algorithm|block=] the ongoing operation, or simply dismiss
-        the notification.
-      </p>
-      <section>
-        <h2>
-          The `"screen-wake-lock"` powerful feature
-        </h2>
-        <p data-tests="wakelockpermissiondescriptor.https.html">
-          The `"screen-wake-lock"` <a>powerful feature</a> enables the
-          capability defined by this specification.
-        </p>
-      </section>
-      <section>
-        <h2>
-          Permission algorithms
-        </h2>
-        <p>
-          The `"screen-wake-lock"` <a>powerful feature</a> defines a [=powerful
-          feature/permission revocation algorithm=]. To invoke the <dfn>Screen
-          Wake Lock permission revocation algorithm</dfn>, run these steps:
-        </p>
-        <ol class="algorithm">
-          <li>Let |document:Document| be the [=current settings object=]'s
-          [=associated Document=].
-          </li>
-          <li>Let |lockList| be
-          |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
-          </li>
-          <li>[=list/For each=] |lock:WakeLockSentinel| in |lockList|:
-            <ol>
-              <li>Run <a>release a wake lock</a> with |document|, |lock|, and
-              {{WakeLockType/"screen"}}.
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </section>
     </section>
     <section>
       <h3>
@@ -345,22 +287,6 @@
           </li>
           <li>Run the following steps <a>in parallel</a>:
             <ol>
-              <li>Let |state:PermissionState| be the result of <a>requesting
-              permission to use</a> "`screen-wake-lock`".
-              </li>
-              <li data-tests="wakelock-request-denied.https.html">If |state| is
-              {{PermissionState/"denied"}}, then:
-                <ol>
-                  <li>
-                    <a>Queue a global task</a> on the <a>screen wake lock task
-                    source</a> given |document|'s <a>relevant global object</a>
-                    to reject |promise| with a {{"NotAllowedError"}}
-                    {{DOMException}}.
-                  </li>
-                  <li>Abort these steps.
-                  </li>
-                </ol>
-              </li>
               <li>
                 <a>Queue a global task</a> on the <a>screen wake lock task
                 source</a> given |document|'s <a>relevant global object</a> to
@@ -779,6 +705,13 @@
         such a UI could help end users to identify if a particular web
         application is having a negative energy impact on the device, and allow
         them to take action if so desired.
+      </p>
+      <p>
+        A <a>user agent</a> MAY <dfn data-lt=
+        "deny wake lock|denies the wake lock">deny a wake lock</dfn> of a
+        particular <a>wake lock type</a> for a particular {{Document}} by any
+        implementation-specific reason, such as platform setting or user
+        preference.
       </p>
     </section>
     <section id="examples" class="informative">
