@@ -763,16 +763,22 @@
         Security and privacy considerations
       </h2>
       <p>
-        Wake locks can cause various device components such as display or CPU
-        to operate at higher power levels than they otherwise would. This can
-        lead to undesirable effects such as faster than normal battery charge
-        depletion. This is particularly relevant to mobile devices, which may
-        not have a stationary power source readily available. Complete battery
-        depletion at an unexpected time can lead to inability of the user to
-        make or receive calls and use network services, including the emergency
-        call service. Implementations MAY ignore requests for screen wake lock
-        if, for example, the battery capacity is low, or the user has put their
-        device in a power-saving mode.
+        Screen wake locks can cause various device components - particularly
+        the display - to operate at higher power levels than they otherwise
+        would. This can lead to undesirable effects, such as preventing the
+        device from automatically locking itself and faster battery depletion.
+        Faster battery depletion is of particular concern for mobile devices,
+        which often don't have a stationary power source readily available.
+        Complete battery depletion at an unexpected time can lead to inability
+        of the user to make or receive calls and use network services,
+        including the emergency call service.
+      </p>
+      <p>
+        It is RECOMMENDED that a user agent provide some UI or indicator that
+        allows the user to know when a screen wake lock is active. Providing such a UI
+        could help end users to identify if a particular web application is
+        having a negative energy impact on the device, and allow them to take
+        action if so desired.
       </p>
     </section>
     <section id="examples" class="informative">
