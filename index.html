@@ -285,50 +285,46 @@
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
-          <li>Run the following steps <a>in parallel</a>:
+          <li>
+            <a>Queue a global task</a> on the <a>screen wake lock task
+            source</a> given |document|'s <a>relevant global object</a> to run
+            these steps:
             <ol>
-              <li>
-                <a>Queue a global task</a> on the <a>screen wake lock task
-                source</a> given |document|'s <a>relevant global object</a> to
-                run these steps:
+              <li>If the steps to <a>determine the visibility state</a> return
+              `hidden`, then:
                 <ol>
-                  <li>If the steps to <a>determine the visibility state</a>
-                  return `hidden`, then:
-                    <ol>
-                      <li>Reject |promise| with a {{"NotAllowedError"}}
-                      {{DOMException}}.
-                      </li>
-                      <li>Abort these steps.
-                      </li>
-                    </ol>
+                  <li>Reject |promise| with a {{"NotAllowedError"}}
+                  {{DOMException}}.
                   </li>
-                  <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
-                  [=list/is empty=], then invoke the following steps <a>in
-                  parallel</a>:
-                    <ol>
-                      <li>Invoke <a>acquire a wake lock</a> with
-                      {{WakeLockType/"screen"}}.
-                        <aside class="note">
-                          The <a>acquire a wake lock</a> algorithm may
-                          ultimately be unable to acquire a lock from the
-                          operating system, but this is indistinguishable from
-                          a successful lock acquisition to avoid user
-                          fingerprinting (failure to acquire a lock can
-                          indicate low battery levels, for example).
-                        </aside>
-                      </li>
-                    </ol>
-                  </li>
-                  <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-                  object with its {{WakeLockSentinel/type}} attribute set to
-                  |type|.
-                  </li>
-                  <li>[=List/Append=] |lock| to
-                  |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
-                  </li>
-                  <li>Resolve |promise| with |lock|.
+                  <li>Abort these steps.
                   </li>
                 </ol>
+              </li>
+              <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
+              [=list/is empty=], then invoke the following steps <a>in
+              parallel</a>:
+                <ol>
+                  <li>Invoke <a>acquire a wake lock</a> with
+                  {{WakeLockType/"screen"}}.
+                    <aside class="note">
+                      The <a>acquire a wake lock</a> algorithm may ultimately
+                      be unable to acquire a lock from the operating system,
+                      but this is indistinguishable from a successful lock
+                      acquisition to avoid user fingerprinting (failure to
+                      acquire a lock can indicate low battery levels, for
+                      example).
+                    </aside>
+                  </li>
+                </ol>
+              </li>
+              <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
+              object with its {{WakeLockSentinel/type}} attribute set to
+              |type|.
+              </li>
+              <li>[=List/Append=] |lock| to
+              |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
+              </li>
+              <li>Resolve |promise| with |lock|.
               </li>
             </ol>
           </li>
@@ -713,6 +709,15 @@
         implementation-specific reason, such as platform setting or user
         preference.
       </p>
+      <aside class="issue" data-number="324" data-cite="permissions">
+        <p>
+          Together with implementers, the Working Group is still evaluating if
+          this API will be classed as a [=powerful feature=]. Initial
+          implementations have thus far not required express permission via a
+          UI prompt to request a screen wake lock. This might change as we gain
+          more implementation experience and receive more user feedback.
+        </p>
+      </aside>
     </section>
     <section id="examples" class="informative">
       <h2>
