@@ -309,9 +309,7 @@
           The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-type.https.any.html">
-          The {{WakeLock/request()}} method, when invoked, MUST run the
-          following steps. The method takes one argument, the {{WakeLockType}}
-          |type:WakeLockType|:
+          The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be [=this=]'s [=relevant settings
@@ -481,8 +479,8 @@
           The <dfn>released</dfn> attribute
         </h3>
         <p data-tests="wakelock-released.https.html">
-          The {{WakeLockSentinel/released}} attribute's getter returns the
-          value of the {{WakeLockSentinel/[[Released]]}} internal slot.
+          The {{WakeLockSentinel/released}} getter steps are to return
+          [=this=].{{WakeLockSentinel/[[Released]]}}.
         </p>
         <aside class="note">
           Once a {{WakeLockSentinel}} is released,
@@ -495,8 +493,8 @@
           The <dfn>type</dfn> attribute
         </h3>
         <p>
-          The {{WakeLockSentinel/type}} attribute corresponds to the
-          {{WakeLockSentinel}}'s <a>wake lock type</a>.
+          The {{WakeLockSentinel/type}} getter steps are to return [=this=]'s
+          <a>wake lock type</a>.
         </p>
       </section>
       <section>
@@ -504,8 +502,7 @@
           The <dfn>release()</dfn> method
         </h3>
         <p data-tests="wakelock-onrelease.https.html">
-          The {{WakeLockSentinel/release()}} method, when invoked, MUST run the
-          following steps:
+          The {{WakeLockSentinel/release()}} method steps are:
         </p>
         <ol class="algorithm">
           <li>If <a>this</a>'s {{WakeLockSentinel/[[Released]]}} is `false`,
