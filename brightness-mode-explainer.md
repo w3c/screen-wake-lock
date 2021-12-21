@@ -54,8 +54,13 @@ This would help address the following use cases:
 - Adjusting display brightness level to arbitrary values (absolute or relative).
   - [\<video\> integration to allow e.g. granular brightness control](https://github.com/w3c/screen-wake-lock/issues/129#issuecomment-926603108) is an instance of the above. This is most likely better handled elsewhere and should probably be a UA-specific control.
 
-## API
-### Web IDL
+## Proposed Solutions
+
+This was initially discussed in [Screen Wake Lock API issue 129](https://github.com/w3c/screen-wake-lock/issues/129) back in 2018 and also proposed as a [separate API in WICG](https://github.com/WICG/proposals/issues/17). This topic was also discussed at multiple TPACs under the Devices and Sensors WG. As such, several different API shapes have been considered over the years.
+
+At this point, none have been fully discarded, and we are open to feedback about adopting some of the ideas described here.
+
+### Screen IDL interface extension
 
 Extend the [Screen interface](https://drafts.csswg.org/cssom-view/#the-screen-interface) with a new operation, inspired by the [Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/WakeLockSentinel). Something like:
 
@@ -70,7 +75,7 @@ interface ScreenBrightnessSentinel {
 };
 ```
 
-### Usage
+Proposed usage:
 
 ```javascript
 myButton.addEventListener("click", async () => {
@@ -83,12 +88,6 @@ myButton.addEventListener("click", async () => {
   }
 });
 ```
-
-## Proposed Solutions
-
-This was initially discussed in [Screen Wake Lock API issue 129](https://github.com/w3c/screen-wake-lock/issues/129) back in 2018 and also proposed as a [separate API in WICG](https://github.com/WICG/proposals/issues/17). This topic was also discussed at multiple TPACs under the Devices and Sensors WG. As such, several different API shapes have been considered over the years.
-
-At this point, none have been fully discarded, and we are open to feedback about adopting some of the ideas described here.
 
 ### Screen Wake Lock integration
 
