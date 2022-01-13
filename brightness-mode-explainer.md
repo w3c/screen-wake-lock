@@ -82,7 +82,10 @@ myButton.addEventListener("click", async () => {
   try {
     const sentinel = await screen.requestBrightnessIncrease();
     console.log("The display's brightness level has increased");
-    await sentinel.release();
+    // …and release it after 5s.
+    window.setTimeout(() => {
+      await sentinel.release();
+    }, 5000);
   } catch (e) {
     console.error(e);
   }
