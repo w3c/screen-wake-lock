@@ -46,7 +46,7 @@ This would help address the following use cases:
 
 - Provide the ability to request an increase to the display's brightness. This could be a UA-controlled maximum (which *could* be the maximum display brightness), either indefinitely or for a period of time.
 - Provide the ability to release the request so that the device's brightness returns to its pre-request value (i.e. hand back control to OS).
-- Handle error cases, where such requests are denied or not possible.
+- Handle error or low battery cases, where such requests are denied or not possible. The API must not make it possible to determine whether a request failed due to low battery to avoid fingerprinting.
 
 ## Non-goals
 
