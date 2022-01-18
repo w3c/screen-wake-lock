@@ -98,6 +98,9 @@ The idea was to extend the existing Screen Wake Lock API and tie the change in b
 
 ``` javascript
 const lock = await navigator.wakeLock.request({ increaseBrightness: true });
+```
+
+This was considered for a long time until the [2021-11-17 DAS WG meeting to discuss the topic](https://www.w3.org/events/meetings/0f623aa1-2026-4366-846b-c2faedda4180).
 
 ### navigator.screenBrightness
 
