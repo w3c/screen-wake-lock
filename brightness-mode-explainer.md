@@ -13,7 +13,7 @@ Previously:
 There is currently a need for web applications to increase the brightness of a device's screen.
 
 This would help address the following use cases:
-- a user scans QR/barcode under various lighting conditions.
+- a user scans QR/barcode under various lighting conditions, in which case boosting the screen brightness creates more contrast.
 - remote medical, where increasing the screen brightness could assist in remote examination
 - biometric security apps, where increasing the screen brightness can help illuminate features to get better imagery from the front facing camera
 - increasing contrast for readability for the visually impaired
