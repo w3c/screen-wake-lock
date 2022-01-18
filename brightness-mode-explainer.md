@@ -24,7 +24,7 @@ For developers, it would help address the following use cases:
 
 The following issues remain open for discussion:
   - should UAs be free to limit maximum brightness level and/or do other things like increase contrast?
-  - Idea is to focus on mobile first (i.e. not worry about external displays). How to indicate that in the spec? Does it *need* to be indicated in the spec?
+  - Should this be mobile first/only? (i.e. not worry about external displays).
   - Should this trigger "`prefers-contrast: more`" in [CSS Media Queries](https://drafts.csswg.org/mediaqueries-5/#prefers-contrast)?
 - From [https://github.com/w3c/devicesensors-wg/issues/51](https://github.com/w3c/devicesensors-wg/issues/51)
   - Brightness levels
@@ -33,7 +33,6 @@ The following issues remain open for discussion:
     - Related to whether script should be allowed to reduce brightness.
   - Permission model
     - Would it require user gesture (request but not consume it)?
-    - How to deal with multiple or external displays
   - While brightness changes
     - What if users change the brightness level while the lock is held?
   - When dropping screen brightness request
