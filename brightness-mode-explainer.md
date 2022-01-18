@@ -10,7 +10,7 @@ Previously:
 
 ## Introduction
 
-There is currently a need for web applications to increase the brightness of a device's screen.
+Since 2018, the working group has received [significant requests](https://github.com/w3c/screen-wake-lock/issues/129) from web developers surrounding the need to increase the brightness of a device's screen.
 
 For developers, it would help address the following use cases:
 
@@ -19,7 +19,6 @@ For developers, it would help address the following use cases:
 - increasing the screen brightness can help illuminate a user's facial features, improving the viability of certain application that rely on the the front facing camera (e.g., [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps, and applications that can scan people's facial features to perform some particular action)
 - increasing contrast for readability for the visually impaired
 
-[Screen Wake Lock API issue 129](https://github.com/w3c/screen-wake-lock/issues/129) was filed back in 2018, and since then there has been feedback from developers working on multiple areas about the usefulness of an API that addresses this use case.
 
 ## Open design issues
 
@@ -56,9 +55,9 @@ The following issues remain open for discussion:
 
 ## Proposed Solutions
 
-This was initially discussed in [Screen Wake Lock API issue 129](https://github.com/w3c/screen-wake-lock/issues/129) back in 2018 and also proposed as a [separate API in WICG](https://github.com/WICG/proposals/issues/17). This topic was also discussed at multiple TPACs under the Devices and Sensors WG. As such, several different API shapes have been considered over the years.
+The following represent some rough proposals that could address the use cases using various web technologies.  
 
-At this point, none have been fully discarded, and we are open to feedback about adopting some of the ideas described here.
+We present them here only to foster discussion, and the working group has not settled on any particular one. We are open to feedback to pursuing any of the proposals below. Or, if there is a better alternative solution we have not considered, we would be open to hearing it!
 
 ### Screen IDL interface extension
 
