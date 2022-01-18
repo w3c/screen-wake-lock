@@ -118,7 +118,7 @@ To take advantage of existing UA privacy mitigations and UX indications that wou
 
 Add something to getUserMedia() to bundle the request for brightness into the media capture request itself.
 
-The idea was dropped because this feature is not doing media capture and the need to ask for camera permission before e.g. entering full screen mode [complicates some use cases](https://github.com/w3c/screen-wake-lock/issues/129#issuecomment-858790397).
+This is complicated because this feature is not doing media capture, and the need to ask for camera permission before e.g. entering full screen mode [complicates some use cases](https://github.com/w3c/screen-wake-lock/issues/129#issuecomment-858790397).
 
 ### CSS property
 
