@@ -106,14 +106,14 @@ Originally proposed in [WICG issue 17](https://github.com/WICG/proposals/issues/
 
 ### requestFullscreen() integration
 
-A mixture of [whatwg/fullscreen](https://fullscreen.spec.whatwg.org/) issues [185](https://github.com/whatwg/fullscreen/issues/185) and [198](https://github.com/whatwg/fullscreen/issues/198). The idea would be to do something like
+The idea to integrate with `.requestFullscreen()`, to do something like:
 
 ``` javascript
 body.requestFullscreen({ increaseBrightness: true });
 ```
 
 To take advantage of existing UA privacy mitigations and UX indications that would show to the user that a web application is increasing the brightness, and leaving full screen mode would make it clear that the UA should stop increasing the device's screen's brightness level.
-
+See [whatwg/fullscreen](https://fullscreen.spec.whatwg.org/) issues [185](https://github.com/whatwg/fullscreen/issues/185) and [198](https://github.com/whatwg/fullscreen/issues/198).
 ### getUserMedia() integration
 
 Add something to getUserMedia() to bundle the request for brightness into the media capture request itself.
