@@ -1,13 +1,5 @@
 # Design Document: the need to control screen brightness
 
-_As discussed in the [DAS WG 2021-11-17](https://www.w3.org/2021/11/17-dap-minutes.html) meeting about Screen Brightness and the Screen Wake Lock API, the idea of this document is to make it easier for the meeting attendees to work on an explainer than if this had been committed to GitHub directly. Once this is done the goal is to move the contents to a proper explainer on GitHub._
-
-Previously:
-- https://github.com/WICG/proposals/issues/17
-- https://github.com/w3c/screen-wake-lock/issues/129
-- https://github.com/w3c/devicesensors-wg/issues/51
-- https://www.w3.org/2021/11/17-dap-minutes.html
-
 ## Introduction
 
 Since 2018, the working group has received [significant requests](https://github.com/w3c/screen-wake-lock/issues/129) from web developers surrounding the need to increase the brightness of a device's screen.
@@ -18,7 +10,6 @@ For developers, it would help address the following use cases:
 - remote medical, where increasing the screen brightness could assist in remote examination
 - increasing the screen brightness can help illuminate a user's facial features, improving the viability of certain application that rely on the the front facing camera (e.g., [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps, and applications that can scan people's facial features to perform some particular action)
 - increasing contrast for readability for the visually impaired
-
 
 ## Open design issues
 
@@ -130,3 +121,9 @@ Some form of "scannable element" property. When an element with said property is
 ``` html
 <body style="brightness: max">*
 ```
+
+## Past discussions
+- https://github.com/WICG/proposals/issues/17
+- https://github.com/w3c/screen-wake-lock/issues/129
+- https://github.com/w3c/devicesensors-wg/issues/51
+- https://www.w3.org/2021/11/17-dap-minutes.html
