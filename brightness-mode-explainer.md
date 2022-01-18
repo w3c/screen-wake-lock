@@ -24,7 +24,7 @@ For developers, it would help address the following use cases:
 ## Open design issues
 
 The following issues remain open for discussion:
-  - UAs should be free to limit maximum brightness level and/or do other things like increase contrast.
+  - should UAs be free to limit maximum brightness level and/or do other things like increase contrast?
   - Idea is to focus on mobile first (i.e. not worry about external displays). How to indicate that in the spec? Does it *need* to be indicated in the spec?
   - Should this trigger "`prefers-contrast: more`" in [CSS Media Queries](https://drafts.csswg.org/mediaqueries-5/#prefers-contrast)?
 - From [https://github.com/w3c/devicesensors-wg/issues/51](https://github.com/w3c/devicesensors-wg/issues/51)
