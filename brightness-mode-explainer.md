@@ -30,7 +30,7 @@ The following issues remain open for discussion:
 - From [https://github.com/w3c/devicesensors-wg/issues/51](https://github.com/w3c/devicesensors-wg/issues/51)
   - Brightness levels
     - How bright is too bright? Consider 100% brightness with HDR displays, for example.
-    - Take a granular value or an enum?
+    - Take a discrete or continuous value?
     - Related to whether script should be allowed to reduce brightness.
   - Permission model
     - Probably require user gesture (request but not consume it).
