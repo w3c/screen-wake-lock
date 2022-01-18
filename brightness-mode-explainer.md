@@ -102,7 +102,7 @@ const lock = await navigator.wakeLock.request({ increaseBrightness: true });
 
 ### navigator.screenBrightness
 
-Originally proposed in [WICG issue 17](https://github.com/WICG/proposals/issues/17). The API proposed there had a larger surface that allowed reading the brightness value (leading to potential fingerprinting issues).
+The API proposed there had a larger surface that allowed reading the brightness value (leading to potential fingerprinting issues). Originally proposed in [WICG issue 17](https://github.com/WICG/proposals/issues/17).
 
 ### requestFullscreen() integration
 
