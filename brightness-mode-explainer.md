@@ -94,11 +94,10 @@ myButton.addEventListener("click", async () => {
 
 ### Screen Wake Lock integration
 
-This was considered for a long time until the [2021-11-17 DAS WG meeting to discuss the topic](https://www.w3.org/events/meetings/0f623aa1-2026-4366-846b-c2faedda4180). The idea was to extend the existing Screen Wake Lock API and tie the change in brightness to a WakeLockSentinel. Something like:
+The idea was to extend the existing Screen Wake Lock API and tie the change in brightness to a WakeLockSentinel. Something like:
 
 ``` javascript
 const lock = await navigator.wakeLock.request({ increaseBrightness: true });
-```
 
 ### navigator.screenBrightness
 
