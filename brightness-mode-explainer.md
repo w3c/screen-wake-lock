@@ -15,9 +15,8 @@ There is currently a need for web applications to increase the brightness of a d
 This would help address the following use cases:
 - a user scans QR/barcode under various lighting conditions, in which case boosting the screen brightness creates more contrast.
 - remote medical, where increasing the screen brightness could assist in remote examination
-- biometric security apps, where increasing the screen brightness can help illuminate features to get better imagery from the front facing camera
+- increasing the screen brightness can help illuminate a user's facial features, improving the viability of certain application that rely on the the front facing camera (e.g., [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps, and applications that can scan people's facial features to perform some particular action)
 - increasing contrast for readability for the visually impaired
-- [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps
 
 [Screen Wake Lock API issue 129](https://github.com/w3c/screen-wake-lock/issues/129) was filed back in 2018, and since then there has been feedback from developers working on multiple areas about the usefulness of an API that addresses this use case.
 
