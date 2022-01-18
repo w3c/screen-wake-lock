@@ -33,7 +33,7 @@ The following issues remain open for discussion:
     - Take a discrete or continuous value?
     - Related to whether script should be allowed to reduce brightness.
   - Permission model
-    - Probably require user gesture (request but not consume it).
+    - Would it require user gesture (request but not consume it)?
     - How to deal with multiple or external displays
   - While brightness changes
     - What if users change the brightness level while the lock is held?
