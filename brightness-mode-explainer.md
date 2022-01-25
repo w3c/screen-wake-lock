@@ -7,9 +7,7 @@ Since 2018, the working group has received [significant requests](https://github
 For developers, it would help address the following use cases:
 
 - a user scans QR/barcode under various lighting conditions, in which case boosting the screen brightness creates more contrast.
-- remote medical, where increasing the screen brightness could assist in remote examination
 - increasing the screen brightness can help illuminate a user's facial features, improving the viability of certain application that rely on the the front facing camera (e.g., [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps, and applications that can scan people's facial features to perform some particular action)
-- increasing contrast for readability for the visually impaired
 
 ## Open design issues
 
