@@ -109,7 +109,7 @@ See [whatwg/fullscreen](https://fullscreen.spec.whatwg.org/) issues [185](https:
 
 Add something to getUserMedia() to bundle the request for brightness into the media capture request itself.
 
-This is complicated because this feature is not doing media capture, and the need to ask for camera permission before e.g. entering full screen mode [complicates some use cases](https://github.com/w3c/screen-wake-lock/issues/129#issuecomment-858790397).
+This is complicated because this feature is not doing media capture (and there is no MediaStream to get out of screen brightness), and the need to ask for camera permission before e.g. entering full screen mode [complicates some use cases](https://github.com/w3c/screen-wake-lock/issues/129#issuecomment-858790397).
 
 ### CSS property
 
