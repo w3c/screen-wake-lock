@@ -128,6 +128,7 @@ Some form of "scannable element" property. When an element with said property is
 - https://www.w3.org/2021/11/17-dap-minutes.html
 
 ## Review requests
-- https://github.com/w3c/csswg-drafts/issues/6990
+- [CSSWG](https://github.com/w3c/csswg-drafts/issues/6990)
+  - [@tabatkins](https://github.com/w3c/csswg-drafts/issues/6990#issuecomment-1022678458) - in favour of a permissioned JS API over CSS property
 - [Mozilla review](https://github.com/mozilla/standards-positions/issues/623) - in favour of similar solution to wake lock, i.e. Screen IDL interface extension with `requestBrightnessIncrease`
 - [Review feedback](https://github.com/w3c/screen-wake-lock/issues/335)
