@@ -129,4 +129,5 @@ Some form of "scannable element" property. When an element with said property is
 
 ## Review requests
 - https://github.com/w3c/csswg-drafts/issues/6990
-
+- [Mozilla review](https://github.com/mozilla/standards-positions/issues/623) - in favour of similar solution to wake lock, i.e. Screen IDL interface extension with `requestBrightnessIncrease`
+- [Review feedback](https://github.com/w3c/screen-wake-lock/issues/335)
