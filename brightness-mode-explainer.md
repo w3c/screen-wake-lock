@@ -131,4 +131,5 @@ Some form of "scannable element" property. When an element with said property is
 - [CSSWG](https://github.com/w3c/csswg-drafts/issues/6990)
   - [@tabatkins](https://github.com/w3c/csswg-drafts/issues/6990#issuecomment-1022678458) - in favour of a permissioned JS API over CSS property
 - [Mozilla review](https://github.com/mozilla/standards-positions/issues/623) - in favour of similar solution to wake lock, i.e. Screen IDL interface extension with `requestBrightnessIncrease`
+- [WebKit](https://lists.webkit.org/pipermail/webkit-dev/2022-March/032160.html)
 - [Review feedback](https://github.com/w3c/screen-wake-lock/issues/335)
