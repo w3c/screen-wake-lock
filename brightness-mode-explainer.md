@@ -121,6 +121,14 @@ Some form of "scannable element" property. When an element with said property is
 <body style="brightness: max">*
 ```
 
+## Security considerations
+
+- The API is available to secure browsing contexts.
+
+- The screen brightness can be controlled only in response to a user gesture to ensure user retain control over their screen brightness. This prevents a situation where a site increases screen brightness every time the system or user overrides it manually.
+
+- If the page visibility becomes hidden after screen brightness has been increased, the screen brightness should be restored automatically.
+
 ## Past discussions
 - https://github.com/WICG/proposals/issues/17
 - https://github.com/w3c/screen-wake-lock/issues/129
