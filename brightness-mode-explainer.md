@@ -123,6 +123,8 @@ Some form of "scannable element" property. When an element with said property is
 
 - If the page visibility becomes hidden after screen brightness has been increased, the screen brightness should be restored automatically.
 
+- To avoid possible user fingerprinting issues, the request to control screen brightness shall not indicate to the site if the actual screen brightness has changed or not. 
+
 ## Past discussions
 - https://github.com/WICG/proposals/issues/17
 - https://github.com/w3c/screen-wake-lock/issues/129
