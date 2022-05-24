@@ -21,14 +21,8 @@ The following issues remain open for discussion:
     - How bright is too bright? Consider 100% brightness with HDR displays, for example.
     - Take a discrete or continuous value?
     - Related to whether script should be allowed to reduce brightness.
-  - Permission model
-    - Would it require a user gesture (request but not consume it)?
-  - While brightness changes
-    - What if users change the brightness level while the lock is held?
   - When dropping a screen brightness request
-      - Does the UA have to restore the previous brightness level?
-        - What about external displays? Do UAs need to keep track of levels for each display?
-      - Should script be allowed to "hold the lock" indefinitely?
+      - What about external displays? Do UAs need to keep track of levels for each display?
 
 ## Goals
 
