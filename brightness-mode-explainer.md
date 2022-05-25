@@ -123,7 +123,9 @@ Some form of "scannable element" property. When an element with said property is
 
 - If the page visibility becomes hidden after screen brightness has been increased, the screen brightness should be restored automatically.
 
-- To avoid possible user fingerprinting issues, the request to control screen brightness shall not indicate to the site if the actual screen brightness has changed or not. 
+- To avoid possible user fingerprinting issues, when the request to control screen brightness is denied, a site should not be able to detect the exact reason why it happened. In other words, a generic `NotAllowedError` DOMException should be raised when there is no user gesture or battery level is too low for instance.
+
+- If the screen brightness is at its maximum and a site requests a brighter screen, the request should succeed anyway so that it can't infer the screen brightness.
 
 ## Past discussions
 - https://github.com/WICG/proposals/issues/17
