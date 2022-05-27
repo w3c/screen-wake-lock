@@ -21,14 +21,8 @@ The following issues remain open for discussion:
     - How bright is too bright? Consider 100% brightness with HDR displays, for example.
     - Take a discrete or continuous value?
     - Related to whether script should be allowed to reduce brightness.
-  - Permission model
-    - Would it require a user gesture (request but not consume it)?
-  - While brightness changes
-    - What if users change the brightness level while the lock is held?
   - When dropping a screen brightness request
-      - Does the UA have to restore the previous brightness level?
-        - What about external displays? Do UAs need to keep track of levels for each display?
-      - Should script be allowed to "hold the lock" indefinitely?
+      - What about external displays? Do UAs need to keep track of levels for each display?
 
 ## Goals
 
@@ -120,6 +114,18 @@ Some form of "scannable element" property. When an element with said property is
 ``` html
 <body style="brightness: max">*
 ```
+
+## Security considerations
+
+- The API is available to secure browsing contexts.
+
+- The screen brightness can be controlled only in response to a user gesture to ensure user retain control over their screen brightness. This prevents a situation where a site increases screen brightness every time the system or user overrides it manually.
+
+- If the page visibility becomes hidden after screen brightness has been increased, the screen brightness should be restored automatically.
+
+- To avoid possible user fingerprinting issues, when the request to control screen brightness is denied, a site should not be able to detect the exact reason why it happened. In other words, a generic `NotAllowedError` DOMException should be raised when there is no user gesture or battery level is too low for instance.
+
+- If the screen brightness is at its maximum and a site requests a brighter screen, the request should succeed anyway so that it can't infer the screen brightness.
 
 ## Past discussions
 - https://github.com/WICG/proposals/issues/17
