@@ -44,6 +44,9 @@ We present them here only to foster discussion, and the working group has not se
 
 ### Screen IDL interface extension
 
+>🆕 This API shape is currently being experimented with.
+>For WIP spec draft and Chromium CL, see https://github.com/beaufortfrancois/screen-brightness
+
 Extend the [`Screen` interface](https://drafts.csswg.org/cssom-view/#the-screen-interface) with a new operation, inspired by the [Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/WakeLockSentinel). Something like:
 
 ```webidl
