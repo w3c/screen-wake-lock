@@ -135,6 +135,7 @@ Some form of "scannable element" property. When an element with said property is
 - https://github.com/w3c/screen-wake-lock/issues/129
 - https://github.com/w3c/devicesensors-wg/issues/51
 - https://www.w3.org/2021/11/17-dap-minutes.html
+- https://twitter.com/quicksave2k/status/1534867198342311936 (❤️ from web developers)
 
 ## Review requests
 - [CSSWG](https://github.com/w3c/csswg-drafts/issues/6990)
