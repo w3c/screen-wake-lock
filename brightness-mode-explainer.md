@@ -12,7 +12,7 @@ For developers, it would help address the following use cases:
 
 ## Interested partners
 
-- <https://iproov.com> authenticates remote users online for onboarding and verification.
+- <https://iproov.com> authenticates users online for remote onboarding and verification, as well as kiosks inside banks and civic institutions. It also provides authentication for users in physical access settings.
 
 ## Open design issues
 
