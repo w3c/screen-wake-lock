@@ -10,6 +10,10 @@ For developers, it would help address the following use cases:
   - this is already possible on native mobile apps such as [Starbucks'](https://play.google.com/store/apps/details?id=com.starbucks.mobilecard), [the UK Home Office's Document Check app](https://play.google.com/store/apps/details?id=uk.gov.HomeOffice.ho1) and the [Dutch government's CoronaCheck app](https://play.google.com/store/apps/details?id=nl.rijksoverheid.ctr.holder).
 - increasing the screen brightness can help illuminate a user's facial features, improving the viability of certain application that rely on the front facing camera (e.g., [make up mirror](https://play.google.com/store/apps/details?id=mmapps.mirror.pro&hl=en&gl=US) style apps, and applications that can scan people's facial features to perform some particular action).
 
+## Interested partners
+
+- <https://iproov.com> authenticates users online for remote onboarding and verification, as well as kiosks inside banks and civic institutions. It also provides authentication for users in physical access settings.
+
 ## Open design issues
 
 The following issues remain open for discussion:
