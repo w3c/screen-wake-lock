@@ -99,8 +99,23 @@ The API proposed there had a larger surface that allowed reading the brightness 
 
 The idea to integrate with `Element.requestFullscreen()`, to do something like:
 
-``` javascript
-body.requestFullscreen({ increaseBrightness: true });
+```webidl
+partial dictionary FullscreenOptions {
+  boolean increaseBrightness = false;
+};
+```
+
+Proposed usage:
+
+```javascript
+myButton.addEventListener("click", async () => {
+  try {
+    await document.body.requestFullscreen({ increaseBrightness: true });
+    console.log("The display's brightness level has increased");
+  } catch (e) {
+    console.error(e);
+  }
+});
 ```
 
 To take advantage of existing UA privacy mitigations and UX indications that would show to the user that a web application is increasing the brightness, and leaving full screen mode would make it clear that the UA should stop increasing the device's screen's brightness level.
