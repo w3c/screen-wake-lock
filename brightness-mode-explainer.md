@@ -13,6 +13,7 @@ For developers, it would help address the following use cases:
 ## Interested partners
 
 - <https://iproov.com> authenticates users online for remote onboarding and verification, as well as kiosks inside banks and civic institutions. It also provides authentication for users in physical access settings.
+- <https://xchart.com/> automates anesthesia charting. Increasing the screen brightness would allow customers to quickly enter "monitoring mode" where their laptop essentially becomes a patient vitals monitor display. In this mode, they'd like to present the option of increasing brightness. Additionally, there is a planned feature involving scanning barcodes on screens as a means of quickly opening a case on another device.
 
 ## Open design issues
 
