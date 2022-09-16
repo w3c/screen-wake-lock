@@ -203,7 +203,7 @@
           Wake Lock permission revocation algorithm</dfn>, run these steps:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be the [=current settings object=]'s
+          <li>Let |document:Document| be the [=current global object=]'s
           [=associated Document=].
           </li>
           <li>Let |lockList| be
@@ -312,7 +312,7 @@
           The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be [=this=]'s [=relevant settings
+          <li>Let |document:Document| be [=this=]'s [=relevant global
           object=]'s [=associated Document=].
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
