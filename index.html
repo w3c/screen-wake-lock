@@ -252,12 +252,10 @@
           The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-type.https.any.html">
-          The {{WakeLock/request()}} method, when invoked, MUST run the
-          following steps. The method takes one argument, the {{WakeLockType}}
-          |type:WakeLockType|:
+          The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be [=this=]'s [=relevant settings
+          <li>Let |document:Document| be [=this=]'s [=relevant global
           object=]'s [=associated Document=].
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
@@ -278,10 +276,9 @@
           |document| is not [=Document/fully active=], return [=a promise
           rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-document-hidden-manual.https.html">If the
-          steps to <a>determine the visibility state</a> return `hidden`,
-          return [=a promise rejected with=] {{"NotAllowedError"}}
-          {{DOMException}}.
+          <li data-tests="wakelock-document-hidden-manual.https.html">If
+          |document|'s [=Document/visibility state=] is "`hidden`", return [=a
+          promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -304,18 +301,41 @@
               [=list/is empty=], then invoke the following steps <a>in
               parallel</a>:
                 <ol>
-                  <li>Invoke <a>acquire a wake lock</a> with
-                  {{WakeLockType/"screen"}}.
-                    <aside class="note">
-                      <p>
-                        The <a>acquire a wake lock</a> algorithm may ultimately
-                        be unable to acquire a lock from the operating system,
-                        but this is indistinguishable from a successful lock
-                        acquisition to avoid user fingerprinting (failure to
-                        acquire a lock can indicate low battery levels, for
-                        example).
-                      </p>
-                    </aside>
+                  <li>If |document|'s [=Document/visibility state=] is
+                  "`hidden`", then:
+                    <ol>
+                      <li>Reject |promise| with a {{"NotAllowedError"}}
+                      {{DOMException}}.
+                      </li>
+                      <li>Abort these steps.
+                      </li>
+                    </ol>
+                  </li>
+                  <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
+                  [=list/is empty=], then invoke the following steps <a>in
+                  parallel</a>:
+                    <ol>
+                      <li>Invoke <a>acquire a wake lock</a> with
+                      {{WakeLockType/"screen"}}.
+                        <aside class="note">
+                          The <a>acquire a wake lock</a> algorithm may
+                          ultimately be unable to acquire a lock from the
+                          operating system, but this is indistinguishable from
+                          a successful lock acquisition to avoid user
+                          fingerprinting (failure to acquire a lock can
+                          indicate low battery levels, for example).
+                        </aside>
+                      </li>
+                    </ol>
+                  </li>
+                  <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
+                  object with its {{WakeLockSentinel/type}} attribute set to
+                  |type|.
+                  </li>
+                  <li>[=List/Append=] |lock| to
+                  |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
+                  </li>
+                  <li>Resolve |promise| with |lock|.
                   </li>
                 </ol>
               </li>
@@ -407,8 +427,8 @@
           The <dfn>released</dfn> attribute
         </h3>
         <p data-tests="wakelock-released.https.html">
-          The {{WakeLockSentinel/released}} attribute's getter returns the
-          value of the {{WakeLockSentinel/[[Released]]}} internal slot.
+          The {{WakeLockSentinel/released}} getter steps are to return
+          [=this=].{{WakeLockSentinel/[[Released]]}}.
         </p>
         <aside class="note">
           Once a {{WakeLockSentinel}} is released,
@@ -421,8 +441,8 @@
           The <dfn>type</dfn> attribute
         </h3>
         <p>
-          The {{WakeLockSentinel/type}} attribute corresponds to the
-          {{WakeLockSentinel}}'s <a>wake lock type</a>.
+          The {{WakeLockSentinel/type}} getter steps are to return [=this=]'s
+          <a>wake lock type</a>.
         </p>
       </section>
       <section>
@@ -430,8 +450,7 @@
           The <dfn>release()</dfn> method
         </h3>
         <p data-tests="wakelock-onrelease.https.html">
-          The {{WakeLockSentinel/release()}} method, when invoked, MUST run the
-          following steps:
+          The {{WakeLockSentinel/release()}} method steps are:
         </p>
         <ol class="algorithm">
           <li>If <a>this</a>'s {{WakeLockSentinel/[[Released]]}} is `false`,
@@ -601,12 +620,13 @@
           <dfn>Handling document loss of visibility</dfn>
         </h3>
         <p data-tests="wakelock-document-hidden-manual.https.html">
-          This specification defines the following <a>external now hidden
-          algorithm</a>, which is run when the user agent determines that the
-          [=Document/visibility state=] of a {{Document}} |document:Document|
-          of a <a>top-level browsing context</a> has become `hidden`:
+          This specification defines the following [=page visibility change
+          steps=] with [=Document/visibility state=] |state| and
+          |document:Document|:
         </p>
         <ol class="algorithm">
+          <li>If |state| is not "`hidden`", abort these steps.
+          </li>
           <li>[=list/For each=] |lock:WakeLockSentinel| in
           |document|.{{Document/[[ActiveLocks]]}}["`screen`"]:
             <ol>
@@ -616,10 +636,6 @@
             </ol>
           </li>
         </ol>
-        <aside class="note">
-          The [=Document/visibility state=] is only exposed on the {{Window}}
-          object.
-        </aside>
       </section>
       <section>
         <h3>
@@ -696,6 +712,11 @@
         Complete battery depletion at an unexpected time can lead to inability
         of the user to make or receive calls and use network services,
         including the emergency call service.
+      </p>
+      <p>
+        Implementations MAY ignore requests for screen wake lock if, for
+        example, the battery capacity is low, or the user has put their device
+        in a power-saving mode.
       </p>
       <p>
         It is RECOMMENDED that a user agent provide some UI or indicator that
