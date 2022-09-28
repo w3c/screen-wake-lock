@@ -251,11 +251,19 @@
           The <dfn>request()</dfn> method
         </h3>
         <p data-tests="wakelock-type.https.any.html">
-          The <code>request(|type:WakeLockType|)</code> method steps are:
+          The `request(|type:WakeLockType|)` method steps are:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be [=this=]'s [=relevant global
-          object=]'s [=associated Document=].
+          object=]'s [=associated `Document`=].
+          </li>
+          <li>If the |document|'s [=Document/browsing context=] is `null`,
+          return [=a promise rejected with=] {{"NotAllowedError"}}
+          {{DOMException}}.
+          </li>
+          <li data-tests="wakelock-active-document.https.window.html">If
+          |document| is not [=Document/fully active=], return [=a promise
+          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
@@ -267,84 +275,33 @@
           |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li>If the |document|'s [=Document/browsing context=] is `null`,
-          return [=a promise rejected with=] {{"NotAllowedError"}}
-          {{DOMException}}.
-          </li>
-          <li data-tests="wakelock-active-document.https.window.html">If
-          |document| is not [=Document/fully active=], return [=a promise
-          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
-          </li>
           <li data-tests="wakelock-document-hidden-manual.https.html">If
           |document|'s [=Document/visibility state=] is "`hidden`", return [=a
           promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
-          <li>
-            <a>Queue a global task</a> on the <a>screen wake lock task
-            source</a> given |document|'s <a>relevant global object</a> to run
-            these steps:
+          <li>[=In parallel=]:
             <ol>
-              <li>If |document|'s [=Document/visibility state=] is "hidden", then:
-                <ol>
-                  <li>Reject |promise| with a {{"NotAllowedError"}}
-                  {{DOMException}}.
-                  </li>
-                  <li>Abort these steps.
-                  </li>
-                </ol>
+              <li>Attempt to [=acquire a wake lock=] of type
+              {{WakeLockType/"screen"}}.
+                <aside class="note">
+                  The <a>acquire a wake lock</a> algorithm may ultimately be
+                  unable to acquire a lock from the operating system, but this
+                  is indistinguishable from a successful lock acquisition to
+                  avoid exposing private information about the underlying
+                  system's state (failure to acquire a lock could indicate low
+                  battery levels, for example).
+                </aside>
               </li>
-              <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
-              [=list/is empty=], then invoke the following steps <a>in
-              parallel</a>:
-                <ol>
-                  <li>If |document|'s [=Document/visibility state=] is
-                  "`hidden`", then:
-                    <ol>
-                      <li>Reject |promise| with a {{"NotAllowedError"}}
-                      {{DOMException}}.
-                      </li>
-                      <li>Abort these steps.
-                      </li>
-                    </ol>
-                  </li>
-                  <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
-                  [=list/is empty=], then invoke the following steps <a>in
-                  parallel</a>:
-                    <ol>
-                      <li>Invoke <a>acquire a wake lock</a> with
-                      {{WakeLockType/"screen"}}.
-                        <aside class="note">
-                          The <a>acquire a wake lock</a> algorithm may
-                          ultimately be unable to acquire a lock from the
-                          operating system, but this is indistinguishable from
-                          a successful lock acquisition to avoid user
-                          fingerprinting (failure to acquire a lock can
-                          indicate low battery levels, for example).
-                        </aside>
-                      </li>
-                    </ol>
-                  </li>
-                  <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-                  object with its {{WakeLockSentinel/type}} attribute set to
-                  |type|.
-                  </li>
-                  <li>[=List/Append=] |lock| to
-                  |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
-                  </li>
-                  <li>Resolve |promise| with |lock|.
-                  </li>
-                </ol>
-              </li>
-              <li>Let |lock:WakeLockSentinel| be a new {{WakeLockSentinel}}
-              object with its {{WakeLockSentinel/type}} attribute set to
-              |type|.
+              <li>Let |lock:WakeLockSentinel| be a newly created
+              {{WakeLockSentinel}} instance with its {{WakeLockSentinel/type}}
+              attribute set to |type|.
               </li>
               <li>[=List/Append=] |lock| to
               |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
               </li>
-              <li>Resolve |promise| with |lock|.
+              <li>[=Queue a global task=] to [=resolve=] |promise| with |lock|.
               </li>
             </ol>
           </li>
@@ -544,8 +501,8 @@
         MUST treat wake lock acquisition as <strong>advisory-only</strong>.
       </p>
       <p>
-        Conversely, the <a>user agent</a> <dfn data-lt=
-        "release wake lock">releases the wake lock</dfn> by requesting the
+        Conversely, the <a>user agent</a> can <dfn data-lt=
+        "releases the wake lock">release the wake lock</dfn> by requesting the
         underlying operating system to no longer apply the wake lock. The lock
         is considered released only when the request to the operating system
         succeeds.
@@ -667,31 +624,26 @@
           <li>Remove |lock| from
           |document|.{{Document/[[ActiveLocks]]}}[|type|].
           </li>
-          <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
-          empty=], then run the following steps <a>in parallel</a>:
+          <li>[=Queue a task=] on the [=screen wake lock task source=] to:
             <ol>
-              <li>Ask the underlying operating system to release the wake lock
-              of type |type| and let |success:boolean| be `true` if the
-              operation succeeded, or else `false`.
+              <li>Set |lock|'s {{WakeLockSentinel/[[Released]]}} to `true`.
               </li>
-              <li>If |success| is `true` and |type| is `"screen"` run the
-              following:
-                <ol>
-                  <li>Reset the platform-specific inactivity timer after which
-                  the screen is actually turned off.
-                  </li>
-                </ol>
-                <aside class="note">
-                  Resetting the inactivity timer prevents the screen from going
-                  blank immediately after the wake lock is released.
-                </aside>
+              <li>[=Fire an event=] named "`release`" at |lock|.
               </li>
             </ol>
           </li>
-          <li>Set |lock|'s {{WakeLockSentinel/[[Released]]}} to `true`.
-          </li>
-          <li>
-            <a>Fire an event</a> named "`release`" at |lock|.
+          <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
+          empty=], then run the following steps <a>in parallel</a>:
+            <ol>
+              <li>Ask the underlying operating system to [=release the wake lock=].</li> 
+              <li>If the operation succeeds, reset the platform-specific inactivity timer after which
+                  the screen is actually turned off.
+              </li>
+              <aside class="note">
+                Resetting the inactivity timer prevents the screen from going
+                blank immediately after the wake lock is released.
+              </aside>
+            </ol>
           </li>
         </ol>
       </section>
