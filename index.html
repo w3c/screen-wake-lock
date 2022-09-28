@@ -635,14 +635,16 @@
           <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
           empty=], then run the following steps <a>in parallel</a>:
             <ol>
-              <li>Ask the underlying operating system to [=release the wake lock=].</li> 
-              <li>If the operation succeeds, reset the platform-specific inactivity timer after which
-                  the screen is actually turned off.
+              <li>Ask the underlying operating system to [=release the wake
+              lock=].
               </li>
-              <aside class="note">
-                Resetting the inactivity timer prevents the screen from going
-                blank immediately after the wake lock is released.
-              </aside>
+              <li>If the operation succeeds, reset the platform-specific
+              inactivity timer after which the screen is actually turned off.
+                <aside class="note">
+                  Resetting the inactivity timer prevents the screen from going
+                  blank immediately after the wake lock is released.
+                </aside>
+              </li>
             </ol>
           </li>
         </ol>
