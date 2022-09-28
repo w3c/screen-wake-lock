@@ -312,8 +312,10 @@
           The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be [=this=]'s [=relevant global
-          object=]'s [=associated Document=].
+          <li>Let |global:Window| be the [=relevant global object=] of
+          [=this=].
+          </li>
+          <li>Let |document:Document| be |global|'s [=associated `Document`=].
           </li>
           <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
@@ -336,6 +338,11 @@
           <li data-tests="wakelock-document-hidden-manual.https.html">If
           |document|'s [=Document/visibility state=] is "`hidden`", return [=a
           promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          </li>
+          <li>If |global| does not have [=transient activation=], return [=a
+          promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          </li>
+          <li>[=Consume user activation=] of |global|.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -782,14 +789,42 @@
       <h2>
         Examples
       </h2>
-      <pre class="example js" title="Acquires and releases a screen wake lock">
-        function tryKeepScreenAlive(minutes) {
-          navigator.wakeLock.request("screen").then(lock =&gt; {
-            setTimeout(() =&gt; lock.release(), minutes * 60 * 1000);
-          });
-        }
-
-        tryKeepScreenAlive(10);
+      <pre class="example html" title=
+      "Acquires and releases a screen wake lock">
+        &lt;button id="request" onclick="requestWakeLock(this)"&gt;
+        Request lock
+        &lt;/button&gt;
+        &lt;button id="release" onclick="releaseWakeLock(this)" disabled&gt;
+          Release lock
+        &lt;/button&gt;
+        &lt;script&gt;
+          let lock = null;
+          async function requestWakeLock(elem) {
+            elem.disabled = true;
+            try {
+              lock = await navigator.wakeLock.request("screen");
+              console.log("Screen Wake Lock acquired");
+            } catch (err) {
+              console.error(`${err.name}, ${err.message}`);
+              elem.disabled = false;
+              return;
+            }
+            const release = document.getElementById("release");
+            lock.addEventListener("release", () =&gt; {
+              console.log("Screen Wake Lock released");
+              release.disabled = true;
+              elem.disabled = false;
+            });
+            release.disabled = false;
+          }
+          async function releaseWakeLock(elem) {
+            await lock.release();
+            lock = null;
+            elem.disabled = true;
+            const request = document.getElementById("request");
+            request.disabled = false;
+          }
+        &lt;/script&gt;
       </pre>
       <p>
         This example allows the user to request a screen wake lock by clicking
@@ -800,21 +835,44 @@
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
-
-        const sentinel = await navigator.wakeLock.request("screen");
-        checkbox.checked = !sentinel.released;
-        sentinel.onrelease = () =&gt; checkbox.checked = !sentinel.released;
+        let lock = null;
+        checkbox.addEventListener("change", async () =&gt; {
+          if (checkbox.checked) {
+            // Acquire lock...
+            lock = await navigator.wakeLock.request("screen");
+            // ...and update checkbox state in case lock is lost.
+            lock.onrelease = () =&gt; {
+              if (checkbox.checked) checkbox.checked = false;
+            }
+          } else {
+            await lock?.release();
+            lock = null;
+          }
+        });
       </pre>
       <p>
-        In this example, two different wake lock requests are created and
-        released independently:
+        In this example, independent wake lock are created and released
+        concurrently:
       </p>
-      <pre class="example js">
-        let lock1 = await navigator.wakeLock.request("screen");
-        let lock2 = await navigator.wakeLock.request("screen");
+      <pre class="example html">
+        &lt;script&gt;
+        const locks = [];
+        // Lock is created when a button is pressed
+        async function lockScreen() {
+          const lock = await navigator.wakeLock.request("screen");
+          locks.push(lock);
+        }
 
-        lock1.release();
-        lock2.release();
+        async function releaseAllLocks() {
+          await Promise.all(locks.map(lock =&gt; lock.release()));
+        }
+        &lt;/script&gt;
+        &lt;button onclick="lockScreen()"&gt;
+          Lock screen
+        &lt;/button&gt;
+        &lt;button onclick="releaseAllLocks()"&gt;
+          Release locks
+        &lt;/button&gt;
       </pre>
     </section>
     <section id="conformance">
