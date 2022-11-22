@@ -600,10 +600,10 @@
       </p>
       <p>
         Conversely, the <a>user agent</a> <dfn data-lt=
-        "release wake lock">releases the wake lock</dfn> by requesting the
-        underlying operating system to no longer apply the wake lock. The lock
-        is considered released only when the request to the operating system
-        succeeds.
+        "release wake lock|release the wake lock">releases the wake lock</dfn>
+        by requesting the underlying operating system to no longer apply the
+        wake lock. The lock is considered released only when the request to the
+        operating system succeeds.
       </p>
       <p>
         The wake lock is <dfn data-lt=
@@ -720,9 +720,9 @@
           <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
           empty=], then run the following steps <a>in parallel</a>:
             <ol>
-              <li>Ask the underlying operating system to release the wake lock
-              of type |type| and let |success:boolean| be `true` if the
-              operation succeeded, or else `false`.
+              <li>Ask the underlying operating system to <a>release the wake
+              lock</a> of type |type| and let |success:boolean| be `true` if
+              the operation succeeded, or else `false`.
               </li>
               <li>If |success| is `true` and |type| is `"screen"` run the
               following:
