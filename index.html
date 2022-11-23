@@ -132,14 +132,14 @@
         Policy control
       </h3>
       <p data-tests=
-      "wakelock-supported-by-feature-policy.html, wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
+      "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.sub.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-permissions-policy-attribute.https.sub.html, wakelock-enabled-by-permissions-policy.https.sub.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
         identified by the string `"screen-wake-lock"`. Its [=default
-        allowlist=] is `["self"]`.
+        allowlist=] is `'self'`.
       </p>
       <aside class="note">
         <p>
-          The <a>default allowlist</a> of `["self"]` allows wake lock usage in
+          The <a>default allowlist</a> of `'self'` allows wake lock usage in
           same-origin nested frames but prevents third-party content from using
           wake locks.
         </p>
@@ -155,8 +155,8 @@
           Alternatively, the Screen Wake Lock API can be disabled completely by
           specifying the permissions policy in a HTTP response header:
         </p>
-        <pre class="example http" title="Feature Policy over HTTP">
-          Permissions-Policy: {"screen-wake-lock": []}
+        <pre class="example http" title="Permissions Policy header">
+          Permissions-Policy: screen-wake-lock=()
         </pre>
         <p>
           See [[[PERMISSIONS-POLICY]]] for more details.
@@ -316,8 +316,9 @@
           <li>Let |document:Document| be [=this=]'s [=relevant global
           object=]'s [=associated Document=].
           </li>
-          <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
-          If |document| is not [=allowed to use=] the [=policy-controlled
+          <li data-tests=
+          "wakelock-disabled-by-permissions-policy.https.sub.html">If
+          |document| is not [=allowed to use=] the [=policy-controlled
           feature=] named "`screen-wake-lock`", return [=a promise rejected
           with=] a {{"NotAllowedError"}} {{DOMException}}.
           </li>
