@@ -134,14 +134,14 @@
       <p data-tests=
       "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.sub.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-permissions-policy-attribute.https.sub.html, wakelock-enabled-by-permissions-policy.https.sub.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
-        identified by the string `"screen-wake-lock"`. Its [=default
-        allowlist=] is `'self'`.
+        identified by the string `"screen-wake-lock"`. Its [=policy-controlled
+        feature/default allowlist=] is `'self'`.
       </p>
       <aside class="note">
         <p>
-          The <a>default allowlist</a> of `'self'` allows wake lock usage in
-          same-origin nested frames but prevents third-party content from using
-          wake locks.
+          The [=policy-controlled feature/default allowlist=] of `'self'`
+          allows wake lock usage in same-origin nested frames but prevents
+          third-party content from using wake locks.
         </p>
         <p>
           Third-party usage can be selectively enabled by adding
