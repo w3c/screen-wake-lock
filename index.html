@@ -327,10 +327,6 @@
           |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li>If the |document|'s [=Document/browsing context=] is `null`,
-          return [=a promise rejected with=] {{"NotAllowedError"}}
-          {{DOMException}}.
-          </li>
           <li data-tests="wakelock-active-document.https.window.html">If
           |document| is not [=Document/fully active=], return [=a promise
           rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
