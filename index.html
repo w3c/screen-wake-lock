@@ -517,9 +517,10 @@
           The <dfn>onrelease</dfn> attribute
         </h3>
         <p>
-          The {{WakeLockSentinel/onrelease}} attribute is an <a>event
-          handler</a> whose corresponding <a>event handler event type</a> is
-          <code>release</code>.
+          The {{WakeLockSentinel/onrelease}} attribute is an <a>event handler
+          IDL attribute</a> for the "<code>onrelease</code>" <a>event
+          handler</a>, whose <a>event handler event type</a> is
+          "<dfn><code>release</code></dfn>".
         </p>
         <p>
           It is used to notify scripts that a given {{WakeLockSentinel}}
@@ -545,10 +546,11 @@
         </h3>
         <p>
           While a {{WakeLockSentinel}} object has one or more event listeners
-          registered for "release", and the {{WakeLockSentinel}} object hasn't
-          already been released, there MUST be a strong reference from the
-          {{Window}} object that the {{WakeLockSentinel}} object's constructor
-          was invoked from to the {{WakeLockSentinel}} object itself.
+          registered for "<a><code>release</code></a>", and the
+          {{WakeLockSentinel}} object hasn't already been released, there MUST
+          be a strong reference from the {{Window}} object that the
+          {{WakeLockSentinel}} object's constructor was invoked from to the
+          {{WakeLockSentinel}} object itself.
         </p>
         <p>
           While there is a task queued by an {{WakeLockSentinel}} object on the
@@ -738,7 +740,7 @@
           <li>Set |lock|'s {{WakeLockSentinel/[[Released]]}} to `true`.
           </li>
           <li>
-            <a>Fire an event</a> named "`release`" at |lock|.
+            <a>Fire an event</a> named "<a><code>release</code></a>" at |lock|.
           </li>
         </ol>
       </section>
