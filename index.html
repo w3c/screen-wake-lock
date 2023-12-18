@@ -360,16 +360,6 @@
                 source</a> given |document|'s <a>relevant global object</a> to
                 run these steps:
                 <ol>
-                  <li>If |document|'s [=Document/visibility state=] is
-                  "`hidden`", then:
-                    <ol>
-                      <li>Reject |promise| with a {{"NotAllowedError"}}
-                      {{DOMException}}.
-                      </li>
-                      <li>Abort these steps.
-                      </li>
-                    </ol>
-                  </li>
                   <li>If |document|.{{Document/[[ActiveLocks]]}}["`screen`"]
                   [=list/is empty=], then invoke the following steps <a>in
                   parallel</a>:
