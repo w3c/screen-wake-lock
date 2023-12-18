@@ -316,6 +316,10 @@
           <li>Let |document:Document| be [=this=]'s [=relevant global
           object=]'s [=associated Document=].
           </li>
+          <li data-tests="wakelock-active-document.https.window.js">If
+          |document| is not [=Document/fully active=], return [=a promise
+          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
+          </li>
           <li data-tests=
           "wakelock-disabled-by-permissions-policy.https.sub.html">If
           |document| is not [=allowed to use=] the [=policy-controlled
@@ -326,10 +330,6 @@
           the <a>user agent</a> <a>denies the wake lock</a> of this |type| for
           |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
-          </li>
-          <li data-tests="wakelock-active-document.https.window.html">If
-          |document| is not [=Document/fully active=], return [=a promise
-          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-document-hidden-manual.https.html">If
           |document|'s [=Document/visibility state=] is "`hidden`", return [=a
