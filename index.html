@@ -363,6 +363,15 @@
                 source</a> given |document|'s <a>relevant global object</a> to
                 run these steps:
                 <ol>
+                  <li>If |document| is not [=Document/fully active=], then:
+                    <ol>
+                      <li>Reject |promise| with a {{"NotAllowedError"}}
+                      {{DOMException}}.
+                      </li>
+                      <li>Abort these steps.
+                      </li>
+                    </ol>
+                  </li>
                   <li>If |document|'s [=Document/visibility state=] is
                   "`hidden`", then:
                     <ol>
