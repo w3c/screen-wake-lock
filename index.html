@@ -176,13 +176,11 @@
         particular <a>wake lock type</a> for a particular {{Document}} by any
         implementation-specific reason, such as platform setting or user
         preference.
-      </p>
-      <p>
-        It is RECOMMENDED that a user agent show some form of unobtrusive
-        notification that informs the user when a wake lock is active, as well
-        as provides the user with the means to [=screen wake lock permission
-        revocation algorithm|block=] the ongoing operation, or simply dismiss
-        the notification.
+        <aside class="note">
+          Given that screen wake locks are released when a document loses
+          visibility, no implementation requires an explicit permission grant
+          to acquire a screen wake lock.
+        </aside>
       </p>
       <section>
         <h2>
