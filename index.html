@@ -275,6 +275,20 @@
                 this {{Document}}.
               </td>
             </tr>
+            <tr>
+              <td>
+                <dfn>[[\HasAcquiredLocks]]</dfn>
+              </td>
+              <td>
+                An <a>ordered map</a> mapping <a>wake lock types</a> to
+                `false`.
+              </td>
+              <td>
+                An <a>ordered map</a> of <a>wake lock types</a> to a
+                <a>boolean</a> that is `true` if this {{Document}} ever had a
+                {{WakeLockSentinel}} of that type.
+              </td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -339,8 +353,10 @@
           |document|'s [=Document/visibility state=] is "`hidden`", return [=a
           promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li>If |global| does not have [=transient activation=], return [=a
-          promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          <li>If |global| does not have [=transient activation=] and
+          |document|.{{Document/[[HasAcquiredLocks]]}}[|type|] is `false`,
+          return [=a promise rejected with=] {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -400,6 +416,9 @@
                   </li>
                   <li>[=List/Append=] |lock| to
                   |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
+                  </li>
+                  <li>Set |document|.{{Document/[[HasAcquiredLocks]]}}[|type|]
+                  to `true`.
                   </li>
                   <li>Resolve |promise| with |lock|.
                   </li>
@@ -781,6 +800,16 @@
         such a UI could help end users to identify if a particular web
         application is having a negative energy impact on the device, and allow
         them to take action if so desired.
+      </p>
+      <p>
+        After a page obtains a screen wake lock, the page can request further
+        screen wake locks without [=transient activation=], even after the user
+        agent releases the first lock (for example, when the page becomes
+        hidden). A page can use this to keep the screen on without further user
+        interaction, which can deplete the battery faster than the user
+        expects. The two paragraphs above also apply to these requests:
+        implementations can ignore them, and user agents can show the user when
+        a screen wake lock is active.
       </p>
     </section>
     <section id="examples" class="informative">
