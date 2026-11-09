@@ -19,15 +19,15 @@
         }, {
           name: "Marcos Cáceres",
           url: "https://marcosc.com",
-          company: "W3C",
-          companyURL: "https://www.w3.org/",
-          w3cid: "39125"
-        }, {
+          company: "Apple Inc.",
+          companyURL: "https://www.apple.com/",
+          w3cid: "39125",
+        },],
+        formerEditors: [{
           name: "Raphael Kubo da Costa",
           company: "Intel Corporation",
           w3cid: "95850",
-        },],
-        formerEditors: [{
+        }, {
           name: "Ilya Bogdanovich",
           url: "mailto:bogdanovichiy@yandex-team.ru",
           company: "Yandex",
@@ -39,7 +39,7 @@
           w3cid: "75989"
         },],
         github: "https://github.com/w3c/screen-wake-lock/",
-        group: "das",
+        group: [ "das", "webapps" ],
         testSuiteURI: "https://wpt.live/screen-wake-lock/",
         implementationReportURI: "https://www.w3.org/wiki/DAS/Implementations",
         otherLinks: [{
@@ -133,14 +133,14 @@
       <p data-tests=
       "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.html, wakelock-enabled-by-permissions-policy-attribute.https.html, wakelock-enabled-by-permissions-policy.https.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
-        identified by the string `"screen-wake-lock"`. Its [=default
-        allowlist=] is `["self"]`.
+        identified by the string `"screen-wake-lock"`. Its [=policy-controlled
+        feature/default allowlist=] is `'self'`.
       </p>
       <aside class="note">
         <p>
-          The <a>default allowlist</a> of `["self"]` allows wake lock usage in
-          same-origin nested frames but prevents third-party content from using
-          wake locks.
+          The [=policy-controlled feature/default allowlist=] of `'self'`
+          allows wake lock usage in same-origin nested frames but prevents
+          third-party content from using wake locks.
         </p>
         <p>
           Third-party usage can be selectively enabled by adding
@@ -154,8 +154,8 @@
           Alternatively, the Screen Wake Lock API can be disabled completely by
           specifying the permissions policy in a HTTP response header:
         </p>
-        <pre class="example http" title="Feature Policy over HTTP">
-          Permissions-Policy: {"screen-wake-lock": []}
+        <pre class="example http" title="Permissions Policy header">
+          Permissions-Policy: screen-wake-lock=()
         </pre>
         <p>
           See [[[PERMISSIONS-POLICY]]] for more details.
@@ -331,6 +331,10 @@
           </li>
           <li>Let |document:Document| be |global|'s [=associated `Document`=].
           </li>
+          <li data-tests="wakelock-active-document.https.window.html">If
+          |document| is not [=Document/fully active=], return [=a promise
+          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
+          </li>
           <li data-tests="wakelock-disabled-by-permissions-policy.https.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
           feature=] named "`screen-wake-lock`", return [=a promise rejected
@@ -339,14 +343,6 @@
           <li>If the <a>user agent</a> <a>denies the wake lock</a> of this
           |type| for |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
-          </li>
-          <li>If the |document|'s [=Document/browsing context=] is `null`,
-          return [=a promise rejected with=] {{"NotAllowedError"}}
-          {{DOMException}}.
-          </li>
-          <li data-tests="wakelock-active-document.https.window.html">If
-          |document| is not [=Document/fully active=], return [=a promise
-          rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li data-tests="wakelock-document-hidden.https.html">If |document|'s
           [=Document/visibility state=] is "`hidden`", return [=a promise
@@ -384,6 +380,15 @@
                 source</a> given |document|'s <a>relevant global object</a> to
                 run these steps:
                 <ol>
+                  <li>If |document| is not [=Document/fully active=], then:
+                    <ol>
+                      <li>Reject |promise| with a {{"NotAllowedError"}}
+                      {{DOMException}}.
+                      </li>
+                      <li>Abort these steps.
+                      </li>
+                    </ol>
+                  </li>
                   <li>If |document|'s [=Document/visibility state=] is
                   "`hidden`", then:
                     <ol>
@@ -544,9 +549,10 @@
           The <dfn>onrelease</dfn> attribute
         </h3>
         <p>
-          The {{WakeLockSentinel/onrelease}} attribute is an <a>event
-          handler</a> whose corresponding <a>event handler event type</a> is
-          <code>release</code>.
+          The {{WakeLockSentinel/onrelease}} attribute is an <a>event handler
+          IDL attribute</a> for the "<code>onrelease</code>" <a>event
+          handler</a>, whose <a>event handler event type</a> is
+          "<dfn><code>release</code></dfn>".
         </p>
         <p>
           It is used to notify scripts that a given {{WakeLockSentinel}}
@@ -572,10 +578,11 @@
         </h3>
         <p>
           While a {{WakeLockSentinel}} object has one or more event listeners
-          registered for "release", and the {{WakeLockSentinel}} object hasn't
-          already been released, there MUST be a strong reference from the
-          {{Window}} object that the {{WakeLockSentinel}} object's constructor
-          was invoked from to the {{WakeLockSentinel}} object itself.
+          registered for "<a><code>release</code></a>", and the
+          {{WakeLockSentinel}} object hasn't already been released, there MUST
+          be a strong reference from the {{Window}} object that the
+          {{WakeLockSentinel}} object's constructor was invoked from to the
+          {{WakeLockSentinel}} object itself.
         </p>
         <p>
           While there is a task queued by an {{WakeLockSentinel}} object on the
@@ -624,10 +631,10 @@
       </p>
       <p>
         Conversely, the <a>user agent</a> <dfn data-lt=
-        "release wake lock">releases the wake lock</dfn> by requesting the
-        underlying operating system to no longer apply the wake lock. The lock
-        is considered released only when the request to the operating system
-        succeeds.
+        "release wake lock|release the wake lock">releases the wake lock</dfn>
+        by requesting the underlying operating system to no longer apply the
+        wake lock. The lock is considered released only when the request to the
+        operating system succeeds.
       </p>
       <p>
         The wake lock is <dfn data-lt=
@@ -686,11 +693,6 @@
             </ol>
           </li>
         </ol>
-        <aside class="note">
-          Only documents presented to the user, thus with an associated
-          [=Document/browsing context=] can be <a>active documents</a>, so the
-          above steps are only relevant for these.
-        </aside>
       </section>
       <section>
         <h3>
@@ -749,9 +751,9 @@
           <li>If |document|.{{Document/[[ActiveLocks]]}}[|type|] [=list/is
           empty=], then run the following steps <a>in parallel</a>:
             <ol>
-              <li>Ask the underlying operating system to release the wake lock
-              of type |type| and let |success:boolean| be `true` if the
-              operation succeeded, or else `false`.
+              <li>Ask the underlying operating system to <a>release the wake
+              lock</a> of type |type| and let |success:boolean| be `true` if
+              the operation succeeded, or else `false`.
               </li>
               <li>If |success| is `true` and |type| is `"screen"` run the
               following:
@@ -770,14 +772,14 @@
           <li>Set |lock|'s {{WakeLockSentinel/[[Released]]}} to `true`.
           </li>
           <li>
-            <a>Fire an event</a> named "`release`" at |lock|.
+            <a>Fire an event</a> named "<a><code>release</code></a>" at |lock|.
           </li>
         </ol>
       </section>
     </section>
     <section>
       <h2>
-        Security and privacy considerations
+        Security considerations
       </h2>
       <p>
         Screen wake locks can cause various device components - particularly
@@ -795,6 +797,11 @@
         example, the battery capacity is low, or the user has put their device
         in a power-saving mode.
       </p>
+    </section>
+    <section>
+      <h2>
+        Privacy considerations
+      </h2>
       <p>
         It is RECOMMENDED that a user agent provide some UI or indicator that
         allows the user to know when a screen wake lock is active. Providing
@@ -909,7 +916,6 @@
         <dfn>user agent</dfn> that implements the interfaces that it contains.
       </p>
     </section>
-    <section id="idl-index" class="appendix"></section>
     <section class="appendix informative" id="acknowledgments">
       <h2>
         Acknowledgments
@@ -970,5 +976,7 @@
         </ul>
       </section>
     </section>
+    <section id="index" class="appendix"></section>
+    <section id="idl-index" class="appendix"></section>
   </body>
 </html>
