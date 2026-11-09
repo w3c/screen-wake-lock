@@ -131,7 +131,7 @@
         Policy control
       </h3>
       <p data-tests=
-      "wakelock-supported-by-feature-policy.html, wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html, wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-feature-policy-attribute.https.sub.html, wakelock-enabled-by-feature-policy.https.sub.html">
+      "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.html, wakelock-enabled-by-permissions-policy-attribute.https.html, wakelock-enabled-by-permissions-policy.https.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
         identified by the string `"screen-wake-lock"`. Its [=default
         allowlist=] is `["self"]`.
@@ -308,7 +308,7 @@
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
-      <p data-tests="wakelock-insecure-context.any.html">
+      <p data-tests="wakelock-insecure-context.window.html">
         The {{WakeLock}} interface allows a document to acquire a [=screen wake
         lock=].
       </p>
@@ -322,7 +322,7 @@
         <h3>
           The <dfn>request()</dfn> method
         </h3>
-        <p data-tests="wakelock-type.https.any.html">
+        <p data-tests="wakelock-type.https.window.html">
           The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
@@ -331,14 +331,13 @@
           </li>
           <li>Let |document:Document| be |global|'s [=associated `Document`=].
           </li>
-          <li data-tests="wakelock-disabled-by-feature-policy.https.sub.html">
+          <li data-tests="wakelock-disabled-by-permissions-policy.https.html">
           If |document| is not [=allowed to use=] the [=policy-controlled
           feature=] named "`screen-wake-lock`", return [=a promise rejected
           with=] a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-screen-type-on-worker.https.worker.html">If
-          the <a>user agent</a> <a>denies the wake lock</a> of this |type| for
-          |document|, return [=a promise rejected with=] a
+          <li>If the <a>user agent</a> <a>denies the wake lock</a> of this
+          |type| for |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
           <li>If the |document|'s [=Document/browsing context=] is `null`,
@@ -349,11 +348,13 @@
           |document| is not [=Document/fully active=], return [=a promise
           rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-document-hidden-manual.https.html">If
-          |document|'s [=Document/visibility state=] is "`hidden`", return [=a
-          promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          <li data-tests="wakelock-document-hidden.https.html">If |document|'s
+          [=Document/visibility state=] is "`hidden`", return [=a promise
+          rejected with=] {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li>If |global| does not have [=transient activation=] and
+          <li data-tests=
+          "wakelock-request-transient-activation.https.html, wakelock-request-previously-acquired.https.html">
+          If |global| does not have [=transient activation=] and
           |document|.{{Document/[[HasAcquiredLocks]]}}[|type|] is `false`,
           return [=a promise rejected with=] {{"NotAllowedError"}}
           {{DOMException}}.
@@ -695,7 +696,7 @@
         <h3>
           <dfn>Handling document loss of visibility</dfn>
         </h3>
-        <p data-tests="wakelock-document-hidden-manual.https.html">
+        <p data-tests="wakelock-document-hidden.https.html">
           This specification defines the following [=page visibility change
           steps=] with [=Document/visibility state=] |state| and
           |document:Document|:
