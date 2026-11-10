@@ -797,6 +797,15 @@
         example, the battery capacity is low, or the user has put their device
         in a power-saving mode.
       </p>
+      <p>
+        After a page obtains a screen wake lock, the page can request further
+        screen wake locks without [=transient activation=], even after the user
+        agent releases the first lock (for example, when the page becomes
+        hidden). A page can use this to keep the screen on without further user
+        interaction, which can deplete the battery faster than the user
+        expects. The paragraph above also applies to these requests:
+        implementations can ignore them.
+      </p>
     </section>
     <section>
       <h2>
@@ -808,16 +817,6 @@
         such a UI could help end users to identify if a particular web
         application is having a negative energy impact on the device, and allow
         them to take action if so desired.
-      </p>
-      <p>
-        After a page obtains a screen wake lock, the page can request further
-        screen wake locks without [=transient activation=], even after the user
-        agent releases the first lock (for example, when the page becomes
-        hidden). A page can use this to keep the screen on without further user
-        interaction, which can deplete the battery faster than the user
-        expects. The two paragraphs above also apply to these requests:
-        implementations can ignore them, and user agents can show the user when
-        a screen wake lock is active.
       </p>
     </section>
     <section id="examples" class="informative">
