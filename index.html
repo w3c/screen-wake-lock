@@ -280,13 +280,12 @@
                 <dfn>[[\HasAcquiredLocks]]</dfn>
               </td>
               <td>
-                An <a>ordered map</a> mapping <a>wake lock types</a> to
-                `false`.
+                An [=ordered map=] mapping [=wake lock types=] to `false`.
               </td>
               <td>
-                An <a>ordered map</a> of <a>wake lock types</a> to a
-                <a>boolean</a> that is `true` if this {{Document}} ever had a
-                {{WakeLockSentinel}} of that type.
+                An [=ordered map=] of [=wake lock types=] to a [=boolean=] that
+                is `true` if this {{Document}} ever had a {{WakeLockSentinel}}
+                of that type.
               </td>
             </tr>
           </tbody>
@@ -346,7 +345,7 @@
           </li>
           <li data-tests="wakelock-document-hidden.https.html">If |document|'s
           [=Document/visibility state=] is "`hidden`", return [=a promise
-          rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          rejected with=] {{"InvalidStateError"}} {{DOMException}}.
           </li>
           <li data-tests=
           "wakelock-request-transient-activation.https.html, wakelock-request-previously-acquired.https.html">
