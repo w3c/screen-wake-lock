@@ -177,12 +177,12 @@
         particular <a>wake lock type</a> for a particular {{Document}} by any
         implementation-specific reason, such as platform setting or user
         preference.
-        <aside class="note">
-          Given that screen wake locks are released when a document loses
-          visibility, no implementation requires an explicit permission grant
-          to acquire a screen wake lock.
-        </aside>
       </p>
+      <aside class="note">
+        Given that screen wake locks are released when a document loses
+        visibility, no implementation requires an explicit permission grant to
+        acquire a screen wake lock.
+      </aside>
       <section>
         <h2>
           The `"screen-wake-lock"` powerful feature
@@ -198,8 +198,9 @@
         </h2>
         <p>
           The `"screen-wake-lock"` <a>powerful feature</a> defines a [=powerful
-          feature/permission revocation algorithm=]. To invoke the <dfn>Screen
-          Wake Lock permission revocation algorithm</dfn>, run these steps:
+          feature/permission revocation algorithm=]. To invoke the <dfn class=
+          "lint-ignore">Screen Wake Lock permission revocation algorithm</dfn>,
+          run these steps:
         </p>
         <ol class="algorithm">
           <li>Let |document:Document| be the [=current global object=]'s
@@ -778,11 +779,8 @@
         Privacy considerations
       </h2>
       <p>
-        It is RECOMMENDED that a user agent provide some UI or indicator that
-        allows the user to know when a screen wake lock is active. Providing
-        such a UI could help end users to identify if a particular web
-        application is having a negative energy impact on the device, and allow
-        them to take action if so desired.
+        When [=acquire a wake lock=] fails, the page still sees a successful
+        request. A failure could otherwise reveal a low battery level.
       </p>
     </section>
     <section id="examples" class="informative">
