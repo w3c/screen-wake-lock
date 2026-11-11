@@ -177,12 +177,12 @@
         particular <a>wake lock type</a> for a particular {{Document}} by any
         implementation-specific reason, such as platform setting or user
         preference.
-        <aside class="note">
-          Given that screen wake locks are released when a document loses
-          visibility, no implementation requires an explicit permission grant
-          to acquire a screen wake lock.
-        </aside>
       </p>
+      <aside class="note">
+        Given that screen wake locks are released when a document loses
+        visibility, no implementation requires an explicit permission grant to
+        acquire a screen wake lock.
+      </aside>
       <section>
         <h2>
           The `"screen-wake-lock"` powerful feature
@@ -514,7 +514,8 @@
           then run <a>release a wake lock</a> with |document:Document| set to
           [=this=]'s [=relevant global object=]'s [=associated Document=],
           |lock:WakeLockSentinel| set to <a>this</a>, and |type:WakeLockType|
-          set to the value of <a>this</a>'s {{WakeLockSentinel/type}} attribute.
+          set to the value of <a>this</a>'s {{WakeLockSentinel/type}}
+          attribute.
           </li>
           <li>Return <a>a promise resolved with</a> `undefined`.
           </li>
