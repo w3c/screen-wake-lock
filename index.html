@@ -132,7 +132,7 @@
         Policy control
       </h3>
       <p data-tests=
-      "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.sub.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.sub.html, wakelock-enabled-by-permissions-policy-attribute.https.sub.html, wakelock-enabled-by-permissions-policy.https.sub.html">
+      "wakelock-supported-by-permissions-policy.html, wakelock-enabled-on-self-origin-by-permissions-policy.https.html, wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.html, wakelock-enabled-by-permissions-policy-attribute.https.html, wakelock-enabled-by-permissions-policy.https.html">
         The Screen Wake Lock API defines a [=policy-controlled feature=]
         identified by the string `"screen-wake-lock"`. Its [=policy-controlled
         feature/default allowlist=] is `'self'`.
@@ -274,6 +274,19 @@
                 this {{Document}}.
               </td>
             </tr>
+            <tr>
+              <td>
+                <dfn>[[\HasAcquiredLocks]]</dfn>
+              </td>
+              <td>
+                An [=ordered map=] mapping [=wake lock types=] to `false`.
+              </td>
+              <td>
+                An [=ordered map=] of [=wake lock types=] to a [=boolean=] that
+                is `true` if this {{Document}} ever had a {{WakeLockSentinel}}
+                of that type.
+              </td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -293,7 +306,7 @@
       <h2>
         The <dfn>WakeLock</dfn> interface
       </h2>
-      <p data-tests="wakelock-insecure-context.any.html">
+      <p data-tests="wakelock-insecure-context.window.html">
         The {{WakeLock}} interface allows a document to acquire a [=screen wake
         lock=].
       </p>
@@ -307,31 +320,38 @@
         <h3>
           The <dfn>request()</dfn> method
         </h3>
-        <p data-tests="wakelock-type.https.any.html">
+        <p data-tests="wakelock-type.https.window.html">
           The <code>request(|type:WakeLockType|)</code> method steps are:
         </p>
         <ol class="algorithm">
-          <li>Let |document:Document| be [=this=]'s [=relevant global
-          object=]'s [=associated Document=].
+          <li>Let |global:Window| be the [=relevant global object=] of
+          [=this=].
+          </li>
+          <li>Let |document:Document| be |global|'s [=associated `Document`=].
           </li>
           <li data-tests="wakelock-active-document.https.window.html">If
           |document| is not [=Document/fully active=], return [=a promise
           rejected with=] with a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests=
-          "wakelock-disabled-by-permissions-policy.https.sub.html">If
-          |document| is not [=allowed to use=] the [=policy-controlled
+          <li data-tests="wakelock-disabled-by-permissions-policy.https.html">
+          If |document| is not [=allowed to use=] the [=policy-controlled
           feature=] named "`screen-wake-lock`", return [=a promise rejected
           with=] a {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-screen-type-on-worker.https.worker.html">If
-          the <a>user agent</a> <a>denies the wake lock</a> of this |type| for
-          |document|, return [=a promise rejected with=] a
+          <li>If the <a>user agent</a> <a>denies the wake lock</a> of this
+          |type| for |document|, return [=a promise rejected with=] a
           {{"NotAllowedError"}} {{DOMException}}.
           </li>
-          <li data-tests="wakelock-document-hidden-manual.https.html">If
-          |document|'s [=Document/visibility state=] is "`hidden`", return [=a
-          promise rejected with=] {{"NotAllowedError"}} {{DOMException}}.
+          <li data-tests="wakelock-document-hidden.https.html">If |document|'s
+          [=Document/visibility state=] is "`hidden`", return [=a promise
+          rejected with=] {{"InvalidStateError"}} {{DOMException}}.
+          </li>
+          <li data-tests=
+          "wakelock-request-transient-activation.https.html, wakelock-request-previously-acquired.https.html">
+          If |global| does not have [=transient activation=] and
+          |document|.{{Document/[[HasAcquiredLocks]]}}[|type|] is `false`,
+          return [=a promise rejected with=] {{"NotAllowedError"}}
+          {{DOMException}}.
           </li>
           <li>Let |promise:Promise| be [=a new promise=].
           </li>
@@ -400,6 +420,9 @@
                   </li>
                   <li>[=List/Append=] |lock| to
                   |document|.{{Document/[[ActiveLocks]]}}["`screen`"].
+                  </li>
+                  <li>Set |document|.{{Document/[[HasAcquiredLocks]]}}[|type|]
+                  to `true`.
                   </li>
                   <li>Resolve |promise| with |lock|.
                   </li>
@@ -675,7 +698,7 @@
         <h3>
           <dfn>Handling document loss of visibility</dfn>
         </h3>
-        <p data-tests="wakelock-document-hidden-manual.https.html">
+        <p data-tests="wakelock-document-hidden.https.html">
           This specification defines the following [=page visibility change
           steps=] with [=Document/visibility state=] |state| and
           |document:Document|:
@@ -774,6 +797,15 @@
         example, the battery capacity is low, or the user has put their device
         in a power-saving mode.
       </p>
+      <p>
+        After a page obtains a screen wake lock, the page can request further
+        screen wake locks without [=transient activation=], even after the user
+        agent releases the first lock (for example, when the page becomes
+        hidden). A page can use this to keep the screen on without further user
+        interaction, which can deplete the battery faster than the user
+        expects. The paragraph above also applies to these requests:
+        implementations can ignore them.
+      </p>
     </section>
     <section>
       <h2>
@@ -791,14 +823,42 @@
       <h2>
         Examples
       </h2>
-      <pre class="example js" title="Acquires and releases a screen wake lock">
-        function tryKeepScreenAlive(minutes) {
-          navigator.wakeLock.request("screen").then(lock =&gt; {
-            setTimeout(() =&gt; lock.release(), minutes * 60 * 1000);
-          });
-        }
-
-        tryKeepScreenAlive(10);
+      <pre class="example html" title=
+      "Acquires and releases a screen wake lock">
+        &lt;button id="request" onclick="requestWakeLock(this)"&gt;
+        Request lock
+        &lt;/button&gt;
+        &lt;button id="release" onclick="releaseWakeLock(this)" disabled&gt;
+          Release lock
+        &lt;/button&gt;
+        &lt;script&gt;
+          let lock = null;
+          async function requestWakeLock(elem) {
+            elem.disabled = true;
+            try {
+              lock = await navigator.wakeLock.request("screen");
+              console.log("Screen Wake Lock acquired");
+            } catch (err) {
+              console.error(`${err.name}, ${err.message}`);
+              elem.disabled = false;
+              return;
+            }
+            const release = document.getElementById("release");
+            lock.addEventListener("release", () =&gt; {
+              console.log("Screen Wake Lock released");
+              release.disabled = true;
+              elem.disabled = false;
+            });
+            release.disabled = false;
+          }
+          async function releaseWakeLock(elem) {
+            await lock.release();
+            lock = null;
+            elem.disabled = true;
+            const request = document.getElementById("request");
+            request.disabled = false;
+          }
+        &lt;/script&gt;
       </pre>
       <p>
         This example allows the user to request a screen wake lock by clicking
@@ -809,21 +869,44 @@
         const checkbox = document.createElement("input");
         checkbox.setAttribute("type", "checkbox");
         document.body.appendChild(checkbox);
-
-        const sentinel = await navigator.wakeLock.request("screen");
-        checkbox.checked = !sentinel.released;
-        sentinel.onrelease = () =&gt; checkbox.checked = !sentinel.released;
+        let lock = null;
+        checkbox.addEventListener("change", async () =&gt; {
+          if (checkbox.checked) {
+            // Acquire lock...
+            lock = await navigator.wakeLock.request("screen");
+            // ...and update checkbox state in case lock is lost.
+            lock.onrelease = () =&gt; {
+              if (checkbox.checked) checkbox.checked = false;
+            }
+          } else {
+            await lock?.release();
+            lock = null;
+          }
+        });
       </pre>
       <p>
-        In this example, two different wake lock requests are created and
-        released independently:
+        In this example, independent wake locks are created and released
+        concurrently:
       </p>
-      <pre class="example js">
-        let lock1 = await navigator.wakeLock.request("screen");
-        let lock2 = await navigator.wakeLock.request("screen");
+      <pre class="example html">
+        &lt;script&gt;
+        const locks = [];
+        // Lock is created when a button is pressed
+        async function lockScreen() {
+          const lock = await navigator.wakeLock.request("screen");
+          locks.push(lock);
+        }
 
-        lock1.release();
-        lock2.release();
+        async function releaseAllLocks() {
+          await Promise.all(locks.map(lock =&gt; lock.release()));
+        }
+        &lt;/script&gt;
+        &lt;button onclick="lockScreen()"&gt;
+          Lock screen
+        &lt;/button&gt;
+        &lt;button onclick="releaseAllLocks()"&gt;
+          Release locks
+        &lt;/button&gt;
       </pre>
     </section>
     <section id="conformance">
